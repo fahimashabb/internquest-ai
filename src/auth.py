@@ -56,9 +56,9 @@ class UserManager:
                     email TEXT UNIQUE NOT NULL,
                     password_hash TEXT NOT NULL,
                     name TEXT NOT NULL,
-                    track TEXT DEFAULT 'Commerce & Business',
-                    degree TEXT DEFAULT 'Undergraduate',
-                    institution TEXT DEFAULT 'University',
+                    track TEXT DEFAULT 'General',
+                    degree TEXT DEFAULT '',
+                    institution TEXT DEFAULT '',
                     phone TEXT DEFAULT '',
                     linkedin TEXT DEFAULT '',
                     resume_filename TEXT DEFAULT '',
@@ -66,6 +66,8 @@ class UserManager:
                     resume_text TEXT DEFAULT '',
                     skills_json TEXT DEFAULT '[]',
                     target_domains_json TEXT DEFAULT '[]',
+                    daily_digest INTEGER DEFAULT 1,
+                    auth_provider TEXT DEFAULT 'email',
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     last_login TIMESTAMP
                 )
@@ -78,6 +80,14 @@ class UserManager:
                     FOREIGN KEY (user_id) REFERENCES users (id)
                 )
             """)
+            try:
+                conn.execute("ALTER TABLE users ADD COLUMN daily_digest INTEGER DEFAULT 1")
+            except Exception:
+                pass
+            try:
+                conn.execute("ALTER TABLE users ADD COLUMN auth_provider TEXT DEFAULT 'email'")
+            except Exception:
+                pass
             conn.commit()
 
     def register_user(
@@ -86,8 +96,8 @@ class UserManager:
         password: str,
         name: str,
         track: str = "General",
-        degree: str = "Undergraduate",
-        institution: str = "University",
+        degree: str = "",
+        institution: str = "",
         phone: str = "",
         linkedin: str = "",
         resume_bytes: Optional[bytes] = None,
@@ -132,8 +142,8 @@ class UserManager:
                 INSERT INTO users (
                     id, email, password_hash, name, track, degree, institution,
                     phone, linkedin, resume_filename, resume_bytes, resume_text,
-                    skills_json, target_domains_json, created_at, last_login
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+                    skills_json, target_domains_json, daily_digest, auth_provider, created_at, last_login
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 'email', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
             """, (
                 user_id, email_clean, pwd_hash, name, track, degree, institution,
                 phone, linkedin, resume_filename, resume_bytes, resume_text,
@@ -144,6 +154,75 @@ class UserManager:
         token = self.create_session(user_id)
         user_info = self.get_user_by_id(user_id)
         return {"success": True, "token": token, "user": user_info, "message": f"Welcome, {name}! Your account is active."}
+
+    def social_login(
+        self,
+        provider: str,
+        email: str,
+        name: str = "",
+        avatar: str = ""
+    ) -> Dict[str, Any]:
+        """Automatic one-click registration & sign-in with Google or Facebook."""
+        email_clean = email.strip().lower()
+        if not email_clean or "@" not in email_clean:
+            return {"success": False, "message": "Valid email address is required for social authentication."}
+
+        provider_name = provider.lower().strip()
+        if provider_name not in ("google", "facebook"):
+            provider_name = "social"
+
+        with self._get_connection() as conn:
+            cur = conn.execute("SELECT * FROM users WHERE email = ?", (email_clean,))
+            row = cur.fetchone()
+            if row:
+                user_data = dict(row)
+                conn.execute("UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE id = ?", (user_data["id"],))
+                conn.commit()
+                token = self.create_session(user_data["id"])
+                user_info = self._sanitize_user(user_data)
+                return {
+                    "success": True,
+                    "token": token,
+                    "user": user_info,
+                    "message": f"Welcome back, {user_info['name']}! Signed in with {provider_name.title()}."
+                }
+
+        # Auto-create user without password
+        user_id = str(uuid.uuid4())
+        display_name = name.strip() if name and name.strip() else email_clean.split("@")[0].title()
+        social_pwd = _hash_password(f"{provider_name}_{secrets.token_hex(16)}")
+
+        with self._get_connection() as conn:
+            conn.execute("""
+                INSERT INTO users (
+                    id, email, password_hash, name, track, degree, institution,
+                    daily_digest, auth_provider, created_at, last_login
+                ) VALUES (?, ?, ?, ?, 'General', '', '', 1, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+            """, (user_id, email_clean, social_pwd, display_name, provider_name))
+            conn.commit()
+
+        token = self.create_session(user_id)
+        user_info = self.get_user_by_id(user_id)
+        return {
+            "success": True,
+            "token": token,
+            "user": user_info,
+            "message": f"Welcome to InternQuest AI, {display_name}! Successfully registered via {provider_name.title()}."
+        }
+
+    def toggle_daily_digest(self, user_id: str, enabled: bool) -> bool:
+        """Enable or disable daily 10:00 AM email digest for user."""
+        val = 1 if enabled else 0
+        with self._get_connection() as conn:
+            conn.execute("UPDATE users SET daily_digest = ? WHERE id = ?", (val, user_id))
+            conn.commit()
+        return True
+
+    def get_digest_subscribers(self) -> List[Dict[str, Any]]:
+        """Return all users with active daily 10:00 AM digests."""
+        with self._get_connection() as conn:
+            cur = conn.execute("SELECT * FROM users WHERE daily_digest = 1 AND email IS NOT NULL AND email != ''")
+            return [self._sanitize_user(dict(r)) for r in cur.fetchall()]
 
     def authenticate_user(self, email: str, password: str) -> Dict[str, Any]:
         """Authenticate user by email and password, returning session token."""
@@ -276,8 +355,8 @@ class UserManager:
             "email": d["email"],
             "name": d["name"],
             "track": d.get("track", "General"),
-            "degree": d.get("degree", "Student"),
-            "institution": d.get("institution", "University"),
+            "degree": d.get("degree", ""),
+            "institution": d.get("institution", ""),
             "phone": d.get("phone", ""),
             "linkedin": d.get("linkedin", ""),
             "has_resume": bool(d.get("resume_bytes")),
@@ -285,6 +364,8 @@ class UserManager:
             "skills": skills,
             "target_domains": domains,
             "resume_text": d.get("resume_text", ""),
+            "daily_digest": bool(d.get("daily_digest", 1)),
+            "auth_provider": d.get("auth_provider", "email"),
             "created_at": d.get("created_at")
         }
 

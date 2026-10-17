@@ -343,6 +343,8 @@
         <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
           <li><h6 class="dropdown-header" id="navUserEmail">user@example.com</h6></li>
           <li><a class="dropdown-item" href="javascript:void(0)" onclick="triggerCvUpload()"><i class="fa-solid fa-cloud-arrow-up me-2 text-primary"></i>Upload / Update My CV</a></li>
+          <li><a class="dropdown-item" href="javascript:void(0)" onclick="toggleUserDigest()"><i class="fa-solid fa-bell me-2 text-warning"></i><span id="navDigestText">Pause 10:00 AM Alerts</span></a></li>
+          <li><a class="dropdown-item" href="javascript:void(0)" onclick="testMorningDigest()"><i class="fa-solid fa-paper-plane me-2 text-info"></i>Send Test 10 AM Digest</a></li>
           <li><hr class="dropdown-divider"></li>
           <li><a class="dropdown-item text-danger" href="javascript:void(0)" onclick="logout()"><i class="fa-solid fa-right-from-bracket me-2"></i>Sign Out</a></li>
         </ul>
@@ -376,14 +378,22 @@
       </div>
 
       <div class="col-lg-5">
+        <div class="d-flex justify-content-between align-items-center mb-2 px-1">
+          <span class="badge" style="background: rgba(34, 197, 94, 0.2); color: #4ade80; border: 1px solid rgba(74, 222, 128, 0.4); font-size: 0.8rem; font-weight: 600;">
+            <i class="fa-solid fa-lock-open me-1"></i> Guest Mode: No Signup Required
+          </span>
+          <span class="small" style="color: #cbd5e1; font-size: 0.8rem;">
+            <i class="fa-solid fa-clock me-1 text-warning"></i> 10:00 AM Daily Alerts with Account
+          </span>
+        </div>
         <div class="upload-zone text-dark bg-white" id="dropZone" onclick="triggerCvUpload()">
           <input type="file" id="cvFileInput" accept="application/pdf" style="display:none;" onchange="handleCvFile(this.files[0])">
           <div class="upload-icon-wrapper">
             <i class="fa-solid fa-cloud-arrow-up"></i>
           </div>
           <span class="fw-bold d-block fs-5 text-dark mb-1" id="uploadLabel">Drop your CV (PDF) here</span>
-          <span class="text-secondary small d-block mb-2">Auto-extracts degree, skills, and industry alignment</span>
-          <span class="badge bg-primary px-3 py-2 fw-semibold"><i class="fa-regular fa-file-pdf me-1"></i> Browse Computer</span>
+          <span class="text-secondary small d-block mb-2">Upload as guest or member to auto-match 85+ opportunities</span>
+          <span class="badge bg-primary px-3 py-2 fw-semibold"><i class="fa-regular fa-file-pdf me-1"></i> Browse Computer (PDF)</span>
         </div>
       </div>
     </div>
@@ -392,10 +402,11 @@
     <div id="profileCard" class="mt-4 p-4 rounded-3 d-none" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2);">
       <div class="row align-items-center g-3">
         <div class="col-md-8">
-          <div class="d-flex align-items-center gap-2">
+          <div class="d-flex flex-wrap align-items-center gap-2">
             <span class="badge bg-success text-white px-2 py-1"><i class="fa-solid fa-check me-1"></i>Active Candidate</span>
             <h5 class="fw-bold mb-0 text-white" id="pName">Candidate</h5>
             <span id="pTrackBadge" class="track-badge track-general">General</span>
+            <span id="pDigestBadge" class="badge bg-info-subtle text-info border border-info ms-2"><i class="fa-solid fa-bell me-1"></i>10:00 AM Daily Alerts: Active</span>
           </div>
           <div class="small mt-2" style="color: #cbd5e1; font-weight: 500;">
             <i class="fa-solid fa-graduation-cap me-1 text-info"></i><span id="pDegree" class="text-white fw-semibold">Undergraduate</span>
@@ -407,8 +418,11 @@
           <div class="mt-3" id="pSkills"></div>
         </div>
         <div class="col-md-4 text-md-end">
-          <button class="btn btn-warning text-dark fw-bold px-3 py-2 shadow" onclick="matchJobsForActiveProfile()">
-            <i class="fa-solid fa-wand-magic-sparkles me-1"></i> Recalculate Matches for My CV
+          <button class="btn btn-warning text-dark fw-bold px-3 py-2 shadow me-1 mb-1" onclick="matchJobsForActiveProfile()">
+            <i class="fa-solid fa-wand-magic-sparkles me-1"></i> Recalculate Matches
+          </button>
+          <button class="btn btn-outline-light btn-sm fw-semibold px-2 py-2 mb-1" onclick="testMorningDigest()" title="Test 10:00 AM email digest now">
+            <i class="fa-solid fa-paper-plane me-1 text-warning"></i> Test 10 AM Digest
           </button>
         </div>
       </div>
@@ -474,11 +488,30 @@
     <div class="modal-content border-0 shadow">
       <div class="modal-header text-white" style="background: #0f172a;">
         <h5 class="modal-title fw-bold" id="authModalTitle">
-          <i class="fa-solid fa-user-circle me-2 text-primary"></i>Welcome to InternQuest AI
+          <i class="fa-solid fa-user-circle me-2 text-primary"></i>InternQuest AI Account
         </h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body p-4">
+        
+        <!-- Automated 1-Click Social Sign-In / Registration -->
+        <div class="mb-3">
+          <button class="btn w-100 fw-bold py-2 mb-2 d-flex align-items-center justify-content-center gap-2 shadow-sm border" style="background:#ffffff; color:#3c4043; border-color:#dadce0;" onclick="promptSocialLogin('google')">
+            <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.616z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.964 10.707c-.18-.54-.282-1.117-.282-1.707s.102-1.167.282-1.707V4.961H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.039l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.961L3.964 7.293C4.672 5.166 6.656 3.58 9 3.58z"/></svg>
+            Continue with Google
+          </button>
+          <button class="btn w-100 fw-bold py-2 d-flex align-items-center justify-content-center gap-2 shadow-sm text-white" style="background:#1877f2; border:none;" onclick="promptSocialLogin('facebook')">
+            <i class="fa-brands fa-facebook-f fs-6"></i>
+            Continue with Facebook
+          </button>
+        </div>
+
+        <div class="d-flex align-items-center my-3">
+          <hr class="flex-grow-1 my-0 text-muted">
+          <span class="px-3 small text-muted fw-bold" style="font-size: 0.75rem;">OR USE EMAIL</span>
+          <hr class="flex-grow-1 my-0 text-muted">
+        </div>
+
         <!-- Tabs -->
         <ul class="nav nav-pills nav-fill mb-3" id="authTabs">
           <li class="nav-item">
@@ -506,6 +539,12 @@
 
         <!-- Register Form -->
         <form id="registerForm" class="d-none" onsubmit="handleRegister(event)">
+          <!-- 10 AM Daily Alert Benefit Banner -->
+          <div class="alert py-2 px-3 small mb-3 border-0 rounded-3 d-flex align-items-center gap-2" style="background: #eef2ff; color: #3730a3;">
+            <i class="fa-solid fa-clock-rotate-left fs-5 text-primary"></i>
+            <div><strong>10:00 AM Morning Digest:</strong> Registered profiles get automatic daily refreshes and morning email alerts with new matching positions!</div>
+          </div>
+
           <div class="mb-2">
             <label class="form-label fw-bold small text-dark">Full Name</label>
             <input type="text" class="form-control" id="regName" required placeholder="e.g. Ayesha Rahman">
@@ -532,12 +571,12 @@
           </div>
           <div class="row g-2 mb-2">
             <div class="col-md-6">
-              <label class="form-label fw-bold small text-dark">Degree / Major</label>
-              <input type="text" class="form-control" id="regDegree" placeholder="e.g. B.Sc in CSE, BBA Finance, BA English">
+              <label class="form-label fw-bold small text-dark">Degree / Major <span class="text-muted fw-normal">(Optional)</span></label>
+              <input type="text" class="form-control" id="regDegree" placeholder="e.g. B.Sc, BBA, BA, or leave blank">
             </div>
             <div class="col-md-6">
-              <label class="form-label fw-bold small text-dark">University / College</label>
-              <input type="text" class="form-control" id="regInst" placeholder="e.g. Dhaka University, BUET, BRAC">
+              <label class="form-label fw-bold small text-dark">University / College <span class="text-muted fw-normal">(Optional)</span></label>
+              <input type="text" class="form-control" id="regInst" placeholder="e.g. Dhaka University, BUET, or leave blank">
             </div>
           </div>
           <div class="mb-3">
@@ -545,10 +584,48 @@
             <input type="file" class="form-control" id="regCvFile" accept="application/pdf">
           </div>
           <button type="submit" class="btn btn-success w-100 fw-bold py-2 shadow-sm">
-            <i class="fa-solid fa-user-plus me-1"></i> Create Account &amp; Save My Profile
+            <i class="fa-solid fa-user-plus me-1"></i> Create Account &amp; Activate 10 AM Alerts
           </button>
         </form>
 
+        <!-- Guest Mode Option -->
+        <div class="text-center mt-3 pt-3 border-top">
+          <div class="text-muted small mb-1">Don't want to register right now?</div>
+          <button type="button" class="btn btn-sm btn-outline-secondary px-3" data-bs-dismiss="modal" onclick="highlightGuestUpload()">
+            <i class="fa-solid fa-user-secret me-1"></i> Continue as Guest (Upload CV &amp; Search Free)
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Social One-Click Login Modal -->
+<div class="modal fade" id="socialModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-header text-white" style="background: #0f172a;">
+        <h5 class="modal-title fw-bold" id="socialModalTitle">Continue with Social Login</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-4">
+        <p class="small text-muted mb-3">
+          Sign in or register automatically using your <strong id="socialProviderName">Google</strong> account. No password required! Your profile will be saved and you'll receive the daily 10:00 AM internship email digest.
+        </p>
+        <form onsubmit="executeSocialLogin(event)">
+          <div class="mb-3">
+            <label class="form-label fw-bold small text-dark">Your Name</label>
+            <input type="text" class="form-control" id="socialName" required placeholder="Your Full Name">
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-bold small text-dark">Email Address</label>
+            <input type="email" class="form-control" id="socialEmail" required placeholder="you@domain.com">
+          </div>
+          <button type="submit" id="socialConfirmBtn" class="btn btn-primary w-100 fw-bold py-2 shadow-sm">
+            Confirm &amp; Sign In
+          </button>
+        </form>
       </div>
     </div>
   </div>
@@ -650,6 +727,9 @@ async function checkAuthSession() {
   }
 }
 
+let socialModal = null;
+let currentSocialProvider = 'google';
+
 function updateAuthUI(user) {
   const controls = document.getElementById('authControls');
   const userMenu = document.getElementById('userProfileControls');
@@ -662,9 +742,26 @@ function updateAuthUI(user) {
     const trackBadge = document.getElementById('navUserTrack');
     trackBadge.innerText = user.track || 'General';
     trackBadge.className = 'track-badge ' + getTrackClass(user.track);
+
+    const digestStatusText = user.daily_digest ? 'Pause 10:00 AM Alerts' : 'Resume 10:00 AM Alerts';
+    const navDigestText = document.getElementById('navDigestText');
+    if (navDigestText) navDigestText.innerText = digestStatusText;
+
+    const pDigestBadge = document.getElementById('pDigestBadge');
+    if (pDigestBadge) {
+      pDigestBadge.className = user.daily_digest ? 'badge bg-success-subtle text-success border border-success' : 'badge bg-secondary-subtle text-secondary border';
+      pDigestBadge.innerHTML = user.daily_digest
+        ? '<i class="fa-solid fa-bell me-1 text-success"></i>10:00 AM Daily Alerts: Active'
+        : '<i class="fa-regular fa-bell-slash me-1 text-secondary"></i>10:00 AM Alerts: Paused';
+    }
   } else {
     controls.classList.remove('d-none');
     userMenu.classList.add('d-none');
+    const pDigestBadge = document.getElementById('pDigestBadge');
+    if (pDigestBadge) {
+      pDigestBadge.className = 'badge bg-light text-dark border';
+      pDigestBadge.innerHTML = '<i class="fa-solid fa-user-secret me-1 text-primary"></i>Guest Mode (Save account for 10 AM alerts)';
+    }
   }
 }
 
@@ -674,6 +771,122 @@ function getTrackClass(track) {
   if (track.includes('Commerce')) return 'track-commerce';
   if (track.includes('Arts')) return 'track-arts';
   return 'track-general';
+}
+
+function promptSocialLogin(provider) {
+  currentSocialProvider = provider;
+  if (!socialModal) socialModal = new bootstrap.Modal(document.getElementById('socialModal'));
+
+  const isGoogle = provider === 'google';
+  document.getElementById('socialModalTitle').innerHTML = isGoogle
+    ? '<i class="fa-brands fa-google text-danger me-2"></i>Continue with Google'
+    : '<i class="fa-brands fa-facebook text-primary me-2"></i>Continue with Facebook';
+
+  document.getElementById('socialProviderName').innerText = isGoogle ? 'Google' : 'Facebook';
+  document.getElementById('socialConfirmBtn').innerHTML = isGoogle
+    ? '<i class="fa-brands fa-google me-1"></i> Confirm &amp; Sign In with Google'
+    : '<i class="fa-brands fa-facebook me-1"></i> Confirm &amp; Sign In with Facebook';
+
+  document.getElementById('socialConfirmBtn').className = isGoogle
+    ? 'btn btn-danger w-100 fw-bold py-2 shadow-sm'
+    : 'btn btn-primary w-100 fw-bold py-2 shadow-sm';
+
+  const typedEmail = document.getElementById('loginEmail').value || document.getElementById('regEmail').value || '';
+  document.getElementById('socialEmail').value = typedEmail || (isGoogle ? 'candidate@gmail.com' : 'candidate@facebook.com');
+
+  const typedName = document.getElementById('regName').value || '';
+  document.getElementById('socialName').value = typedName || 'Job Seeker';
+
+  if (authModal) authModal.hide();
+  socialModal.show();
+}
+
+async function executeSocialLogin(e) {
+  e.preventDefault();
+  const email = document.getElementById('socialEmail').value.trim();
+  const name = document.getElementById('socialName').value.trim();
+
+  if (!email || !email.includes('@')) {
+    showAlert('Please enter a valid email address.', 'danger');
+    return;
+  }
+
+  try {
+    const res = await fetch('/api/auth/social-login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ provider: currentSocialProvider, email, name })
+    });
+    const d = await res.json();
+    if (d.success) {
+      localStorage.setItem('iq_token', d.token);
+      currentUser = d.user;
+      updateAuthUI(d.user);
+      if (socialModal) socialModal.hide();
+      showAlert(`🎉 ${d.message} (Daily 10:00 AM alerts activated)`, 'success');
+      if (d.user.has_resume) {
+        displayActiveProfile({
+          name: d.user.name,
+          degree: d.user.degree,
+          institution: d.user.institution,
+          skills: d.user.skills,
+          track: d.user.track,
+          filename: d.user.resume_filename
+        });
+        matchJobsForActiveProfile();
+      }
+    } else {
+      showAlert(d.message || 'Social login failed.', 'danger');
+    }
+  } catch(err) {
+    showAlert('Error with social login: ' + err, 'danger');
+  }
+}
+
+async function toggleUserDigest() {
+  if (!currentUser) return;
+  const token = localStorage.getItem('iq_token');
+  const newStatus = !currentUser.daily_digest;
+  try {
+    const res = await fetch('/api/auth/toggle-digest', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token, enabled: newStatus })
+    });
+    const d = await res.json();
+    if (d.success) {
+      currentUser.daily_digest = newStatus;
+      updateAuthUI(currentUser);
+      showAlert(`🔔 ${d.message}`, 'info');
+    }
+  } catch(e) {
+    showAlert('Could not update digest setting: ' + e, 'danger');
+  }
+}
+
+async function testMorningDigest() {
+  const token = localStorage.getItem('iq_token');
+  showAlert('⏰ Triggering 10:00 AM Daily Morning Digest test dispatch...', 'info');
+  try {
+    const res = await fetch('/api/test-digest', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: token || '' })
+    });
+    const d = await res.json();
+    showAlert(`✅ ${d.message}`, 'success');
+    loadLog();
+  } catch(e) {
+    showAlert('Error triggering test digest: ' + e, 'danger');
+  }
+}
+
+function highlightGuestUpload() {
+  const dz = document.getElementById('dropZone');
+  dz.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  dz.classList.add('dragover');
+  setTimeout(() => dz.classList.remove('dragover'), 1600);
+  showAlert('👋 Guest Mode Ready! Upload your CV below to match positions immediately with zero registration.', 'info');
 }
 
 function openAuthModal(mode) {
@@ -873,13 +1086,26 @@ async function handleCvFile(file) {
 
 function displayActiveProfile(p) {
   document.getElementById('pName').innerText = p.name || 'Candidate';
-  document.getElementById('pDegree').innerText = p.degree || 'Undergraduate';
-  document.getElementById('pInst').innerText = p.institution || 'University';
+  document.getElementById('pDegree').innerText = p.degree || 'Student / Graduate';
+  document.getElementById('pInst').innerText = p.institution || (currentUser ? 'General Background' : 'Guest Upload');
   document.getElementById('pFilename').innerText = p.filename || 'Uploaded Resume.pdf';
 
   const trackBadge = document.getElementById('pTrackBadge');
   trackBadge.innerText = p.track || 'General';
   trackBadge.className = 'track-badge ' + getTrackClass(p.track);
+
+  const digestBadge = document.getElementById('pDigestBadge');
+  if (digestBadge) {
+    if (currentUser) {
+      digestBadge.className = currentUser.daily_digest ? 'badge bg-success-subtle text-success border border-success' : 'badge bg-secondary-subtle text-secondary border';
+      digestBadge.innerHTML = currentUser.daily_digest
+        ? '<i class="fa-solid fa-bell me-1 text-success"></i>10:00 AM Daily Alerts: Active'
+        : '<i class="fa-regular fa-bell-slash me-1 text-secondary"></i>10:00 AM Alerts: Paused';
+    } else {
+      digestBadge.className = 'badge bg-light text-dark border';
+      digestBadge.innerHTML = '<i class="fa-solid fa-user-secret me-1 text-primary"></i>Guest Mode (Save profile for 10 AM alerts)';
+    }
+  }
 
   const skillsDiv = document.getElementById('pSkills');
   skillsDiv.innerHTML = '';

@@ -173,6 +173,46 @@ class DashboardHandler(BaseHTTPRequestHandler):
             self._send_json({"success": True, "message": "Logged out."})
             return
 
+        if path == "/api/auth/social-login":
+            provider = payload.get("provider", "google")
+            email = payload.get("email", "").strip()
+            name = payload.get("name", "").strip()
+            avatar = payload.get("avatar", "").strip()
+            result = user_manager.social_login(provider=provider, email=email, name=name, avatar=avatar)
+            self._send_json(result)
+            return
+
+        if path == "/api/auth/toggle-digest":
+            token = payload.get("token", "").strip()
+            enabled = bool(payload.get("enabled", True))
+            user = user_manager.get_user_by_session(token)
+            if not user:
+                self._send_json({"success": False, "message": "Authentication required."})
+                return
+            user_manager.toggle_daily_digest(user["id"], enabled)
+            self._send_json({
+                "success": True,
+                "daily_digest": enabled,
+                "message": f"10:00 AM Daily Email Digest {'activated' if enabled else 'paused'}."
+            })
+            return
+
+        if path == "/api/test-digest":
+            token = payload.get("token", "").strip()
+            target_user_id = None
+            if token:
+                user = user_manager.get_user_by_session(token)
+                if user:
+                    target_user_id = user["id"]
+
+            def run_digest():
+                self.bot.send_daily_morning_digests(target_user_id=target_user_id)
+
+            threading.Thread(target=run_digest, daemon=True).start()
+            self._send_json({"success": True, "message": "10:00 AM Morning Digest triggered! Check your inbox or engine logs."})
+            return
+
+
         if path == "/api/auth/upload-cv":
             token = payload.get("token", "").strip()
             user = user_manager.get_user_by_session(token)
@@ -364,15 +404,31 @@ class DashboardHandler(BaseHTTPRequestHandler):
 
 
 def run_server(port=5000):
+    import schedule
+    import time
+
     settings = load_settings()
     bot = InternshipBot(settings)
     DashboardHandler.bot = bot
+
+    # 10:00 AM Daily Morning Refresh & Subscriber Digest Job
+    def background_scheduler():
+        schedule.every().day.at("10:00").do(lambda: (bot.run_discovery_cycle(), bot.send_daily_morning_digests()))
+        while True:
+            try:
+                schedule.run_pending()
+            except Exception:
+                pass
+            time.sleep(30)
+
+    threading.Thread(target=background_scheduler, daemon=True).start()
 
     server = HTTPServer(("127.0.0.1", port), DashboardHandler)
     url = f"http://localhost:{port}"
     print(f"\n========================================================")
     print(f"  InternQuest AI - Universal Internship Platform LIVE!")
     print(f"  Open: {url}")
+    print(f"  Auto-Refresh: Daily at 10:00 AM with Email Digests")
     print(f"  Press Ctrl+C to stop.")
     print(f"========================================================\n")
 

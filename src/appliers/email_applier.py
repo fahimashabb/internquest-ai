@@ -137,3 +137,66 @@ class EmailApplier:
                 "status": "ERROR",
                 "message": f"SMTP Error sending to {to_email}: {e}"
             }
+
+    def send_digest_email(
+        self,
+        to_email: str,
+        recipient_name: str,
+        subject: str,
+        body_text: str,
+        body_html: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """Send or record morning 10:00 AM digest email to registered candidate."""
+        user_email = self.settings.email_user
+        user_password = self.settings.email_password
+
+        # If credentials are not set, log digest generation gracefully
+        if not user_password or not user_email:
+            self.tracker.log_activity(
+                activity_type="DIGEST_GENERATED",
+                details=f"10:00 AM Daily Digest prepared for {recipient_name} <{to_email}>: {subject}"
+            )
+            return {
+                "success": True,
+                "status": "DIGEST_LOGGED",
+                "message": f"10:00 AM Digest prepared for {recipient_name} ({to_email}). (SMTP not configured, logged to system history)."
+            }
+
+        try:
+            msg = MIMEMultipart("alternative")
+            from_name = "InternQuest AI Updates"
+            msg["From"] = f"{from_name} <{user_email}>"
+            msg["To"] = to_email
+            msg["Subject"] = subject
+
+            msg.attach(MIMEText(body_text, "plain", "utf-8"))
+            if body_html:
+                msg.attach(MIMEText(body_html, "html", "utf-8"))
+
+            server = smtplib.SMTP(self.settings.email_host, self.settings.email_port)
+            server.ehlo()
+            server.starttls()
+            server.login(user_email, user_password)
+            server.sendmail(user_email, [to_email], msg.as_string())
+            server.quit()
+
+            self.tracker.log_activity(
+                activity_type="DIGEST_SENT",
+                details=f"Sent daily 10:00 AM digest email to {to_email} ({recipient_name})"
+            )
+            return {
+                "success": True,
+                "status": "SENT",
+                "message": f"Daily 10:00 AM digest successfully sent to {to_email}."
+            }
+        except Exception as e:
+            self.tracker.log_activity(
+                activity_type="DIGEST_ERROR",
+                details=f"Failed to email 10:00 AM digest to {to_email}: {e}"
+            )
+            return {
+                "success": False,
+                "status": "ERROR",
+                "message": f"SMTP digest error for {to_email}: {e}"
+            }
+
