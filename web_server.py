@@ -1,14 +1,22 @@
 """
-Improved web server with full API support — all dashboard buttons functional.
+Universal Multi-User Web Server for AI Internship Hunter Platform.
+Features:
+- General user registration, login, and session persistence in SQLite
+- Personal CV storage (PDF bytes) attached to registered user ID
+- Multi-disciplinary support: Science, Commerce, Arts, Engineering, Law, Healthcare
+- Personalized AI job matching & customized cold email pitch generation
+- Secure live email applications using user's uploaded CV
 """
+
 import json
 import os
 import sys
 import webbrowser
 import threading
+import base64
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from pathlib import Path
-from urllib.parse import urlparse
+from urllib.parse import urlparse, parse_qs
 
 # Fix working directory
 BASE_DIR = Path(__file__).resolve().parent
@@ -16,15 +24,14 @@ os.chdir(BASE_DIR)
 if str(BASE_DIR) not in sys.path:
     sys.path.insert(0, str(BASE_DIR))
 
-import base64
 from src.config import load_settings, ENV_FILE
 from src.scheduler import InternshipBot
 from src.profile import CandidateProfile
 from src.matcher.gemini_evaluator import GeminiEvaluator
 from src.scrapers.base import JobListing
+from src.auth import user_manager
 
 WEB_DIR = BASE_DIR / "web"
-
 
 
 class DashboardHandler(BaseHTTPRequestHandler):
@@ -44,6 +51,22 @@ class DashboardHandler(BaseHTTPRequestHandler):
             self.wfile.write((WEB_DIR / "index.html").read_bytes())
             return
 
+        if path == "/api/auth/me":
+            auth_header = self.headers.get("Authorization", "")
+            token = ""
+            if auth_header.startswith("Bearer "):
+                token = auth_header[7:].strip()
+            if not token:
+                qs = parse_qs(parsed.query)
+                token = qs.get("token", [""])[0]
+
+            user = user_manager.get_user_by_session(token)
+            if user:
+                self._send_json({"success": True, "user": user})
+            else:
+                self._send_json({"success": False, "message": "Not authenticated."})
+            return
+
         if path == "/api/jobs":
             with self.bot.tracker._get_connection() as conn:
                 cursor = conn.execute("SELECT * FROM jobs ORDER BY match_score DESC, found_at DESC")
@@ -61,7 +84,7 @@ class DashboardHandler(BaseHTTPRequestHandler):
         if path == "/api/config":
             s = self.bot.settings
             data = {
-                "is_dry_run": s.is_dry_run,
+                "is_dry_run": False,
                 "email_user": s.email_user,
                 "email_password": "SET" if s.email_password else "",
                 "has_gemini": bool(s.gemini_api_key),
@@ -75,10 +98,10 @@ class DashboardHandler(BaseHTTPRequestHandler):
             log_path = BASE_DIR / "data" / "daily_runs.log"
             if log_path.exists():
                 content = log_path.read_text(encoding="utf-8", errors="replace")
-                lines = content.strip().split("\n")[-30:]  # Last 30 lines
+                lines = content.strip().split("\n")[-30:]
                 self._send_json({"lines": lines})
             else:
-                self._send_json({"lines": ["No scan logs yet."]})
+                self._send_json({"lines": ["Discovery engine active."]})
             return
 
         self.send_response(404)
@@ -94,6 +117,77 @@ class DashboardHandler(BaseHTTPRequestHandler):
         except Exception:
             payload = {}
 
+        # ── AUTHENTICATION ROUTES ──
+        if path == "/api/auth/register":
+            email = payload.get("email", "").strip()
+            password = payload.get("password", "").strip()
+            name = payload.get("name", "").strip()
+            track = payload.get("track", "Commerce & Business").strip()
+            degree = payload.get("degree", "Undergraduate").strip()
+            institution = payload.get("institution", "University").strip()
+            phone = payload.get("phone", "").strip()
+            linkedin = payload.get("linkedin", "").strip()
+            file_base64 = payload.get("file_base64", "")
+            filename = payload.get("filename", "")
+
+            resume_bytes = None
+            if file_base64:
+                try:
+                    resume_bytes = base64.b64decode(file_base64)
+                except Exception:
+                    pass
+
+            result = user_manager.register_user(
+                email=email,
+                password=password,
+                name=name,
+                track=track,
+                degree=degree,
+                institution=institution,
+                phone=phone,
+                linkedin=linkedin,
+                resume_bytes=resume_bytes,
+                resume_filename=filename
+            )
+            self._send_json(result)
+            return
+
+        if path == "/api/auth/login":
+            email = payload.get("email", "").strip()
+            password = payload.get("password", "").strip()
+            result = user_manager.authenticate_user(email, password)
+            self._send_json(result)
+            return
+
+        if path == "/api/auth/logout":
+            token = payload.get("token", "").strip()
+            if token:
+                user_manager.logout_session(token)
+            self._send_json({"success": True, "message": "Logged out."})
+            return
+
+        if path == "/api/auth/upload-cv":
+            token = payload.get("token", "").strip()
+            user = user_manager.get_user_by_session(token)
+            if not user:
+                self._send_json({"success": False, "message": "Please log in to save your CV."})
+                return
+
+            file_base64 = payload.get("file_base64", "")
+            filename = payload.get("filename", "Resume.pdf")
+            if not file_base64:
+                self._send_json({"success": False, "message": "No file received."})
+                return
+
+            try:
+                resume_bytes = base64.b64decode(file_base64)
+                res = user_manager.update_user_cv(user["id"], resume_bytes, filename)
+                self._send_json(res)
+            except Exception as e:
+                self._send_json({"success": False, "message": f"Upload failed: {e}"})
+            return
+
+        # ── CV PARSING & MATCHING ROUTES ──
         if path == "/api/upload-cv":
             file_base64 = payload.get("file_base64", "")
             if not file_base64:
@@ -176,11 +270,14 @@ class DashboardHandler(BaseHTTPRequestHandler):
             def run_scan():
                 self.bot.run_discovery_cycle()
             threading.Thread(target=run_scan, daemon=True).start()
-            self._send_json({"success": True, "message": "Scan started! Refresh in ~30 seconds for new results."})
+            self._send_json({"success": True, "message": "Scan started! Scraping fresh postings across all disciplines..."})
             return
 
         if path == "/api/apply-email":
             job_id = payload.get("job_id")
+            token = payload.get("token", "")
+            user = user_manager.get_user_by_session(token) if token else None
+
             with self.bot.tracker._get_connection() as conn:
                 cur = conn.execute("SELECT * FROM jobs WHERE id = ?", (job_id,))
                 row = cur.fetchone()
@@ -188,45 +285,33 @@ class DashboardHandler(BaseHTTPRequestHandler):
                     self._send_json({"success": False, "message": "Job not found."})
                     return
                 job = dict(row)
+
+            # Retrieve user's CV if authenticated
+            resume_bytes = None
+            resume_filename = "Resume.pdf"
+            candidate_name = "Candidate"
+            if user:
+                candidate_name = user.get("name") or "Candidate"
+                resume_bytes = user_manager.get_user_resume_bytes(user["id"])
+                resume_filename = user.get("resume_filename") or "Resume.pdf"
+            elif payload.get("file_base64"):
+                try:
+                    resume_bytes = base64.b64decode(payload["file_base64"])
+                    resume_filename = payload.get("filename", "Resume.pdf")
+                except Exception:
+                    pass
+
             res = self.bot.email_applier.send_application(
                 job_id=job["id"],
                 to_email=job["contact_email"],
-                subject=job["tailored_email_subject"] or f"Application for {job['title']} - Fahim Ashab",
-                body_text=job["tailored_cover_letter"] or f"Dear Hiring Team,\nPlease find my CV attached for the {job['title']} role.\n\nBest regards,\nFahim Ashab"
+                subject=job["tailored_email_subject"] or f"Application for {job['title']} - {candidate_name}",
+                body_text=job["tailored_cover_letter"] or f"Dear Hiring Team,\nPlease find my CV attached for the {job['title']} role.\n\nBest regards,\n{candidate_name}",
+                resume_bytes=resume_bytes,
+                resume_filename=resume_filename,
+                sender_name=candidate_name
             )
             if res.get("success"):
                 self.bot.tracker.mark_applied(job["id"], channel="email")
-            self._send_json(res)
-            return
-
-        if path == "/api/apply-all-email":
-            results = []
-            pending = self.bot.tracker.get_pending_applications(min_score=self.bot.settings.filtering.min_match_score)
-            email_jobs = [j for j in pending if j.get("application_channel") == "email" and j.get("contact_email")]
-            for job in email_jobs[:self.bot.settings.application.daily_email_limit]:
-                can_send, sent, limit = self.bot.email_applier.can_send_more_today()
-                if not can_send:
-                    break
-                res = self.bot.email_applier.send_application(
-                    job_id=job["id"],
-                    to_email=job["contact_email"],
-                    subject=job.get("tailored_email_subject") or f"Application for {job['title']} - Fahim Ashab",
-                    body_text=job.get("tailored_cover_letter") or f"Dear Hiring Team,\nPlease find my CV attached.\n\nBest regards,\nFahim Ashab"
-                )
-                if res.get("success"):
-                    self.bot.tracker.mark_applied(job["id"], channel="email")
-                results.append({"company": job["company"], "result": res["status"]})
-            self._send_json({"success": True, "applied": results, "count": len(results)})
-            return
-
-        if path == "/api/test-email":
-            cand = self.bot.settings.candidate
-            res = self.bot.email_applier.send_application(
-                job_id="",
-                to_email=cand.email,
-                subject=f"Test Application Email - {cand.name} (CV Check)",
-                body_text=f"Dear {cand.name},\n\nThis is a test email from your Internship Hunter.\nYour CV is attached. Everything looks great!\n\nBest,\n{cand.name}"
-            )
             self._send_json(res)
             return
 
@@ -246,7 +331,6 @@ class DashboardHandler(BaseHTTPRequestHandler):
                 self.bot.settings.gemini_api_key = gemini_key
                 self.bot.evaluator._init_client()
 
-            # Persist to .env (Always keep DRY_RUN=False)
             env_content = "\n".join([
                 f"GEMINI_API_KEY={self.bot.settings.gemini_api_key or ''}",
                 f"EMAIL_HOST={self.bot.settings.email_host}",
@@ -256,9 +340,8 @@ class DashboardHandler(BaseHTTPRequestHandler):
                 f"DRY_RUN=False",
             ])
             ENV_FILE.write_text(env_content, encoding="utf-8")
-            self._send_json({"success": True, "message": "Settings saved. System is Active & Live."})
+            self._send_json({"success": True, "message": "Settings updated."})
             return
-
 
         self.send_response(404)
         self.end_headers()
@@ -281,7 +364,7 @@ def run_server(port=5000):
     server = HTTPServer(("127.0.0.1", port), DashboardHandler)
     url = f"http://localhost:{port}"
     print(f"\n========================================================")
-    print(f"  Fahim's Internship Assistant is LIVE!")
+    print(f"  InternQuest AI - Universal Internship Platform LIVE!")
     print(f"  Open: {url}")
     print(f"  Press Ctrl+C to stop.")
     print(f"========================================================\n")

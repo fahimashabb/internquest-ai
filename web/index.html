@@ -3,68 +3,130 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Internship Hunter & Application Assistant</title>
+  <title>InternQuest AI - Universal Internship Hunter & Matcher</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
-    body { background: #f8fafc; font-family: "Segoe UI", Roboto, sans-serif; color: #1e293b; }
+    :root {
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --accent: #06b6d4;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+    }
+    body { background: var(--bg); font-family: "Segoe UI", Roboto, system-ui, -apple-system, sans-serif; color: var(--text-main); }
     .navbar { background: #0f172a; }
-    .card { border: none; border-radius: 14px; }
-    .card-job { transition: transform .15s, box-shadow .2s; border: 1px solid #e2e8f0; }
-    .card-job:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,.08); }
+    .brand-logo { width: 38px; height: 38px; border-radius: 10px; }
+    .card { border: none; border-radius: 16px; }
+    .card-job {
+      transition: all .2s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 1px solid #e2e8f0;
+      background: var(--card-bg);
+    }
+    .card-job:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+      border-color: #cbd5e1;
+    }
     .score-pill { font-size: .95rem; font-weight: 700; border-radius: 20px; padding: 5px 14px; }
     .high { background: #dcfce7; color: #166534; }
-    .med  { background: #fef9c3; color: #713f12; }
+    .med  { background: #fef9c3; color: #854d0e; }
     .low  { background: #f1f5f9; color: #475569; }
-    .btn-act { border-radius: 8px; font-weight: 600; }
-    .email-preview { background: #ffffff; border-left: 4px solid #3b82f6; white-space: pre-wrap; font-size: .88rem; font-family: inherit; }
-    #logBox { background: #0f172a; color: #94a3b8; font-family: monospace; font-size: .8rem; height: 160px; overflow-y: auto; padding: 10px 14px; border-radius: 10px; }
-    .stat-box { border-radius: 12px; padding: 18px; border: 1px solid #e2e8f0; }
-    .spinner-scan { display: none; }
-    .scanning .spinner-scan { display: inline-block; }
-    .scanning .icon-scan { display: none; }
+    .btn-act { border-radius: 10px; font-weight: 600; font-size: 0.9rem; }
     .upload-zone {
-      border: 2px dashed #3b82f6;
-      border-radius: 14px;
+      border: 2px dashed #6366f1;
+      border-radius: 16px;
       padding: 24px;
       text-align: center;
-      background: #f0f7ff;
+      background: #f5f3ff;
       cursor: pointer;
       transition: all .2s;
     }
     .upload-zone:hover, .upload-zone.dragover {
-      background: #e0effe;
-      border-color: #1d4ed8;
+      background: #ede9fe;
+      border-color: #4f46e5;
     }
     .skill-pill {
       background: #e0f2fe;
       color: #0369a1;
       padding: 3px 10px;
-      border-radius: 15px;
+      border-radius: 14px;
       font-size: .8rem;
       font-weight: 600;
       display: inline-block;
       margin: 2px;
     }
-    .sector-tab.active {
-      background: #0f172a !important;
-      color: #fff !important;
+    .track-badge {
+      font-size: .75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 3px 9px;
+      border-radius: 8px;
     }
+    .track-science { background: #dbeafe; color: #1e40af; }
+    .track-commerce { background: #dcfce7; color: #15803d; }
+    .track-arts { background: #fce7f3; color: #9d174d; }
+    .track-general { background: #f1f5f9; color: #334155; }
+    .sector-tab { border-radius: 20px; font-weight: 600; font-size: 0.85rem; padding: 6px 14px; }
+    .sector-tab.active { background: #0f172a !important; color: #fff !important; }
+    .email-preview { background: #ffffff; border-left: 4px solid var(--primary); white-space: pre-wrap; font-size: .88rem; }
+    #logBox { background: #0f172a; color: #94a3b8; font-family: monospace; font-size: .8rem; height: 140px; overflow-y: auto; padding: 10px 14px; border-radius: 10px; }
   </style>
 </head>
 <body>
 
-<!-- Navbar -->
-<nav class="navbar navbar-dark px-4 py-2 shadow-sm">
+<!-- Navbar with Logo & Authentication -->
+<nav class="navbar navbar-expand-lg navbar-dark px-4 py-2 shadow-sm sticky-top">
   <div class="container-fluid">
-    <span class="navbar-brand fw-bold fs-5">
-      <i class="fa-solid fa-graduation-cap text-primary me-2"></i>AI Internship Hunter &amp; Matcher
-    </span>
-    <div class="d-flex gap-2 align-items-center">
-      <span class="badge bg-success px-3 py-2 fs-6"><i class="fa-solid fa-circle-check me-1"></i> System Active &amp; Live</span>
-      <button class="btn btn-outline-light btn-sm" onclick="openSettings()">
-        <i class="fa-solid fa-gear me-1"></i> Admin Settings
-      </button>
+    <a class="navbar-brand d-flex align-items-center gap-2 fw-bold fs-5 text-white" href="#">
+      <!-- SVG Brand Logo -->
+      <svg class="brand-logo" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="100" height="100" rx="24" fill="url(#brandGrad)"/>
+        <path d="M50 22L80 37L50 52L20 37L50 22Z" fill="#FFFFFF"/>
+        <path d="M30 46V64C30 73 50 78 50 78C50 78 70 73 70 64V46L50 56L30 46Z" fill="#E0E7FF" fill-opacity="0.85"/>
+        <circle cx="50" cy="50" r="7" fill="#38BDF8"/>
+        <defs>
+          <linearGradient id="brandGrad" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#4F46E5"/>
+            <stop offset="0.5" stop-color="#7C3AED"/>
+            <stop offset="1" stop-color="#06B6D4"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <span>InternQuest <span class="badge bg-primary fs-6 fw-semibold px-2 py-1 ms-1">AI</span></span>
+    </a>
+
+    <div class="d-flex align-items-center gap-3 ms-auto">
+      <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 fs-6">
+        <i class="fa-solid fa-circle-check me-1"></i> Live &amp; Active
+      </span>
+
+      <!-- Auth Controls (Dynamic) -->
+      <div id="authControls" class="d-flex align-items-center gap-2">
+        <button class="btn btn-outline-light btn-sm btn-act px-3" onclick="openAuthModal('login')">
+          <i class="fa-solid fa-right-to-bracket me-1"></i> Sign In
+        </button>
+        <button class="btn btn-primary btn-sm btn-act px-3" onclick="openAuthModal('register')">
+          <i class="fa-solid fa-user-plus me-1"></i> Register Free
+        </button>
+      </div>
+
+      <!-- User Profile Dropdown (when logged in) -->
+      <div id="userProfileControls" class="dropdown d-none">
+        <button class="btn btn-dark border-secondary dropdown-toggle btn-sm px-3 text-white d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown">
+          <i class="fa-solid fa-circle-user text-info fs-5"></i>
+          <span id="navUserName" class="fw-semibold">User</span>
+          <span id="navUserTrack" class="track-badge track-general">General</span>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
+          <li><h6 class="dropdown-header" id="navUserEmail">user@example.com</h6></li>
+          <li><a class="dropdown-item" href="javascript:void(0)" onclick="triggerCvUpload()"><i class="fa-solid fa-cloud-arrow-up me-2 text-primary"></i>Upload / Update My CV</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item text-danger" href="javascript:void(0)" onclick="logout()"><i class="fa-solid fa-right-from-bracket me-2"></i>Sign Out</a></li>
+        </ul>
+      </div>
     </div>
   </div>
 </nav>
@@ -74,83 +136,58 @@
   <!-- Status Alert -->
   <div id="statusAlert" class="alert d-none shadow-sm mb-3" role="alert"></div>
 
-  <!-- Universal CV Upload Hero Section -->
-  <div class="card shadow-sm mb-4 p-4" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #fff;">
-    <div class="row align-items-center g-3">
+  <!-- Hero Section: Universal CV Drop & Analysis -->
+  <div class="card shadow-sm mb-4 p-4" style="background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%); color: #fff;">
+    <div class="row align-items-center g-4">
       <div class="col-lg-7">
         <div class="d-flex align-items-center gap-2 mb-2">
-          <span class="badge bg-primary px-3 py-1">Universal Multi-User Mode</span>
-          <span class="badge bg-success-subtle text-success px-3 py-1">100+ Bangladesh Banks &amp; MNCs</span>
+          <span class="badge bg-indigo-subtle text-info border border-info px-2 py-1 small">Universal Multi-Discipline</span>
+          <span class="badge bg-light text-dark px-2 py-1 small">Science • Commerce • Arts • Tech</span>
         </div>
-        <h3 class="fw-bold mb-2">Upload Your CV &amp; Find Your Perfect Internship 🎯</h3>
-        <p class="text-light opacity-75 mb-0 small">
-          Drop your resume PDF below. Our AI extracts your degree and skills, scans 100+ companies (Banks, FinTechs, MNCs, NGOs, Remote boards), calculates your match score, and drafts personalized cold outreach letters with 1-click copy.
+        <h2 class="fw-bold mb-2">Find Internships Aligned With Your CV 🎯</h2>
+        <p class="text-light opacity-75 mb-3">
+          Upload your resume in PDF. Our AI reads your background—whether in <strong>Science, Commerce, Arts, or Tech</strong>—scans 100+ Bangladesh companies, banks, MNCs, NGOs &amp; remote boards, calculates personalized match scores, and drafts tailored outreach pitches.
         </p>
+        <div class="d-flex flex-wrap gap-2">
+          <span class="badge bg-secondary-subtle text-light border border-secondary px-3 py-2"><i class="fa-solid fa-flask me-1 text-info"></i> Science &amp; Tech</span>
+          <span class="badge bg-secondary-subtle text-light border border-secondary px-3 py-2"><i class="fa-solid fa-chart-line me-1 text-success"></i> Commerce &amp; Banking</span>
+          <span class="badge bg-secondary-subtle text-light border border-secondary px-3 py-2"><i class="fa-solid fa-palette me-1 text-warning"></i> Arts, Media &amp; Law</span>
+        </div>
       </div>
+
       <div class="col-lg-5">
-        <div class="upload-zone text-dark" id="dropZone" onclick="document.getElementById('cvFileInput').click()">
+        <div class="upload-zone text-dark bg-white" id="dropZone" onclick="triggerCvUpload()">
           <input type="file" id="cvFileInput" accept="application/pdf" style="display:none;" onchange="handleCvFile(this.files[0])">
-          <i class="fa-solid fa-cloud-arrow-up fa-2x text-primary mb-2 d-block"></i>
-          <span class="fw-bold d-block" id="uploadLabel">Drop your CV here or click to browse</span>
-          <span class="text-muted small">Supports PDF format (Auto-extracts skills &amp; experience)</span>
+          <i class="fa-solid fa-cloud-arrow-up fa-3x text-primary mb-2 d-block"></i>
+          <span class="fw-bold d-block fs-6" id="uploadLabel">Drop your CV (PDF) here or click to browse</span>
+          <span class="text-muted small">Auto-extracts degree, skills, and industry alignment</span>
         </div>
       </div>
     </div>
 
-    <!-- Detected Profile Card -->
-    <div id="profileCard" class="mt-4 p-3 rounded-3 d-none" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);">
-      <div class="row align-items-center g-2">
+    <!-- Active Candidate Profile Card -->
+    <div id="profileCard" class="mt-4 p-3 rounded-3 d-none" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.18);">
+      <div class="row align-items-center g-3">
         <div class="col-md-8">
           <div class="d-flex align-items-center gap-2">
-            <span class="badge bg-success"><i class="fa-solid fa-check me-1"></i>CV Analyzed</span>
+            <span class="badge bg-success"><i class="fa-solid fa-check me-1"></i>Active Candidate</span>
             <h5 class="fw-bold mb-0 text-white" id="pName">Candidate</h5>
+            <span id="pTrackBadge" class="track-badge track-general">General</span>
           </div>
           <div class="text-light opacity-75 small mt-1">
             <i class="fa-solid fa-graduation-cap me-1"></i><span id="pDegree">Undergraduate</span>
             <span class="mx-2">•</span>
             <i class="fa-solid fa-building-columns me-1"></i><span id="pInst">University</span>
             <span class="mx-2">•</span>
-            <i class="fa-solid fa-location-dot me-1"></i><span id="pLoc">Bangladesh</span>
+            <i class="fa-solid fa-file-pdf me-1 text-warning"></i><span id="pFilename">Uploaded Resume</span>
           </div>
           <div class="mt-2" id="pSkills"></div>
         </div>
         <div class="col-md-4 text-md-end">
-          <button class="btn btn-warning fw-bold px-3 py-2" onclick="matchJobsForUploadedCv()">
+          <button class="btn btn-warning fw-bold px-3 py-2" onclick="matchJobsForActiveProfile()">
             <i class="fa-solid fa-wand-magic-sparkles me-1"></i> Recalculate Matches for My CV
           </button>
         </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Action Bar & Stats -->
-  <div class="row g-3 mb-4">
-    <div class="col-6 col-md-3">
-      <div class="card shadow-sm stat-box bg-white text-center">
-        <div class="text-muted small mb-1">Total Positions Tracked</div>
-        <div class="fs-3 fw-bold" id="statTotal">—</div>
-      </div>
-    </div>
-    <div class="col-6 col-md-3">
-      <div class="card shadow-sm stat-box bg-white text-center">
-        <div class="text-muted small mb-1">High Matches (≥65%)</div>
-        <div class="fs-3 fw-bold text-success" id="statMatched">—</div>
-      </div>
-    </div>
-    <div class="col-6 col-md-3">
-      <div class="card shadow-sm stat-box bg-white text-center">
-        <div class="text-muted small mb-1">Email Outreach Ready</div>
-        <div class="fs-3 fw-bold text-primary" id="statEmailReady">—</div>
-      </div>
-    </div>
-    <div class="col-6 col-md-3">
-      <div class="card shadow-sm stat-box bg-white text-center">
-        <div class="text-muted small mb-1">Live Discovery</div>
-        <button id="scanBtn" class="btn btn-outline-primary btn-sm w-100 mt-1 fw-semibold" onclick="scanJobs()">
-          <i class="fa-solid fa-rotate icon-scan me-1"></i>
-          <span class="spinner-border spinner-border-sm spinner-scan me-1"></span>
-          Scan All 100+ Sources
-        </button>
       </div>
     </div>
   </div>
@@ -161,17 +198,17 @@
       <div class="col-md-5">
         <div class="input-group">
           <span class="input-group-text bg-light border-end-0"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
-          <input type="text" id="searchInput" class="form-control border-start-0" placeholder="Search by role, company name, or keyword..." oninput="filterJobs()">
+          <input type="text" id="searchInput" class="form-control border-start-0" placeholder="Search by role, company, or keyword..." oninput="filterJobs()">
         </div>
       </div>
       <div class="col-md-7 d-flex flex-wrap gap-1 justify-content-md-end" id="sectorFilters">
-        <button class="btn btn-sm btn-dark sector-tab active" onclick="setSector('All', this)">All</button>
-        <button class="btn btn-sm btn-outline-secondary sector-tab" onclick="setSector('Banking', this)">Banks &amp; Finance</button>
-        <button class="btn btn-sm btn-outline-secondary sector-tab" onclick="setSector('FinTech', this)">FinTech</button>
-        <button class="btn btn-sm btn-outline-secondary sector-tab" onclick="setSector('Tech', this)">Tech &amp; Software</button>
-        <button class="btn btn-sm btn-outline-secondary sector-tab" onclick="setSector('MNC', this)">MNCs &amp; Conglomerates</button>
-        <button class="btn btn-sm btn-outline-secondary sector-tab" onclick="setSector('NGO', this)">NGOs &amp; Dev</button>
-        <button class="btn btn-sm btn-outline-secondary sector-tab" onclick="setSector('Remote', this)">Remote Global</button>
+        <button class="btn btn-sm btn-dark sector-tab active" onclick="setSector('All', this)">All Sectors</button>
+        <button class="btn btn-sm btn-outline-secondary sector-tab" onclick="setSector('Science', this)">🧪 Science &amp; Tech</button>
+        <button class="btn btn-sm btn-outline-secondary sector-tab" onclick="setSector('Commerce', this)">📈 Commerce &amp; Banking</button>
+        <button class="btn btn-sm btn-outline-secondary sector-tab" onclick="setSector('Arts', this)">🎨 Arts, Media &amp; Law</button>
+        <button class="btn btn-sm btn-outline-secondary sector-tab" onclick="setSector('MNC', this)">🏢 MNCs &amp; Conglomerates</button>
+        <button class="btn btn-sm btn-outline-secondary sector-tab" onclick="setSector('NGO', this)">🌍 NGOs &amp; Dev</button>
+        <button class="btn btn-sm btn-outline-secondary sector-tab" onclick="setSector('Remote', this)">🌐 Remote Global</button>
       </div>
     </div>
   </div>
@@ -179,12 +216,12 @@
   <!-- Section Header -->
   <div class="d-flex justify-content-between align-items-center mb-3">
     <h5 class="fw-bold mb-0">
-      <i class="fa-solid fa-briefcase text-primary me-2"></i>Available Opportunities
+      <i class="fa-solid fa-briefcase text-primary me-2"></i>Internship Opportunities
       <span id="countLabel" class="badge bg-secondary-subtle text-secondary fs-6 ms-2"></span>
     </h5>
     <div class="d-flex gap-2">
       <button class="btn btn-sm btn-outline-primary" onclick="setChannelFilter('all')">All Channels</button>
-      <button class="btn btn-sm btn-outline-primary" onclick="setChannelFilter('email')"><i class="fa-regular fa-envelope me-1"></i>Direct Email</button>
+      <button class="btn btn-sm btn-outline-primary" onclick="setChannelFilter('email')"><i class="fa-regular fa-envelope me-1"></i>Email Direct</button>
       <button class="btn btn-sm btn-outline-primary" onclick="setChannelFilter('web')"><i class="fa-solid fa-globe me-1"></i>Web Portal</button>
     </div>
   </div>
@@ -197,15 +234,101 @@
     </div>
   </div>
 
-  <!-- Activity Log -->
+  <!-- Activity & Scraper Logs -->
   <div class="card shadow-sm mt-5 p-4 bg-white">
     <div class="d-flex justify-content-between align-items-center mb-2">
-      <h6 class="fw-bold mb-0"><i class="fa-solid fa-terminal me-2 text-primary"></i>Background Automation &amp; Scan Logs</h6>
-      <span class="text-muted small">Auto-refreshes every 15s</span>
+      <h6 class="fw-bold mb-0"><i class="fa-solid fa-terminal me-2 text-primary"></i>Background Discovery Engine Logs</h6>
+      <button class="btn btn-sm btn-outline-secondary" onclick="scanJobs()"><i class="fa-solid fa-rotate me-1"></i>Trigger Live Scan</button>
     </div>
-    <div id="logBox">Loading logs...</div>
+    <div id="logBox">Scanning active across all disciplines...</div>
   </div>
 
+</div>
+
+<!-- Authentication Modal (Sign In / Register) -->
+<div class="modal fade" id="authModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-header bg-dark text-white">
+        <h5 class="modal-title fw-bold" id="authModalTitle">
+          <i class="fa-solid fa-user-circle me-2 text-primary"></i>Welcome to InternQuest AI
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-4">
+        <!-- Tabs -->
+        <ul class="nav nav-pills nav-fill mb-3" id="authTabs">
+          <li class="nav-item">
+            <button class="nav-link active fw-bold" id="tabLoginBtn" onclick="switchAuthTab('login')">Sign In</button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link fw-bold" id="tabRegisterBtn" onclick="switchAuthTab('register')">Register Free</button>
+          </li>
+        </ul>
+
+        <!-- Login Form -->
+        <form id="loginForm" onsubmit="handleLogin(event)">
+          <div class="mb-3">
+            <label class="form-label fw-semibold small">Email Address</label>
+            <input type="email" class="form-control" id="loginEmail" required placeholder="name@example.com">
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold small">Password</label>
+            <input type="password" class="form-control" id="loginPassword" required placeholder="Enter your password">
+          </div>
+          <button type="submit" class="btn btn-primary w-100 fw-bold py-2">
+            <i class="fa-solid fa-right-to-bracket me-1"></i> Sign In to My Account
+          </button>
+        </form>
+
+        <!-- Register Form -->
+        <form id="registerForm" class="d-none" onsubmit="handleRegister(event)">
+          <div class="mb-2">
+            <label class="form-label fw-semibold small">Full Name</label>
+            <input type="text" class="form-control" id="regName" required placeholder="e.g. Ayesha Rahman">
+          </div>
+          <div class="row g-2 mb-2">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold small">Email</label>
+              <input type="email" class="form-control" id="regEmail" required placeholder="name@example.com">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold small">Password</label>
+              <input type="password" class="form-control" id="regPassword" required minlength="6" placeholder="Min 6 characters">
+            </div>
+          </div>
+          <div class="mb-2">
+            <label class="form-label fw-semibold small">Academic Background / Track</label>
+            <select class="form-select" id="regTrack">
+              <option value="Science & Engineering">🧪 Science &amp; Engineering (CS, Data, Biotech, EEE, Civil)</option>
+              <option value="Commerce & Business" selected>📈 Commerce &amp; Business (Finance, Banking, Marketing, HR)</option>
+              <option value="Arts, Media & Law">🎨 Arts, Humanities, Design, Media &amp; Law</option>
+              <option value="Health & Pharma">🏥 Pharmacy, Health &amp; Life Sciences</option>
+              <option value="General">🌐 Other / General Studies</option>
+            </select>
+          </div>
+          <div class="row g-2 mb-2">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold small">Degree / Major</label>
+              <input type="text" class="form-control" id="regDegree" placeholder="e.g. B.Sc in CSE, BBA Finance, BA English">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold small">University / College</label>
+              <input type="text" class="form-control" id="regInst" placeholder="e.g. Dhaka University, BUET, BRAC">
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold small">Upload CV (Optional now, can add later)</label>
+            <input type="file" class="form-control" id="regCvFile" accept="application/pdf">
+          </div>
+          <button type="submit" class="btn btn-success w-100 fw-bold py-2">
+            <i class="fa-solid fa-user-plus me-1"></i> Create Account &amp; Save My Profile
+          </button>
+        </form>
+
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- Pitch Modal -->
@@ -227,7 +350,7 @@
           </div>
         </div>
         <div class="mb-3">
-          <label class="form-label fw-bold small text-muted">TAILORED COVER LETTER / COLD OUTREACH BODY</label>
+          <label class="form-label fw-bold small text-muted">TAILORED COLD OUTREACH / COVER LETTER</label>
           <textarea id="modalPitch" class="form-control email-preview p-3" rows="11" readonly></textarea>
         </div>
         <div class="d-flex justify-content-between align-items-center">
@@ -241,50 +364,17 @@
   </div>
 </div>
 
-<!-- Settings Modal -->
-<div class="modal fade" id="settingsModal" tabindex="-1">
-  <div class="modal-dialog">
-    <div class="modal-content border-0 shadow">
-      <div class="modal-header bg-dark text-white">
-        <h5 class="modal-title"><i class="fa-solid fa-sliders me-2"></i>Admin &amp; Personal Settings</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body p-4">
-        <div class="alert alert-success py-2 small mb-3">
-          <i class="fa-solid fa-circle-check me-1"></i> <strong>Live Mode Active</strong> — Real email applications will be sent when you click apply.
-        </div>
-        <div class="mb-3">
-          <label class="form-label fw-bold">Gmail Address</label>
-          <input type="email" class="form-control" id="settingEmail" placeholder="your_email@gmail.com">
-        </div>
-        <div class="mb-3">
-          <label class="form-label fw-bold">Gmail App Password (16 characters)</label>
-          <input type="password" class="form-control" id="settingPassword" placeholder="•••• •••• •••• ••••">
-        </div>
-        <div class="mb-3">
-          <label class="form-label fw-bold">Gemini API Key (Optional)</label>
-          <input type="password" class="form-control" id="settingGemini" placeholder="AIzaSy...">
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-primary" onclick="saveSettings()">Save Settings</button>
-      </div>
-    </div>
-  </div>
-</div>
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 let allJobs = [];
 let displayedJobs = [];
-let activeProfile = null;
+let currentUser = null;
+let guestProfile = null;
 let currentSector = 'All';
 let currentChannel = 'all';
-let settingsModal = null;
+let authModal = null;
 let pitchModal = null;
 
-// Drag and drop listeners
 const dropZone = document.getElementById('dropZone');
 ['dragenter', 'dragover'].forEach(name => {
   dropZone.addEventListener(name, (e) => { e.preventDefault(); dropZone.classList.add('dragover'); }, false);
@@ -294,52 +384,277 @@ const dropZone = document.getElementById('dropZone');
 });
 dropZone.addEventListener('drop', (e) => {
   const dt = e.dataTransfer;
-  if (dt && dt.files && dt.files[0]) {
-    handleCvFile(dt.files[0]);
-  }
+  if (dt && dt.files && dt.files[0]) handleCvFile(dt.files[0]);
 });
+
+function triggerCvUpload() {
+  document.getElementById('cvFileInput').click();
+}
+
+// Check session on load
+async function checkAuthSession() {
+  const token = localStorage.getItem('iq_token');
+  if (!token) {
+    updateAuthUI(null);
+    return;
+  }
+  try {
+    const res = await fetch('/api/auth/me', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const d = await res.json();
+    if (d.success && d.user) {
+      currentUser = d.user;
+      updateAuthUI(d.user);
+      if (d.user.has_resume) {
+        displayActiveProfile({
+          name: d.user.name,
+          degree: d.user.degree,
+          institution: d.user.institution,
+          skills: d.user.skills,
+          track: d.user.track,
+          filename: d.user.resume_filename || 'Saved Resume.pdf'
+        });
+      }
+    } else {
+      localStorage.removeItem('iq_token');
+      updateAuthUI(null);
+    }
+  } catch(e) {
+    updateAuthUI(null);
+  }
+}
+
+function updateAuthUI(user) {
+  const controls = document.getElementById('authControls');
+  const userMenu = document.getElementById('userProfileControls');
+
+  if (user) {
+    controls.classList.add('d-none');
+    userMenu.classList.remove('d-none');
+    document.getElementById('navUserName').innerText = user.name || 'User';
+    document.getElementById('navUserEmail').innerText = user.email || '';
+    const trackBadge = document.getElementById('navUserTrack');
+    trackBadge.innerText = user.track || 'General';
+    trackBadge.className = 'track-badge ' + getTrackClass(user.track);
+  } else {
+    controls.classList.remove('d-none');
+    userMenu.classList.add('d-none');
+  }
+}
+
+function getTrackClass(track) {
+  if (!track) return 'track-general';
+  if (track.includes('Science')) return 'track-science';
+  if (track.includes('Commerce')) return 'track-commerce';
+  if (track.includes('Arts')) return 'track-arts';
+  return 'track-general';
+}
+
+function openAuthModal(mode) {
+  if (!authModal) authModal = new bootstrap.Modal(document.getElementById('authModal'));
+  switchAuthTab(mode);
+  authModal.show();
+}
+
+function switchAuthTab(mode) {
+  const isLogin = mode === 'login';
+  document.getElementById('tabLoginBtn').classList.toggle('active', isLogin);
+  document.getElementById('tabRegisterBtn').classList.toggle('active', !isLogin);
+  document.getElementById('loginForm').classList.toggle('d-none', !isLogin);
+  document.getElementById('registerForm').classList.toggle('d-none', isLogin);
+}
+
+async function handleLogin(e) {
+  e.preventDefault();
+  const email = document.getElementById('loginEmail').value;
+  const password = document.getElementById('loginPassword').value;
+
+  try {
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    const d = await res.json();
+    if (d.success) {
+      localStorage.setItem('iq_token', d.token);
+      currentUser = d.user;
+      updateAuthUI(d.user);
+      if (authModal) authModal.hide();
+      showAlert(`Welcome back, ${d.user.name}!`, 'success');
+      if (d.user.has_resume) {
+        displayActiveProfile({
+          name: d.user.name,
+          degree: d.user.degree,
+          institution: d.user.institution,
+          skills: d.user.skills,
+          track: d.user.track,
+          filename: d.user.resume_filename
+        });
+        matchJobsForActiveProfile();
+      }
+    } else {
+      showAlert(d.message || 'Login failed', 'danger');
+    }
+  } catch(err) {
+    showAlert('Error logging in: ' + err, 'danger');
+  }
+}
+
+async function handleRegister(e) {
+  e.preventDefault();
+  const name = document.getElementById('regName').value;
+  const email = document.getElementById('regEmail').value;
+  const password = document.getElementById('regPassword').value;
+  const track = document.getElementById('regTrack').value;
+  const degree = document.getElementById('regDegree').value;
+  const institution = document.getElementById('regInst').value;
+  const fileInput = document.getElementById('regCvFile');
+
+  let file_base64 = '';
+  let filename = '';
+
+  if (fileInput.files && fileInput.files[0]) {
+    const file = fileInput.files[0];
+    filename = file.name;
+    file_base64 = await readFileAsBase64(file);
+  }
+
+  try {
+    const res = await fetch('/api/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, password, track, degree, institution, file_base64, filename })
+    });
+    const d = await res.json();
+    if (d.success) {
+      localStorage.setItem('iq_token', d.token);
+      currentUser = d.user;
+      updateAuthUI(d.user);
+      if (authModal) authModal.hide();
+      showAlert(`Account created successfully! Welcome, ${d.user.name}!`, 'success');
+      if (d.user.has_resume) {
+        displayActiveProfile({
+          name: d.user.name,
+          degree: d.user.degree,
+          institution: d.user.institution,
+          skills: d.user.skills,
+          track: d.user.track,
+          filename: d.user.resume_filename
+        });
+        matchJobsForActiveProfile();
+      }
+    } else {
+      showAlert(d.message || 'Registration failed', 'danger');
+    }
+  } catch(err) {
+    showAlert('Registration error: ' + err, 'danger');
+  }
+}
+
+async function logout() {
+  const token = localStorage.getItem('iq_token');
+  if (token) {
+    fetch('/api/auth/logout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token })
+    });
+  }
+  localStorage.removeItem('iq_token');
+  currentUser = null;
+  updateAuthUI(null);
+  document.getElementById('profileCard').classList.add('d-none');
+  showAlert('You have been signed out.', 'info');
+  loadData();
+}
+
+function readFileAsBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result.split(',')[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
 
 async function handleCvFile(file) {
   if (!file || !file.name.toLowerCase().endsWith('.pdf')) {
-    showAlert('Please select a valid PDF file.', 'danger');
+    showAlert('Please upload a valid PDF file.', 'danger');
     return;
   }
   document.getElementById('uploadLabel').innerText = `Analyzing: ${file.name}...`;
   showAlert(`Processing ${file.name}... Extracting candidate profile and skills...`, 'info');
 
-  const reader = new FileReader();
-  reader.onload = async function() {
+  const base64Content = await readFileAsBase64(file);
+
+  const token = localStorage.getItem('iq_token');
+  if (token && currentUser) {
+    // Save to user account
     try {
-      const base64Content = reader.result.split(',')[1];
-      const res = await fetch('/api/upload-cv', {
+      const res = await fetch('/api/auth/upload-cv', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ filename: file.name, file_base64: base64Content })
+        body: JSON.stringify({ token, file_base64: base64Content, filename: file.name })
       });
-      const data = await res.json();
-      if (data.success && data.profile) {
-        activeProfile = data.profile;
-        displayProfileCard(data.profile);
-        showAlert(`✅ CV parsed successfully for ${data.profile.name}! Matching opportunities...`, 'success');
+      const d = await res.json();
+      if (d.success) {
+        currentUser = d.user;
+        displayActiveProfile({
+          name: d.user.name,
+          degree: d.user.degree,
+          institution: d.user.institution,
+          skills: d.user.skills,
+          track: d.user.track,
+          filename: file.name
+        });
+        showAlert(`✅ CV saved to your account and analyzed! Matching jobs...`, 'success');
         document.getElementById('uploadLabel').innerText = `Active CV: ${file.name}`;
-        await matchJobsForUploadedCv();
-      } else {
-        showAlert(data.message || 'Failed to extract profile from CV.', 'danger');
-        document.getElementById('uploadLabel').innerText = 'Drop your CV here or click to browse';
+        await matchJobsForActiveProfile();
+        return;
       }
-    } catch(err) {
-      showAlert('Error uploading CV: ' + err, 'danger');
-      document.getElementById('uploadLabel').innerText = 'Drop your CV here or click to browse';
+    } catch(e) {}
+  }
+
+  // Guest upload mode
+  try {
+    const res = await fetch('/api/upload-cv', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ filename: file.name, file_base64: base64Content })
+    });
+    const data = await res.json();
+    if (data.success && data.profile) {
+      guestProfile = data.profile;
+      guestProfile.filename = file.name;
+      guestProfile.file_base64 = base64Content;
+      displayActiveProfile({
+        name: data.profile.name,
+        degree: data.profile.degree,
+        institution: data.profile.institution,
+        skills: data.profile.skills,
+        track: data.profile.target_domains ? data.profile.target_domains[0] : 'General',
+        filename: file.name
+      });
+      showAlert(`✅ CV parsed successfully for ${data.profile.name}! Sign in to save it permanently.`, 'success');
+      document.getElementById('uploadLabel').innerText = `Active CV: ${file.name}`;
+      await matchJobsForActiveProfile();
     }
-  };
-  reader.readAsDataURL(file);
+  } catch(err) {
+    showAlert('Error analyzing CV: ' + err, 'danger');
+  }
 }
 
-function displayProfileCard(p) {
+function displayActiveProfile(p) {
   document.getElementById('pName').innerText = p.name || 'Candidate';
   document.getElementById('pDegree').innerText = p.degree || 'Undergraduate';
   document.getElementById('pInst').innerText = p.institution || 'University';
-  document.getElementById('pLoc').innerText = p.location || 'Bangladesh';
+  document.getElementById('pFilename').innerText = p.filename || 'Uploaded Resume.pdf';
+
+  const trackBadge = document.getElementById('pTrackBadge');
+  trackBadge.innerText = p.track || 'General';
+  trackBadge.className = 'track-badge ' + getTrackClass(p.track);
 
   const skillsDiv = document.getElementById('pSkills');
   skillsDiv.innerHTML = '';
@@ -352,28 +667,29 @@ function displayProfileCard(p) {
       skillsDiv.appendChild(span);
     });
   } else {
-    skillsDiv.innerHTML = '<span class="text-light small opacity-75">General Business & Operations</span>';
+    skillsDiv.innerHTML = '<span class="text-light small opacity-75">Multi-disciplinary skillset</span>';
   }
   document.getElementById('profileCard').classList.remove('d-none');
 }
 
-async function matchJobsForUploadedCv() {
-  if (!activeProfile) {
-    showAlert('Please upload a CV first.', 'warning');
+async function matchJobsForActiveProfile() {
+  const profileToMatch = currentUser || guestProfile;
+  if (!profileToMatch) {
+    showAlert('Please upload a CV or sign in first.', 'warning');
     return;
   }
-  showAlert('⚡ Calculating custom match scores and tailored pitches...', 'info');
+  showAlert('⚡ Calculating custom match scores across all disciplines...', 'info');
   try {
     const res = await fetch('/api/match-cv', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ profile: activeProfile })
+      body: JSON.stringify({ profile: profileToMatch })
     });
     const d = await res.json();
     if (d.success && d.jobs) {
       allJobs = d.jobs;
       filterJobs();
-      showAlert(`🎯 Successfully matched ${allJobs.length} opportunities for ${activeProfile.name}!`, 'success');
+      showAlert(`🎯 Successfully matched ${allJobs.length} opportunities for ${profileToMatch.name}!`, 'success');
     }
   } catch(e) {
     showAlert('Failed to match CV: ' + e, 'danger');
@@ -382,25 +698,12 @@ async function matchJobsForUploadedCv() {
 
 async function loadData() {
   try {
-    const [jobsRes, statsRes, cfgRes] = await Promise.all([
-      fetch('/api/jobs'),
-      fetch('/api/stats'),
-      fetch('/api/config')
-    ]);
-    const jobs = await jobsRes.json();
-    const stats = await statsRes.json();
-    const cfg = await cfgRes.json();
-
-    document.getElementById('statTotal').innerText = stats.TOTAL_FOUND ?? jobs.length;
-    document.getElementById('statMatched').innerText = stats.MATCHED ?? jobs.filter(j => (j.match_score||0)>=65).length;
-    document.getElementById('statEmailReady').innerText = jobs.filter(j => j.application_channel === 'email' && j.contact_email).length;
-
-    allJobs = jobs;
+    const res = await fetch('/api/jobs');
+    allJobs = await res.json();
     filterJobs();
     loadLog();
   } catch(e) {
-    console.error(e);
-    showAlert('Could not connect to the backend server.', 'danger');
+    showAlert('Could not load jobs.', 'danger');
   }
 }
 
@@ -421,19 +724,20 @@ function setChannelFilter(ch) {
 function filterJobs() {
   const query = (document.getElementById('searchInput').value || '').toLowerCase().trim();
   displayedJobs = allJobs.filter(job => {
-    // Sector filter
     const textFull = `${job.title} ${job.company} ${job.description || ''}`.toLowerCase();
+    
+    // Sector filter
     let matchesSector = true;
-    if (currentSector === 'Banking') {
-      matchesSector = /bank|finance|treasury|credit|audit|accounting|accounts/.test(textFull);
-    } else if (currentSector === 'FinTech') {
-      matchesSector = /fintech|bkash|nagad|payment|gateway/.test(textFull);
-    } else if (currentSector === 'Tech') {
-      matchesSector = /software|developer|engineer|python|tech|react|javascript|fullstack|data/.test(textFull);
+    if (currentSector === 'Science') {
+      matchesSector = /software|developer|engineer|python|tech|react|javascript|data|machine learning|ai|biotech|microbiology|pharmacy|civil|electrical|it/.test(textFull);
+    } else if (currentSector === 'Commerce') {
+      matchesSector = /bank|finance|treasury|credit|audit|accounting|accounts|marketing|hr|supply chain|budget|valuation|investment|fintech/.test(textFull);
+    } else if (currentSector === 'Arts') {
+      matchesSector = /content|writing|graphic|design|ui|ux|media|journalism|communications|public relations|legal|law|social|advocacy/.test(textFull);
     } else if (currentSector === 'MNC') {
-      matchesSector = /unilever|bat|nestle|square|pran|beximco|marico|rb|walton|group/.test(textFull);
+      matchesSector = /unilever|bat|nestle|square|pran|beximco|marico|rb|walton|group|aci|renata/.test(textFull);
     } else if (currentSector === 'NGO') {
-      matchesSector = /ngo|brac|un|foundation|development|undp|world bank|usaid/.test(textFull);
+      matchesSector = /ngo|brac|un|foundation|development|undp|world bank|usaid|icddr|actionaid|care|unicef/.test(textFull);
     } else if (currentSector === 'Remote') {
       matchesSector = /remote/.test((job.location || '').toLowerCase()) || job.source === 'jobicy' || job.source === 'remotive';
     }
@@ -459,33 +763,29 @@ function filterJobs() {
 function renderJobs() {
   const list = document.getElementById('jobList');
   list.innerHTML = '';
-  document.getElementById('countLabel').innerText = `${displayedJobs.length} Positions`;
+  document.getElementById('countLabel').innerText = `${displayedJobs.length} Positions Available`;
 
   if (!displayedJobs.length) {
     list.innerHTML = `<div class="col-12 text-center py-5 text-muted">
       <i class="fa-solid fa-folder-open fa-3x mb-3 d-block text-secondary"></i>
-      No opportunities match this filter. Try changing your search or sector.
+      No opportunities match this filter. Try selecting another sector or clearing search.
     </div>`;
     return;
   }
 
   displayedJobs.forEach(job => {
-    const score = job.match_score || 50;
+    const score = job.match_score || 55;
     const sc = score >= 80 ? 'high' : score >= 65 ? 'med' : 'low';
     const isEmail = job.application_channel === 'email' && job.contact_email;
 
     const channelTag = isEmail
-      ? `<span class="badge bg-primary-subtle text-primary border border-primary-subtle">
-           <i class="fa-regular fa-envelope me-1"></i>${job.contact_email}
-         </span>`
-      : `<span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle">
-           <i class="fa-solid fa-globe me-1"></i>Web Portal
-         </span>`;
+      ? `<span class="badge bg-primary-subtle text-primary border border-primary-subtle"><i class="fa-regular fa-envelope me-1"></i>${job.contact_email}</span>`
+      : `<span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle"><i class="fa-solid fa-globe me-1"></i>Career Portal</span>`;
 
     const card = document.createElement('div');
     card.className = 'col-12 col-lg-6';
     card.innerHTML = `
-      <div class="card card-job p-4 h-100 bg-white d-flex flex-column justify-content-between">
+      <div class="card card-job p-4 h-100 d-flex flex-column justify-content-between">
         <div>
           <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
             <div>
@@ -508,7 +808,7 @@ function renderJobs() {
 
         <div class="d-flex gap-2 justify-content-between pt-3 border-top mt-2">
           <button class="btn btn-outline-primary btn-sm btn-act" onclick="openPitchModal('${job.id}')">
-            <i class="fa-solid fa-envelope-open-text me-1"></i> View &amp; Copy Pitch
+            <i class="fa-solid fa-envelope-open-text me-1"></i> Tailored Outreach Pitch
           </button>
           <a href="${job.url}" target="_blank" class="btn btn-primary btn-sm btn-act">
             <i class="fa-solid fa-arrow-up-right-from-square me-1"></i> Apply Link
@@ -526,12 +826,12 @@ async function openPitchModal(jobId) {
   if (!pitchModal) pitchModal = new bootstrap.Modal(document.getElementById('pitchModal'));
 
   document.getElementById('modalSubject').value = job.tailored_email_subject || `Application for ${job.title}`;
-  document.getElementById('modalPitch').value = job.tailored_cover_letter || 'Drafting pitch...';
-  document.getElementById('modalContactEmail').innerText = job.contact_email ? `Send to: ${job.contact_email}` : 'Apply via Official Career Portal';
+  document.getElementById('modalPitch').value = job.tailored_cover_letter || 'Drafting tailored pitch...';
+  document.getElementById('modalContactEmail').innerText = job.contact_email ? `Company Contact: ${job.contact_email}` : 'Apply via Official Career Portal';
 
   pitchModal.show();
 
-  // If user uploaded a custom CV, optionally refine pitch dynamically
+  const activeProfile = currentUser || guestProfile;
   if (activeProfile) {
     try {
       const res = await fetch('/api/generate-pitch', {
@@ -552,26 +852,18 @@ function copyModalField(fieldId) {
   const el = document.getElementById(fieldId);
   el.select();
   navigator.clipboard.writeText(el.value);
-  showAlert('📋 Copied to clipboard!', 'success');
+  showAlert('📋 Copied pitch to clipboard!', 'success');
 }
 
 async function scanJobs() {
-  const btn = document.getElementById('scanBtn');
-  btn.disabled = true;
-  btn.classList.add('scanning');
-  showAlert('🔍 Scanning all Bangladesh companies, banks, NGOs & remote boards... (takes ~30s)', 'info');
+  showAlert('🔍 Triggering multi-discipline scan across 100+ Bangladesh companies...', 'info');
   try {
     const res = await fetch('/api/scan', { method: 'POST' });
     const d = await res.json();
-    showAlert(d.message || 'Scan in progress...', 'info');
-    setTimeout(() => { loadData(); showAlert('✅ Scan complete! All opportunities refreshed.', 'success'); }, 35000);
+    showAlert(d.message, 'info');
+    setTimeout(() => { loadData(); showAlert('✅ Opportunities refreshed!', 'success'); }, 30000);
   } catch(e) {
     showAlert('Error starting scan.', 'danger');
-  } finally {
-    setTimeout(() => {
-      btn.disabled = false;
-      btn.classList.remove('scanning');
-    }, 38000);
   }
 }
 
@@ -585,26 +877,6 @@ async function loadLog() {
   } catch(e) {}
 }
 
-function openSettings() {
-  if (!settingsModal) settingsModal = new bootstrap.Modal(document.getElementById('settingsModal'));
-  settingsModal.show();
-}
-
-async function saveSettings() {
-  const payload = {
-    is_dry_run: false,
-    email_user: document.getElementById('settingEmail').value,
-    email_password: document.getElementById('settingPassword').value,
-    gemini_api_key: document.getElementById('settingGemini').value,
-  };
-  try {
-    await fetch('/api/config', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)});
-    if (settingsModal) settingsModal.hide();
-    showAlert('✅ Settings saved!', 'success');
-    loadData();
-  } catch(e) { showAlert('Failed to save: ' + e, 'danger'); }
-}
-
 function showAlert(msg, type) {
   const el = document.getElementById('statusAlert');
   el.className = `alert alert-${type} shadow-sm mb-3`;
@@ -614,7 +886,10 @@ function showAlert(msg, type) {
   el._t = setTimeout(() => el.classList.add('d-none'), 8000);
 }
 
-window.addEventListener('load', loadData);
+window.addEventListener('load', () => {
+  checkAuthSession();
+  loadData();
+});
 setInterval(loadLog, 15000);
 </script>
 </body>

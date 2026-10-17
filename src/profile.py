@@ -165,7 +165,7 @@ class CandidateProfile:
             return self._resume_text
 
         resume_path = self.settings.absolute_resume_path
-        if not resume_path.exists():
+        if not resume_path or not resume_path.exists():
             return self._fallback_summary()
 
         try:
@@ -210,8 +210,9 @@ operational planning, and cross-functional leadership.
                 "institution": self._profile_data.get("institution", "University"),
                 "skills": self._profile_data.get("skills", []),
                 "target_domains": self._profile_data.get("target_domains", ["General"]),
-                "resume_text": self.get_resume_text()
+                "resume_text": self._profile_data.get("resume_text", "")
             }
+
 
         return {
             "name": self.settings.candidate.name,

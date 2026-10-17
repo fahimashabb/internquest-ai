@@ -1,85 +1,82 @@
-# 🎯 AI Internship Hunter & Universal CV Matcher
+# 🎯 InternQuest AI - Universal Internship Hunter & Matcher
 
-An open-source, AI-powered career assistant platform that automatically discovers daily internship opportunities across **100+ Bangladesh banks, multinational corporations (MNCs), NGOs, FinTechs, conglomerates, and global remote job boards**, scores them against any candidate's uploaded CV, and generates customized outreach pitches.
+A modern, multi-user, open-source AI platform designed to help students and graduates across **Science, Commerce, Arts, Engineering, and All Disciplines** discover matching internships and generate tailored outreach pitches.
 
----
-
-## 🌟 Key Features
-
-1. **📄 Universal Drag-and-Drop CV Uploader**:
-   - Any student or job seeker can upload their resume (`.pdf`).
-   - Automatically extracts candidate name, degree, institution, detected skills, and target industries.
-
-2. **⚡ Dynamic AI Matching & Scoring**:
-   - Real-time match scoring (0–100%) against live positions.
-   - Categorizes roles across **Banking & Finance, FinTech, Tech & Software, MNCs & Conglomerates, NGOs & Development, and Remote Global**.
-   - Filters out senior executive positions requiring 5+ years of experience to prioritize legitimate student & entry-level openings.
-
-3. **✉️ 1-Click Tailored Cold Outreach Generator**:
-   - Generates a customized, 3-paragraph professional cold email and attention-grabbing subject line specifically highlighting the candidate's real coursework, projects, and skills.
-   - Built-in **"📋 Copy to Clipboard"** button and direct official application links.
-
-4. **🇧🇩 Deep Bangladesh Job Discovery Engine**:
-   - Covers 30+ Commercial & Islamic Banks, 14 FinTechs (bKash, Nagad, Pathao), 7 MNCs (Unilever, BAT, Nestlé), 20 Conglomerates (Square, PRAN, Beximco), 17 NGOs/Development agencies (BRAC, UNDP, World Bank), plus LinkedIn and remote boards (Jobicy, Remotive).
+Users can **register for an account**, **sign in**, **upload their CV**, and have their profile, skills, and resume preserved securely under their personal account.
 
 ---
 
-## 🚀 How to Run Locally
+## 🌟 Key Platform Features
 
-### Option 1: Standard Web Dashboard (Fast & Lightweight)
+1. **🔐 Multi-User Authentication & Profile Storage**:
+   - Built-in **Sign In** and **Register Free** system with salted password encryption and session persistence in SQLite.
+   - Automatically stores each user's uploaded CV, extracted skills, contact info, and academic track (**Science & Engineering**, **Commerce & Business**, **Arts, Media & Law**, **Health & Pharma**, or **General Studies**).
+
+2. **📄 Dynamic CV Analysis & Alignment**:
+   - Drag-and-drop any PDF resume to extract key competencies and educational background in real time.
+   - No hardcoded profiles—every analysis is tailored 100% to the specific applicant's resume.
+
+3. **⚡ Universal Multi-Discipline Search & Matching**:
+   - Searches across 100+ Bangladesh Banks, MNCs, NGOs, FinTechs, Software Houses, Creative Agencies, and Global Remote boards.
+   - Intelligent keyword and level filtering prioritizes student internships and traineeships while filtering out senior executive roles requiring 5+ years of experience.
+   - Match scores (0–100%) and instant rationales explain why an opportunity aligns with the applicant.
+
+4. **✉️ 1-Click Tailored Cold Outreach Generator**:
+   - Drafts a compelling email subject line and a personalized 3-paragraph cold email / cover letter highlighting the applicant's real coursework, projects, and skills.
+   - Includes 1-click **"📋 Copy Pitch"** button and official portal links.
+
+---
+
+## 🚀 Running Locally
+
+### Option 1: Modern Web Dashboard
 Double-click **`Start_Dashboard.bat`** (or run via terminal):
 ```powershell
-python web_server.py
+.\.venv\Scripts\python.exe web_server.py
 ```
 Open your browser at **`http://localhost:5000`**.
 
-### Option 2: Streamlit Interactive UI
+### Option 2: Streamlit Public Web UI
+Double-click **`Start_Streamlit_Public_App.bat`** (or run via terminal):
 ```powershell
-streamlit run streamlit_app.py
+.\.venv\Scripts\streamlit.exe run streamlit_app.py
 ```
 Open your browser at **`http://localhost:8501`**.
 
 ---
 
-## ☁️ How to Host for Free on GitHub & Streamlit Cloud (Live Link for Everyone)
+## 🌐 How to Host Online with GitHub & Streamlit Cloud (Free Forever)
 
-You can share a live web link (`https://your-name-internship-hunter.streamlit.app`) so anyone can access it from their phone or laptop for free!
+You can publish this app to GitHub and launch it on **Streamlit Community Cloud** (backed by Snowflake) so anyone with a web link can create an account and upload their CV!
 
 ### Step 1: Create a GitHub Repository
-1. Go to [GitHub.com](https://github.com) and sign in.
-2. Click the **"+"** button at the top right and select **"New repository"**.
-3. Name your repository (e.g., `internship-hunter-webapp`).
-4. Keep it **Public** and **do NOT** check "Add README" (we already have one).
+1. Go to [GitHub.com](https://github.com) and log in.
+2. Click **`+`** at top-right ➔ **New repository**.
+3. Name it `internquest-ai` (or your preferred name).
+4. Keep it **Public** and leave "Add a README" **unchecked**.
 5. Click **Create repository**.
 
-### Step 2: Push Your Code to GitHub
-In your project folder (`E:\CV hunter Webapp\`), open PowerShell and run:
+### Step 2: Push Your Code
+Open PowerShell in the project directory (`E:\CV hunter Webapp\`) and run:
 ```powershell
 $git = "$env:LOCALAPPDATA\Programs\MinGit\cmd\git.exe"
-& $git remote add origin https://github.com/YOUR_GITHUB_USERNAME/YOUR_REPO_NAME.git
+& $git remote add origin https://github.com/YOUR_GITHUB_USERNAME/internquest-ai.git
 & $git push -u origin main
 ```
-*(Replace `YOUR_GITHUB_USERNAME` and `YOUR_REPO_NAME` with your actual GitHub username and repository name).*
+*(Replace `YOUR_GITHUB_USERNAME` with your actual GitHub username).*
 
-### Step 3: Deploy Free on Streamlit Cloud
-1. Go to [share.streamlit.io](https://share.streamlit.io) and sign in with your GitHub account.
+### Step 3: Deploy on Streamlit Cloud
+1. Go to [share.streamlit.io](https://share.streamlit.io) and log in with your GitHub account.
 2. Click **"New app"**.
-3. Select your repository: `YOUR_GITHUB_USERNAME/internship-hunter-webapp`.
-4. Set the **Main file path** to: `streamlit_app.py`.
+3. Select your repository: `YOUR_GITHUB_USERNAME/internquest-ai`.
+4. Set **Main file path** to: `streamlit_app.py`.
 5. Click **"Deploy"**!
 
-Within 60 seconds, your application will be live on the internet with a public link you can share with anyone!
+Within 60 seconds, your application is live on the internet with a public link (e.g. `https://internquest-ai.streamlit.app`)!
 
 ---
 
-## 🔒 Privacy & Safety Guarantee
-
-- **Zero Credential Leaks**: `.env` and all personal passwords/keys are strictly ignored by `.gitignore`.
-- **Public Visitor Privacy**: Uploaded CVs are parsed in-memory during the browser session and are not permanently saved or published.
-- **No Unsolicited Sending**: Visitors can preview and copy tailored pitches to send from their own inboxes.
-
----
-
-## 👨‍💻 Author & Maintainer
-Created by **Fahim Ashab** (BBA Finance & Banking, Jashore University of Science and Technology).
-Open-source under the MIT License.
+## 🛡️ Security & Data Isolation
+- **No Personal CV Bundled**: No candidate resume is bundled in the source code; every user uploads their own CV.
+- **Credential Protection**: Private credentials (`.env`, local virtual environments, and personal passwords) are strictly excluded from GitHub by `.gitignore`.
+- **User Privacy**: Each user's uploaded CV is tied to their authenticated account.

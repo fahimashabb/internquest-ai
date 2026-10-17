@@ -17,14 +17,14 @@ load_dotenv(dotenv_path=ENV_FILE)
 
 
 class CandidateConfig(BaseModel):
-    name: str = "Fahim Ashab"
-    email: str = "fahimashabofficial@gmail.com"
-    phone: str = "+880 1832-383642"
-    linkedin: str = "https://linkedin.com/in/fahim-ashab-0473542b6"
-    location: str = "Rajshahi / Jashore, Bangladesh"
-    degree: str = "Bachelor of Business Administration (BBA) in Finance & Banking"
-    institution: str = "Jashore University of Science and Technology (JUST)"
-    resume_path: str = "data/Fahim_Ashab_Resume.pdf"
+    name: str = "Candidate"
+    email: str = ""
+    phone: str = ""
+    linkedin: str = ""
+    location: str = "Bangladesh"
+    degree: str = "Student / Graduate"
+    institution: str = "University"
+    resume_path: str = ""
     interests: List[str] = Field(default_factory=list)
 
 
@@ -73,7 +73,9 @@ class AppSettings(BaseModel):
         return self.application.dry_run
 
     @property
-    def absolute_resume_path(self) -> Path:
+    def absolute_resume_path(self) -> Optional[Path]:
+        if not self.candidate.resume_path:
+            return None
         rel = Path(self.candidate.resume_path)
         if rel.is_absolute():
             return rel

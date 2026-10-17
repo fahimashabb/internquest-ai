@@ -25,26 +25,39 @@ class EmailApplier:
         to_email: str,
         subject: str,
         body_text: str,
-        resume_path: Optional[Path] = None
+        resume_path: Optional[Path] = None,
+        resume_bytes: Optional[bytes] = None,
+        resume_filename: str = "Resume.pdf",
+        sender_name: Optional[str] = None,
+        sender_email: Optional[str] = None
     ) -> MIMEMultipart:
         """Construct MIME multipart email with resume attachment."""
         msg = MIMEMultipart()
-        msg["From"] = f"{self.settings.application.sender_name} <{self.settings.email_user}>"
+        from_name = sender_name or self.settings.application.sender_name or "Applicant"
+        from_addr = sender_email or self.settings.email_user
+        msg["From"] = f"{from_name} <{from_addr}>"
         msg["To"] = to_email
         msg["Subject"] = subject
 
         # Attach text body
         msg.attach(MIMEText(body_text, "plain", "utf-8"))
 
-        # Attach CV
-        cv_path = resume_path or self.settings.absolute_resume_path
-        if cv_path and cv_path.exists():
-            with open(cv_path, "rb") as f:
+        # Attach CV from user bytes or user file path
+        if resume_bytes:
+            attachment = MIMEApplication(resume_bytes, _subtype="pdf")
+            attachment.add_header(
+                "Content-Disposition",
+                "attachment",
+                filename=resume_filename or "Resume.pdf"
+            )
+            msg.attach(attachment)
+        elif resume_path and resume_path.exists():
+            with open(resume_path, "rb") as f:
                 attachment = MIMEApplication(f.read(), _subtype="pdf")
                 attachment.add_header(
                     "Content-Disposition",
                     "attachment",
-                    filename=cv_path.name
+                    filename=resume_path.name
                 )
                 msg.attach(attachment)
 
@@ -56,9 +69,15 @@ class EmailApplier:
         to_email: str,
         subject: str,
         body_text: str,
+        resume_path: Optional[Path] = None,
+        resume_bytes: Optional[bytes] = None,
+        resume_filename: str = "Resume.pdf",
+        sender_name: Optional[str] = None,
+        sender_email: Optional[str] = None,
+        sender_password: Optional[str] = None,
         force_live: bool = True
     ) -> Dict[str, Any]:
-        """Send an application email directly to a company or HR contact."""
+        """Send an application email directly to a company or HR contact using the user's CV."""
         # Check daily quota
         can_send, sent_count, limit = self.can_send_more_today()
         if not can_send:
@@ -68,21 +87,33 @@ class EmailApplier:
                 "message": f"Daily email limit reached ({sent_count}/{limit}). Quota resets tomorrow."
             }
 
-        # Live SMTP sending
-        if not self.settings.email_password:
+        user_email = sender_email or self.settings.email_user
+        user_password = sender_password or self.settings.email_password
+
+        # Live SMTP sending requires credentials
+        if not user_password:
             return {
                 "success": False,
                 "status": "MISSING_CREDENTIALS",
-                "message": "Gmail App Password not configured. Please enter your 16-character App Password in Admin Settings."
+                "message": "Gmail App Password not configured. Please enter your 16-character App Password in Settings."
             }
 
         try:
-            msg = self.prepare_message(to_email, subject, body_text)
+            msg = self.prepare_message(
+                to_email=to_email,
+                subject=subject,
+                body_text=body_text,
+                resume_path=resume_path,
+                resume_bytes=resume_bytes,
+                resume_filename=resume_filename,
+                sender_name=sender_name,
+                sender_email=user_email
+            )
             server = smtplib.SMTP(self.settings.email_host, self.settings.email_port)
             server.ehlo()
             server.starttls()
-            server.login(self.settings.email_user, self.settings.email_password)
-            server.sendmail(self.settings.email_user, [to_email], msg.as_string())
+            server.login(user_email, user_password)
+            server.sendmail(user_email, [to_email], msg.as_string())
             server.quit()
 
             # Record success in tracker
@@ -93,6 +124,12 @@ class EmailApplier:
                 "success": True,
                 "status": "SENT",
                 "message": f"Application successfully emailed to {to_email} with CV attached."
+            }
+        except smtplib.SMTPAuthenticationError:
+            return {
+                "success": False,
+                "status": "AUTH_ERROR",
+                "message": "Authentication failed. Check your Gmail address and 16-character App Password."
             }
         except Exception as e:
             return {

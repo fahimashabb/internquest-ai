@@ -1,4 +1,4 @@
-﻿"""
+"""
 Comprehensive Bangladesh Company & Institution Scraper.
 Covers: All major banks, MNCs, NGOs, FinTechs, Conglomerates, Pharma,
 Telecom, FMCG, Media, Consulting, and promising growth companies in Bangladesh.
@@ -147,7 +147,30 @@ BD_COMPANY_SEARCHES = [
     "Nascenia internship Bangladesh",
     "TigerIT internship Bangladesh",
     "Leads Corporation internship Bangladesh",
-    # ── BROAD ROLE-BASED SEARCHES (Bangladesh) ──
+    # ── SCIENCE, TECH & ENGINEERING ──
+    "software engineer intern Bangladesh 2026",
+    "python developer intern Dhaka Bangladesh",
+    "data science intern Bangladesh 2026",
+    "web development intern Dhaka",
+    "IT intern Bangladesh",
+    "electrical engineer intern Bangladesh",
+    "civil engineering intern Bangladesh",
+    "mechanical engineer intern Bangladesh",
+    "biotechnology intern Bangladesh",
+    "microbiology intern Dhaka Bangladesh",
+    "pharmacy intern Dhaka Bangladesh",
+    "AI machine learning intern Bangladesh",
+    # ── ARTS, HUMANITIES, DESIGN & LAW ──
+    "content writer intern Bangladesh 2026",
+    "graphic design intern Dhaka Bangladesh",
+    "UI UX design intern Bangladesh",
+    "digital communications intern Dhaka",
+    "journalism media intern Bangladesh",
+    "legal intern law intern Dhaka Bangladesh",
+    "public relations PR intern Bangladesh",
+    "social research intern Dhaka",
+    "video editor creative intern Bangladesh",
+    # ── COMMERCE & BUSINESS ──
     "finance intern Bangladesh 2026",
     "financial analyst intern Dhaka Bangladesh",
     "business operations intern Bangladesh",
@@ -155,7 +178,8 @@ BD_COMPANY_SEARCHES = [
     "management trainee intern Bangladesh",
     "corporate finance intern Bangladesh",
     "accounts intern Dhaka Bangladesh",
-    "investment banking intern Bangladesh",
+    "marketing intern Dhaka Bangladesh",
+    "HR human resources intern Bangladesh",
     "supply chain intern Bangladesh",
     "MIS intern Bangladesh operations",
     "cost budgeting intern Bangladesh",
