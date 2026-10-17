@@ -36,6 +36,9 @@ def _verify_password(password: str, stored_hash: str) -> bool:
         return False
 
 
+ADMIN_EMAILS = ["fahimashabofficial@gmail.com"]
+
+
 class UserManager:
     def __init__(self, db_path: Optional[Path] = None):
         self.db_path = db_path or DB_PATH
@@ -48,7 +51,7 @@ class UserManager:
         return conn
 
     def _init_db(self):
-        """Create users and sessions tables if they don't exist."""
+        """Create users, sessions, and site_settings tables if they don't exist."""
         with self._get_connection() as conn:
             conn.execute("""
                 CREATE TABLE IF NOT EXISTS users (
@@ -68,6 +71,7 @@ class UserManager:
                     target_domains_json TEXT DEFAULT '[]',
                     daily_digest INTEGER DEFAULT 1,
                     auth_provider TEXT DEFAULT 'email',
+                    is_admin INTEGER DEFAULT 0,
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     last_login TIMESTAMP
                 )
@@ -80,6 +84,12 @@ class UserManager:
                     FOREIGN KEY (user_id) REFERENCES users (id)
                 )
             """)
+            conn.execute("""
+                CREATE TABLE IF NOT EXISTS site_settings (
+                    key TEXT PRIMARY KEY,
+                    value TEXT
+                )
+            """)
             try:
                 conn.execute("ALTER TABLE users ADD COLUMN daily_digest INTEGER DEFAULT 1")
             except Exception:
@@ -88,6 +98,24 @@ class UserManager:
                 conn.execute("ALTER TABLE users ADD COLUMN auth_provider TEXT DEFAULT 'email'")
             except Exception:
                 pass
+            try:
+                conn.execute("ALTER TABLE users ADD COLUMN is_admin INTEGER DEFAULT 0")
+            except Exception:
+                pass
+
+            # Default site settings
+            defaults = {
+                "site_title": "InternQuest AI",
+                "announcement": "Welcome to InternQuest AI! New opportunities updated daily at 10:00 AM.",
+                "show_announcement": "true",
+                "min_match_score": "55",
+                "daily_email_limit": "5",
+                "allow_guest_mode": "true",
+                "maintenance_mode": "false"
+            }
+            for k, v in defaults.items():
+                conn.execute("INSERT OR IGNORE INTO site_settings (key, value) VALUES (?, ?)", (k, v))
+
             conn.commit()
 
     def register_user(
@@ -350,6 +378,8 @@ class UserManager:
         except Exception:
             pass
 
+        is_admin_flag = bool(d.get("is_admin", 0)) or (d.get("email", "").lower() in [e.lower() for e in ADMIN_EMAILS])
+
         return {
             "id": d["id"],
             "email": d["email"],
@@ -366,8 +396,66 @@ class UserManager:
             "resume_text": d.get("resume_text", ""),
             "daily_digest": bool(d.get("daily_digest", 1)),
             "auth_provider": d.get("auth_provider", "email"),
+            "is_admin": is_admin_flag,
             "created_at": d.get("created_at")
         }
+
+    # ==========================================
+    # WordPress-Style Admin Panel Helpers
+    # ==========================================
+    def is_admin(self, user_or_email: Any) -> bool:
+        """Check if a given user object or email has Super Admin privileges."""
+        if not user_or_email:
+            return False
+        if isinstance(user_or_email, str):
+            return user_or_email.strip().lower() in [e.lower() for e in ADMIN_EMAILS]
+        if isinstance(user_or_email, dict):
+            email = user_or_email.get("email", "").strip().lower()
+            return bool(user_or_email.get("is_admin")) or (email in [e.lower() for e in ADMIN_EMAILS])
+        return False
+
+    def get_site_settings(self) -> Dict[str, str]:
+        """Fetch all site configuration key-value pairs."""
+        with self._get_connection() as conn:
+            cur = conn.execute("SELECT key, value FROM site_settings")
+            return {r[0]: r[1] for r in cur.fetchall()}
+
+    def update_site_settings(self, settings_dict: Dict[str, Any]) -> Dict[str, str]:
+        """Update or insert site settings from admin panel."""
+        with self._get_connection() as conn:
+            for k, v in settings_dict.items():
+                conn.execute(
+                    "INSERT INTO site_settings (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value",
+                    (str(k), str(v))
+                )
+            conn.commit()
+        return self.get_site_settings()
+
+    def get_all_users_admin(self) -> List[Dict[str, Any]]:
+        """Return all registered users with CV metadata for Admin Panel."""
+        with self._get_connection() as conn:
+            cur = conn.execute("SELECT * FROM users ORDER BY created_at DESC")
+            return [self._sanitize_user(dict(row)) for row in cur.fetchall()]
+
+    def get_user_resume_bytes(self, user_id: str) -> Optional[Dict[str, Any]]:
+        """Retrieve stored PDF resume bytes and filename for Admin download."""
+        with self._get_connection() as conn:
+            cur = conn.execute("SELECT resume_filename, resume_bytes, name FROM users WHERE id = ?", (user_id,))
+            row = cur.fetchone()
+            if row and row["resume_bytes"]:
+                return {
+                    "filename": row["resume_filename"] or f"{row['name'].replace(' ', '_')}_Resume.pdf",
+                    "bytes": row["resume_bytes"]
+                }
+            return None
+
+    def delete_user_admin(self, user_id: str) -> bool:
+        """Permanently delete a user account and associated sessions."""
+        with self._get_connection() as conn:
+            conn.execute("DELETE FROM sessions WHERE user_id = ?", (user_id,))
+            conn.execute("DELETE FROM users WHERE id = ?", (user_id,))
+            conn.commit()
+        return True
 
 
 # Global singleton

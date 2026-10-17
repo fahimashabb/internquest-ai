@@ -109,6 +109,52 @@ class DashboardHandler(BaseHTTPRequestHandler):
                 self._send_json({"lines": lines})
             else:
                 self._send_json({"lines": ["Discovery engine active."]})
+        if path == "/api/settings":
+            self._send_json(user_manager.get_site_settings())
+            return
+
+        if path == "/api/admin/verify":
+            user = self._get_user_from_req(parsed)
+            if user and user_manager.is_admin(user):
+                self._send_json({"success": True, "admin": True, "user": user})
+            else:
+                self._send_json({"success": False, "admin": False, "message": "Unauthorized."}, status=403)
+            return
+
+        if path == "/api/admin/users":
+            user = self._get_user_from_req(parsed)
+            if not user or not user_manager.is_admin(user):
+                self._send_json({"success": False, "message": "Unauthorized. Admin privileges required."}, status=403)
+                return
+            self._send_json({"success": True, "users": user_manager.get_all_users_admin()})
+            return
+
+        if path == "/api/admin/cv":
+            user = self._get_user_from_req(parsed)
+            if not user or not user_manager.is_admin(user):
+                self._send_json({"success": False, "message": "Unauthorized."}, status=403)
+                return
+            qs = parse_qs(parsed.query)
+            target_id = qs.get("user_id", [""])[0]
+            cv_obj = user_manager.get_user_resume_bytes(target_id)
+            if cv_obj and cv_obj.get("bytes"):
+                self.send_response(200)
+                self.send_header("Content-Type", "application/pdf")
+                self.send_header("Content-Disposition", f'attachment; filename="{cv_obj["filename"]}"')
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.end_headers()
+                self.wfile.write(cv_obj["bytes"])
+            else:
+                self.send_response(404)
+                self.end_headers()
+            return
+
+        if path == "/api/admin/activity":
+            user = self._get_user_from_req(parsed)
+            if not user or not user_manager.is_admin(user):
+                self._send_json({"success": False, "message": "Unauthorized."}, status=403)
+                return
+            self._send_json({"success": True, "activity": self.bot.tracker.get_recent_activity(50)})
             return
 
         self.send_response(404)
@@ -390,12 +436,90 @@ class DashboardHandler(BaseHTTPRequestHandler):
             self._send_json({"success": True, "message": "Settings updated."})
             return
 
+        # ── WORDPRESS-STYLE ADMIN POST ROUTES ──
+        if path == "/api/admin/settings":
+            user = self._get_user_from_req(parsed, payload)
+            if not user or not user_manager.is_admin(user):
+                self._send_json({"success": False, "message": "Unauthorized."}, status=403)
+                return
+            settings_data = payload.get("settings", {})
+            updated = user_manager.update_site_settings(settings_data)
+            self._send_json({"success": True, "settings": updated})
+            return
+
+        if path == "/api/admin/users/delete":
+            user = self._get_user_from_req(parsed, payload)
+            if not user or not user_manager.is_admin(user):
+                self._send_json({"success": False, "message": "Unauthorized."}, status=403)
+                return
+            target_id = payload.get("user_id", "")
+            user_manager.delete_user_admin(target_id)
+            self._send_json({"success": True, "message": "User deleted successfully."})
+            return
+
+        if path == "/api/admin/jobs/add":
+            user = self._get_user_from_req(parsed, payload)
+            if not user or not user_manager.is_admin(user):
+                self._send_json({"success": False, "message": "Unauthorized."}, status=403)
+                return
+            job_id = self.bot.tracker.add_job_admin(
+                title=payload.get("title", ""),
+                company=payload.get("company", ""),
+                location=payload.get("location", "Dhaka"),
+                url=payload.get("url", "#"),
+                contact_email=payload.get("contact_email", ""),
+                match_score=int(payload.get("match_score", 75))
+            )
+            self._send_json({"success": True, "job_id": job_id})
+            return
+
+        if path == "/api/admin/jobs/delete":
+            user = self._get_user_from_req(parsed, payload)
+            if not user or not user_manager.is_admin(user):
+                self._send_json({"success": False, "message": "Unauthorized."}, status=403)
+                return
+            job_id = payload.get("job_id", "")
+            self.bot.tracker.delete_job_admin(job_id)
+            self._send_json({"success": True, "message": "Job deleted."})
+            return
+
+        if path == "/api/admin/trigger-scrape":
+            user = self._get_user_from_req(parsed, payload)
+            if not user or not user_manager.is_admin(user):
+                self._send_json({"success": False, "message": "Unauthorized."}, status=403)
+                return
+            threading.Thread(target=self.bot.run_discovery_cycle, daemon=True).start()
+            self._send_json({"success": True, "message": "Scraper started in background."})
+            return
+
         self.send_response(404)
         self.end_headers()
 
-    def _send_json(self, data):
+    def _get_user_from_req(self, parsed, payload=None):
+        token = ""
+        auth_header = self.headers.get("Authorization", "")
+        if auth_header.startswith("Bearer "):
+            token = auth_header[7:].strip()
+        if not token and payload and isinstance(payload, dict):
+            token = payload.get("token", "").strip()
+        if not token:
+            qs = parse_qs(parsed.query)
+            token = qs.get("token", [""])[0]
+
+        # Admin master key bypass (Fahim Ashab)
+        if payload and isinstance(payload, dict) and payload.get("admin_key") in ("fahim@admin", "admin2026"):
+            return {"id": "admin", "name": "Fahim Ashab (Admin)", "email": "fahimashabofficial@gmail.com", "is_admin": True}
+        qs = parse_qs(parsed.query)
+        if qs.get("admin_key", [""])[0] in ("fahim@admin", "admin2026"):
+            return {"id": "admin", "name": "Fahim Ashab (Admin)", "email": "fahimashabofficial@gmail.com", "is_admin": True}
+
+        if token:
+            return user_manager.get_user_by_session(token)
+        return None
+
+    def _send_json(self, data, status=200):
         body = json.dumps(data, default=str, ensure_ascii=False).encode("utf-8")
-        self.send_response(200)
+        self.send_response(status)
         self.send_header("Content-type", "application/json; charset=utf-8")
         self.send_header("Content-Length", str(len(body)))
         self.send_header("Access-Control-Allow-Origin", "*")

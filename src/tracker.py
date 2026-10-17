@@ -203,3 +203,48 @@ class ApplicationTracker:
 
         target.write_text("\n".join(lines), encoding="utf-8")
         return target
+
+    def delete_job_admin(self, job_id: str) -> bool:
+        """Delete a job listing by its ID."""
+        with self._get_connection() as conn:
+            conn.execute("DELETE FROM jobs WHERE id = ?", (job_id,))
+            conn.commit()
+        return True
+
+    def add_job_admin(
+        self,
+        title: str,
+        company: str,
+        location: str = "Dhaka",
+        url: str = "#",
+        contact_email: str = "",
+        is_internship: bool = True,
+        match_score: int = 75,
+        source: str = "Admin Portal"
+    ) -> str:
+        """Manually add an internship opportunity from the Admin Panel."""
+        import hashlib
+        job_id = hashlib.md5(f"{company}_{title}_{url}".encode("utf-8")).hexdigest()[:12]
+        with self._get_connection() as conn:
+            conn.execute("""
+                INSERT OR REPLACE INTO jobs (
+                    id, title, company, location, url, source, contact_email,
+                    is_internship, match_score, match_rationale, tailored_email_subject,
+                    tailored_cover_letter, application_channel, status, found_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+            """, (
+                job_id, title, company, location, url, source, contact_email,
+                1 if is_internship else 0, match_score, "Verified by Platform Administrator",
+                f"Application: {title} - [Applicant Name]", "",
+                "email" if contact_email else "web", "MATCHED"
+            ))
+            conn.commit()
+        self.log_activity("ADMIN_ADD_JOB", f"Admin posted new listing: '{title}' at '{company}'")
+        return job_id
+
+    def get_recent_activity(self, limit: int = 50) -> List[Dict[str, Any]]:
+        """Fetch recent system activity and audit logs."""
+        with self._get_connection() as conn:
+            cur = conn.execute("SELECT * FROM activity_log ORDER BY timestamp DESC LIMIT ?", (limit,))
+            return [dict(r) for r in cur.fetchall()]
+

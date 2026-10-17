@@ -15,8 +15,43 @@
       --card-bg: #ffffff;
       --text-main: #0f172a;
       --text-muted: #64748b;
+      --border-color: #e2e8f0;
+      --box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
     }
-    body { background: var(--bg); font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, system-ui, sans-serif; color: var(--text-main); }
+    html.dark {
+      --bg: #090d16;
+      --card-bg: #131b2e;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border-color: #1e293b;
+      --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    }
+    body { background: var(--bg); font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, system-ui, sans-serif; color: var(--text-main); transition: background 0.2s ease, color 0.2s ease; }
+    html.dark body { background: #090d16; color: #f1f5f9; }
+    html.dark .card { background: #131b2e !important; color: #f1f5f9 !important; border: 1px solid #1e293b !important; }
+    html.dark .upload-zone { background: #131b2e !important; color: #f1f5f9; border-color: #6366f1; }
+    html.dark .upload-zone h5 { color: #f8fafc !important; }
+    html.dark .job-card { background: #131b2e !important; border: 1px solid #1e293b !important; color: #f1f5f9 !important; }
+    html.dark .job-card h5 { color: #f8fafc !important; }
+    html.dark .job-card .comp-name { color: #cbd5e1 !important; }
+    html.dark .rationale-box { background: #0f172a !important; color: #cbd5e1 !important; border-left-color: #6366f1; }
+    html.dark .email-preview { background: #0f172a !important; color: #f1f5f9 !important; border-color: #334155 !important; }
+    html.dark .modal-content { background: #131b2e !important; color: #f1f5f9 !important; border: 1px solid #1e293b; }
+    html.dark .form-control, html.dark .form-select { background: #0f172a !important; color: #f1f5f9 !important; border-color: #334155 !important; }
+    html.dark .sector-tab { background: #0f172a; color: #94a3b8; border-color: #1e293b; }
+    html.dark .sector-tab:hover { background: #1e293b; color: #f1f5f9; }
+    html.dark .sector-tab.active { background: #4f46e5 !important; color: #fff !important; }
+    html.dark .channel-tab { background: #0f172a; color: #94a3b8; border-color: #1e293b; }
+    html.dark .channel-tab:hover { background: #1e293b; color: #f1f5f9; }
+    html.dark .channel-tab.active { background: #4f46e5; color: #fff; }
+    html.dark .table { color: #f1f5f9; }
+    html.dark .table thead th { border-bottom-color: #334155; color: #cbd5e1; }
+    html.dark .table tbody td { border-bottom-color: #1e293b; color: #f1f5f9; }
+    html.dark .dropdown-menu { background: #131b2e; border: 1px solid #1e293b; }
+    html.dark .dropdown-item { color: #f1f5f9; }
+    html.dark .dropdown-item:hover { background: #1e293b; color: #fff; }
+    html.dark .dropdown-header { color: #94a3b8; }
+    html.dark .list-group-item { background: #0f172a; color: #f1f5f9; border-color: #1e293b; }
     .navbar { background: #0f172a; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
     .brand-logo { width: 38px; height: 38px; border-radius: 10px; }
     .card { border: none; border-radius: 16px; }
@@ -318,10 +353,16 @@
       <span>InternQuest <span class="badge bg-primary fs-6 fw-semibold px-2 py-1 ms-1">AI</span></span>
     </a>
 
-    <div class="d-flex align-items-center gap-3 ms-auto">
-      <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 fs-6">
-        <i class="fa-solid fa-circle-check me-1"></i> Live &amp; Active
-      </span>
+    <div class="d-flex align-items-center gap-2 ms-auto">
+      <!-- Dark / Light Mode Toggle Button -->
+      <button id="themeToggleBtn" class="btn btn-outline-light btn-sm rounded-pill px-3" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
+        <i id="themeIcon" class="fa-solid fa-moon me-1"></i> <span id="themeText">Dark</span>
+      </button>
+
+      <!-- Super Admin Panel Button (Hidden for non-admin) -->
+      <button id="navAdminBtn" class="btn btn-warning btn-sm rounded-pill px-3 fw-bold d-none shadow-sm" onclick="openAdminPanel()">
+        <i class="fa-solid fa-crown me-1"></i> Admin Hub
+      </button>
 
       <!-- Auth Controls (Dynamic) -->
       <div id="authControls" class="d-flex align-items-center gap-2">
@@ -342,6 +383,7 @@
         </button>
         <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
           <li><h6 class="dropdown-header" id="navUserEmail">user@example.com</h6></li>
+          <li id="adminDropdownItem" class="d-none"><a class="dropdown-item text-warning fw-bold" href="javascript:void(0)" onclick="openAdminPanel()"><i class="fa-solid fa-crown me-2"></i>WordPress Admin Panel</a></li>
           <li><a class="dropdown-item" href="javascript:void(0)" onclick="triggerCvUpload()"><i class="fa-solid fa-cloud-arrow-up me-2 text-primary"></i>Upload / Update My CV</a></li>
           <li><a class="dropdown-item" href="javascript:void(0)" onclick="toggleUserDigest()"><i class="fa-solid fa-bell me-2 text-warning"></i><span id="navDigestText">Pause 10:00 AM Alerts</span></a></li>
           <li><a class="dropdown-item" href="javascript:void(0)" onclick="testMorningDigest()"><i class="fa-solid fa-paper-plane me-2 text-info"></i>Send Test 10 AM Digest</a></li>
@@ -354,6 +396,12 @@
 </nav>
 
 <div class="container-lg py-4">
+
+  <!-- Public Announcement Banner (Configured from Admin Panel) -->
+  <div id="announcementBanner" class="alert alert-primary border-0 shadow-sm d-none mb-3 py-2 px-3 d-flex align-items-center gap-2">
+    <i class="fa-solid fa-bullhorn text-primary fs-5"></i>
+    <div id="announcementText" class="fw-medium"></div>
+  </div>
 
   <!-- Status Alert -->
   <div id="statusAlert" class="alert d-none shadow-sm mb-3" role="alert"></div>
@@ -666,6 +714,235 @@
   </div>
 </div>
 
+<!-- WordPress-Style Admin Control Hub Modal -->
+<div class="modal fade" id="adminModal" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header text-white" style="background: linear-gradient(135deg, #1e1b4b, #312e81);">
+        <h5 class="modal-title fw-bold"><i class="fa-solid fa-crown text-warning me-2"></i>InternQuest Control Hub (WordPress-Style Admin)</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-0">
+        <div class="row g-0">
+          <!-- WordPress Left Sidebar -->
+          <div class="col-md-3 border-end p-3" style="background: rgba(15, 23, 42, 0.03);">
+            <div class="list-group list-group-flush rounded-3" id="adminTabs">
+              <button class="list-group-item list-group-item-action active fw-bold py-3" id="btnAdminOverview" onclick="switchAdminTab('overview')">
+                <i class="fa-solid fa-gauge-high me-2 text-primary"></i> Dashboard Overview
+              </button>
+              <button class="list-group-item list-group-item-action fw-bold py-3" id="btnAdminUsers" onclick="switchAdminTab('users')">
+                <i class="fa-solid fa-users me-2 text-success"></i> Users &amp; Resumes
+              </button>
+              <button class="list-group-item list-group-item-action fw-bold py-3" id="btnAdminJobs" onclick="switchAdminTab('jobs')">
+                <i class="fa-solid fa-briefcase me-2 text-warning"></i> Job Listings Manager
+              </button>
+              <button class="list-group-item list-group-item-action fw-bold py-3" id="btnAdminSettings" onclick="switchAdminTab('settings')">
+                <i class="fa-solid fa-sliders me-2 text-info"></i> Site Settings
+              </button>
+              <button class="list-group-item list-group-item-action fw-bold py-3" id="btnAdminLogs" onclick="switchAdminTab('logs')">
+                <i class="fa-solid fa-clock-rotate-left me-2 text-secondary"></i> System Activity Logs
+              </button>
+            </div>
+            <div class="mt-4 p-3 rounded-3" style="background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.2);">
+              <small class="text-muted d-block mb-1">SUPER ADMIN</small>
+              <strong class="d-block text-primary fw-bold">Fahim Ashab</strong>
+              <small class="text-muted">Full administrative privileges</small>
+            </div>
+          </div>
+
+          <!-- Right Content Area -->
+          <div class="col-md-9 p-4" style="min-height: 520px;">
+            <!-- Tab 1: Overview -->
+            <div id="adminTabOverview">
+              <h5 class="fw-bold mb-3"><i class="fa-solid fa-chart-line text-primary me-2"></i>Platform Analytics &amp; Health</h5>
+              <div class="row g-3 mb-4">
+                <div class="col-sm-6 col-lg-3">
+                  <div class="card p-3 shadow-sm border">
+                    <div class="small text-muted fw-bold">REGISTERED USERS</div>
+                    <h3 id="adminMetricUsers" class="fw-bold my-1 text-primary">0</h3>
+                    <small class="text-success"><i class="fa-solid fa-user-check me-1"></i>Verified Profiles</small>
+                  </div>
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                  <div class="card p-3 shadow-sm border">
+                    <div class="small text-muted fw-bold">STORED RESUMES</div>
+                    <h3 id="adminMetricCVs" class="fw-bold my-1 text-success">0</h3>
+                    <small class="text-muted"><i class="fa-solid fa-file-pdf me-1"></i>PDFs Attached</small>
+                  </div>
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                  <div class="card p-3 shadow-sm border">
+                    <div class="small text-muted fw-bold">ACTIVE VACANCIES</div>
+                    <h3 id="adminMetricJobs" class="fw-bold my-1 text-warning">0</h3>
+                    <small class="text-muted"><i class="fa-solid fa-briefcase me-1"></i>In Database</small>
+                  </div>
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                  <div class="card p-3 shadow-sm border">
+                    <div class="small text-muted fw-bold">10 AM SUBSCRIBERS</div>
+                    <h3 id="adminMetricSubscribers" class="fw-bold my-1 text-info">0</h3>
+                    <small class="text-muted"><i class="fa-solid fa-bell me-1"></i>Daily Alerts</small>
+                  </div>
+                </div>
+              </div>
+              <h6 class="fw-bold mb-2">Platform Control Actions</h6>
+              <div class="d-flex flex-wrap gap-2">
+                <button class="btn btn-outline-primary btn-sm fw-bold px-3 py-2" onclick="triggerAdminScrape()">
+                  <i class="fa-solid fa-arrows-rotate me-1"></i> Run Live Scrapers Now
+                </button>
+                <button class="btn btn-outline-warning btn-sm fw-bold px-3 py-2" onclick="triggerAdminDigest()">
+                  <i class="fa-solid fa-paper-plane me-1"></i> Dispatch Test 10 AM Digest
+                </button>
+              </div>
+            </div>
+
+            <!-- Tab 2: Users & Resumes -->
+            <div id="adminTabUsers" class="d-none">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold mb-0"><i class="fa-solid fa-users text-success me-2"></i>Registered Candidates &amp; Resumes</h5>
+                <button class="btn btn-sm btn-outline-secondary" onclick="loadAdminUsers()"><i class="fa-solid fa-rotate me-1"></i>Refresh</button>
+              </div>
+              <div class="table-responsive">
+                <table class="table table-hover align-middle table-sm">
+                  <thead class="table-light">
+                    <tr>
+                      <th>Candidate</th>
+                      <th>Email</th>
+                      <th>Track</th>
+                      <th>CV / Resume</th>
+                      <th>Alerts</th>
+                      <th class="text-end">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="adminUsersTbody">
+                    <tr><td colspan="6" class="text-center py-4 text-muted">Loading candidates...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Tab 3: Job Listings Manager -->
+            <div id="adminTabJobs" class="d-none">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold mb-0"><i class="fa-solid fa-briefcase text-warning me-2"></i>Manage Internship Opportunities</h5>
+                <button class="btn btn-primary btn-sm fw-bold" onclick="toggleAddJobForm()"><i class="fa-solid fa-plus me-1"></i>Post New Internship</button>
+              </div>
+              <!-- Post Job Form -->
+              <div id="adminAddJobCard" class="card border p-3 mb-3 d-none shadow-sm">
+                <h6 class="fw-bold mb-3 text-primary">➕ Post New Opportunity (WordPress Style)</h6>
+                <form onsubmit="handleAdminAddJob(event)">
+                  <div class="row g-2 mb-2">
+                    <div class="col-md-6">
+                      <label class="form-label small fw-bold">Job Title *</label>
+                      <input type="text" id="adminNewTitle" class="form-control form-control-sm" required placeholder="e.g. Summer Finance Intern 2026">
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label small fw-bold">Company Name *</label>
+                      <input type="text" id="adminNewComp" class="form-control form-control-sm" required placeholder="e.g. Standard Chartered Bank">
+                    </div>
+                  </div>
+                  <div class="row g-2 mb-2">
+                    <div class="col-md-4">
+                      <label class="form-label small fw-bold">Location</label>
+                      <input type="text" id="adminNewLoc" class="form-control form-control-sm" value="Dhaka, Bangladesh">
+                    </div>
+                    <div class="col-md-5">
+                      <label class="form-label small fw-bold">Application URL *</label>
+                      <input type="url" id="adminNewURL" class="form-control form-control-sm" required placeholder="https://company.com/career">
+                    </div>
+                    <div class="col-md-3">
+                      <label class="form-label small fw-bold">Contact Email</label>
+                      <input type="email" id="adminNewEmail" class="form-control form-control-sm" placeholder="hr@company.com">
+                    </div>
+                  </div>
+                  <div class="d-flex justify-content-end gap-2 mt-2">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="toggleAddJobForm()">Cancel</button>
+                    <button type="submit" class="btn btn-sm btn-primary fw-bold"><i class="fa-solid fa-check me-1"></i>Publish Opportunity</button>
+                  </div>
+                </form>
+              </div>
+              <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                <table class="table table-hover align-middle table-sm">
+                  <thead class="table-light sticky-top">
+                    <tr>
+                      <th>Title</th>
+                      <th>Company</th>
+                      <th>Location</th>
+                      <th>Channel</th>
+                      <th class="text-end">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="adminJobsTbody">
+                    <tr><td colspan="5" class="text-center py-4 text-muted">Loading jobs...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Tab 4: Site Settings -->
+            <div id="adminTabSettings" class="d-none">
+              <h5 class="fw-bold mb-3"><i class="fa-solid fa-sliders text-info me-2"></i>WordPress-Style General Settings</h5>
+              <form onsubmit="handleAdminSaveSettings(event)">
+                <div class="mb-3">
+                  <label class="form-label small fw-bold">Platform Brand Title</label>
+                  <input type="text" id="adminSettingTitle" class="form-control" value="InternQuest AI">
+                </div>
+                <div class="mb-3">
+                  <label class="form-label small fw-bold">Public Announcement Banner</label>
+                  <textarea id="adminSettingAnnouncement" class="form-control" rows="2" placeholder="Announcement shown to all visitors..."></textarea>
+                </div>
+                <div class="mb-3 form-check form-switch">
+                  <input class="form-check-input" type="checkbox" id="adminSettingShowAnnouncement" checked>
+                  <label class="form-check-label small fw-bold" for="adminSettingShowAnnouncement">Show Public Announcement Banner</label>
+                </div>
+                <div class="row g-3 mb-3">
+                  <div class="col-md-6">
+                    <label class="form-label small fw-bold">Default Minimum Match Score (%)</label>
+                    <input type="number" id="adminSettingMinScore" class="form-control" min="30" max="95" value="55">
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label small fw-bold">Max Auto-Applications Per Day</label>
+                    <input type="number" id="adminSettingDailyLimit" class="form-control" min="1" max="50" value="5">
+                  </div>
+                </div>
+                <div class="mb-3 form-check form-switch">
+                  <input class="form-check-input" type="checkbox" id="adminSettingGuest" checked>
+                  <label class="form-check-label small fw-bold" for="adminSettingGuest">Allow Free Guest CV Uploads (No Registration Required)</label>
+                </div>
+                <button type="submit" class="btn btn-primary fw-bold px-4 py-2 shadow-sm">
+                  <i class="fa-solid fa-floppy-disk me-1"></i> Save Platform Settings
+                </button>
+              </form>
+            </div>
+
+            <!-- Tab 5: Activity Logs -->
+            <div id="adminTabLogs" class="d-none">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold mb-0"><i class="fa-solid fa-clock-rotate-left text-secondary me-2"></i>Audit Trail &amp; Activity Log</h5>
+                <button class="btn btn-sm btn-outline-secondary" onclick="loadAdminActivity()"><i class="fa-solid fa-rotate me-1"></i>Refresh</button>
+              </div>
+              <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                <table class="table table-hover table-sm">
+                  <thead class="table-light sticky-top">
+                    <tr>
+                      <th>Time</th>
+                      <th>Event</th>
+                      <th>Details</th>
+                    </tr>
+                  </thead>
+                  <tbody id="adminLogsTbody">
+                    <tr><td colspan="3" class="text-center py-4 text-muted">Loading audit records...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 let allJobs = [];
@@ -747,6 +1024,17 @@ function updateAuthUI(user) {
     const navDigestText = document.getElementById('navDigestText');
     if (navDigestText) navDigestText.innerText = digestStatusText;
 
+    const navAdminBtn = document.getElementById('navAdminBtn');
+    if (navAdminBtn) {
+      if (user.is_admin) navAdminBtn.classList.remove('d-none');
+      else navAdminBtn.classList.add('d-none');
+    }
+    const adminDrop = document.getElementById('adminDropdownItem');
+    if (adminDrop) {
+      if (user.is_admin) adminDrop.classList.remove('d-none');
+      else adminDrop.classList.add('d-none');
+    }
+
     const pDigestBadge = document.getElementById('pDigestBadge');
     if (pDigestBadge) {
       pDigestBadge.className = user.daily_digest ? 'badge bg-success-subtle text-success border border-success' : 'badge bg-secondary-subtle text-secondary border';
@@ -757,6 +1045,11 @@ function updateAuthUI(user) {
   } else {
     controls.classList.remove('d-none');
     userMenu.classList.add('d-none');
+    const navAdminBtn = document.getElementById('navAdminBtn');
+    if (navAdminBtn) navAdminBtn.classList.add('d-none');
+    const adminDrop = document.getElementById('adminDropdownItem');
+    if (adminDrop) adminDrop.classList.add('d-none');
+
     const pDigestBadge = document.getElementById('pDigestBadge');
     if (pDigestBadge) {
       pDigestBadge.className = 'badge bg-light text-dark border';
@@ -1358,7 +1651,338 @@ function showAlert(msg, type) {
   el._t = setTimeout(() => el.classList.add('d-none'), 8000);
 }
 
+// ── THEME CONTROLLER (Dark / Light Mode) ──
+function initTheme() {
+  const saved = localStorage.getItem('theme') || 'light';
+  if (saved === 'dark') {
+    document.documentElement.classList.add('dark');
+    const ic = document.getElementById('themeIcon');
+    const tx = document.getElementById('themeText');
+    if (ic) ic.className = 'fa-solid fa-sun me-1';
+    if (tx) tx.innerText = 'Light';
+  } else {
+    document.documentElement.classList.remove('dark');
+    const ic = document.getElementById('themeIcon');
+    const tx = document.getElementById('themeText');
+    if (ic) ic.className = 'fa-solid fa-moon me-1';
+    if (tx) tx.innerText = 'Dark';
+  }
+}
+
+function toggleTheme() {
+  const isDark = document.documentElement.classList.toggle('dark');
+  localStorage.setItem('theme', isDark ? 'dark' : 'light');
+  const ic = document.getElementById('themeIcon');
+  const tx = document.getElementById('themeText');
+  if (ic) ic.className = isDark ? 'fa-solid fa-sun me-1' : 'fa-solid fa-moon me-1';
+  if (tx) tx.innerText = isDark ? 'Light' : 'Dark';
+}
+
+// ── SITE SETTINGS & ANNOUNCEMENT ──
+async function loadSiteSettings() {
+  try {
+    const res = await fetch('/api/settings');
+    const d = await res.json();
+    if (d.show_announcement === 'true' && d.announcement && d.announcement.trim()) {
+      document.getElementById('announcementText').innerText = d.announcement;
+      document.getElementById('announcementBanner').classList.remove('d-none');
+    }
+  } catch(e) {}
+}
+
+// ── WORDPRESS-STYLE ADMIN HUB CONTROLLER ──
+let adminModal = null;
+
+function getAuthHeaders() {
+  const token = localStorage.getItem('iq_token') || '';
+  return {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`
+  };
+}
+
+function openAdminPanel() {
+  if (!adminModal) {
+    adminModal = new bootstrap.Modal(document.getElementById('adminModal'));
+  }
+  switchAdminTab('overview');
+  adminModal.show();
+}
+
+function switchAdminTab(tab) {
+  const tabs = ['overview', 'users', 'jobs', 'settings', 'logs'];
+  tabs.forEach(t => {
+    const tabEl = document.getElementById(`adminTab${t.charAt(0).toUpperCase() + t.slice(1)}`);
+    const btnEl = document.getElementById(`btnAdmin${t.charAt(0).toUpperCase() + t.slice(1)}`);
+    if (tabEl) tabEl.classList.add('d-none');
+    if (btnEl) btnEl.classList.remove('active');
+  });
+
+  const activeTabEl = document.getElementById(`adminTab${tab.charAt(0).toUpperCase() + tab.slice(1)}`);
+  const activeBtnEl = document.getElementById(`btnAdmin${tab.charAt(0).toUpperCase() + tab.slice(1)}`);
+  if (activeTabEl) activeTabEl.classList.remove('d-none');
+  if (activeBtnEl) activeBtnEl.classList.add('active');
+
+  if (tab === 'overview') loadAdminOverview();
+  else if (tab === 'users') loadAdminUsers();
+  else if (tab === 'jobs') loadAdminJobs();
+  else if (tab === 'settings') loadAdminSettings();
+  else if (tab === 'logs') loadAdminActivity();
+}
+
+async function loadAdminOverview() {
+  try {
+    const token = localStorage.getItem('iq_token') || '';
+    const resUsers = await fetch(`/api/admin/users?token=${encodeURIComponent(token)}`);
+    const dUsers = await resUsers.json();
+    if (dUsers.success && dUsers.users) {
+      document.getElementById('adminMetricUsers').innerText = dUsers.users.length;
+      const cvCount = dUsers.users.filter(u => u.has_resume).length;
+      document.getElementById('adminMetricCVs').innerText = cvCount;
+      const subCount = dUsers.users.filter(u => u.daily_digest).length;
+      document.getElementById('adminMetricSubscribers').innerText = subCount;
+    }
+    const resJobs = await fetch('/api/jobs');
+    const dJobs = await resJobs.json();
+    document.getElementById('adminMetricJobs').innerText = dJobs.length || 0;
+  } catch(e) {}
+}
+
+async function loadAdminUsers() {
+  const tbody = document.getElementById('adminUsersTbody');
+  tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-muted"><i class="fa-solid fa-spinner fa-spin me-2"></i>Loading candidates...</td></tr>';
+  try {
+    const token = localStorage.getItem('iq_token') || '';
+    const res = await fetch(`/api/admin/users?token=${encodeURIComponent(token)}`);
+    const d = await res.json();
+    if (!d.success || !d.users || d.users.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-muted">No registered candidates yet.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = d.users.map(u => {
+      const cvBtn = u.has_resume
+        ? `<a href="/api/admin/cv?user_id=${u.id}&token=${encodeURIComponent(token)}" target="_blank" class="btn btn-sm btn-outline-success py-1 px-2 fw-semibold"><i class="fa-solid fa-file-pdf me-1"></i>Download CV</a>`
+        : `<span class="text-muted small">No CV attached</span>`;
+      return `
+        <tr>
+          <td>
+            <div class="fw-bold">${u.name}</div>
+            <small class="text-muted">${u.institution || 'University'}</small>
+          </td>
+          <td><code class="text-primary">${u.email}</code></td>
+          <td><span class="track-badge ${getTrackClass(u.track)}">${u.track}</span></td>
+          <td>${cvBtn}</td>
+          <td>${u.daily_digest ? '<span class="badge bg-success-subtle text-success">10 AM Alerts</span>' : '<span class="badge bg-secondary-subtle text-muted">Muted</span>'}</td>
+          <td class="text-end">
+            <button class="btn btn-sm btn-outline-danger py-1 px-2" onclick="deleteAdminUser('${u.id}', '${u.name}')" title="Delete User">
+              <i class="fa-solid fa-trash-can"></i>
+            </button>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  } catch(e) {
+    tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-danger">Failed to load users.</td></tr>';
+  }
+}
+
+async function deleteAdminUser(userId, name) {
+  if (!confirm(`Are you sure you want to permanently delete user account "${name}"?`)) return;
+  try {
+    const res = await fetch('/api/admin/users/delete', {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ user_id: userId, token: localStorage.getItem('iq_token') })
+    });
+    const d = await res.json();
+    if (d.success) {
+      showAlert(`Deleted user ${name}.`, 'warning');
+      loadAdminUsers();
+      loadAdminOverview();
+    }
+  } catch(e) {
+    showAlert('Error deleting user.', 'danger');
+  }
+}
+
+async function loadAdminJobs() {
+  const tbody = document.getElementById('adminJobsTbody');
+  tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-muted"><i class="fa-solid fa-spinner fa-spin me-2"></i>Loading opportunities...</td></tr>';
+  try {
+    const res = await fetch('/api/jobs');
+    const jobs = await res.json();
+    tbody.innerHTML = jobs.map(j => `
+      <tr>
+        <td class="fw-bold text-truncate" style="max-width: 200px;">${j.title}</td>
+        <td>${j.company}</td>
+        <td><small class="text-muted">${j.location || 'Dhaka'}</small></td>
+        <td><span class="badge bg-light text-dark border">${j.application_channel || 'web'}</span></td>
+        <td class="text-end">
+          <a href="${j.url}" target="_blank" class="btn btn-sm btn-outline-secondary py-0 px-2 me-1"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+          <button class="btn btn-sm btn-outline-danger py-0 px-2" onclick="deleteAdminJob('${j.id}', '${j.title}')"><i class="fa-solid fa-trash-can"></i></button>
+        </td>
+      </tr>
+    `).join('');
+  } catch(e) {
+    tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-danger">Failed to load jobs.</td></tr>';
+  }
+}
+
+function toggleAddJobForm() {
+  const el = document.getElementById('adminAddJobCard');
+  el.classList.toggle('d-none');
+}
+
+async function handleAdminAddJob(e) {
+  e.preventDefault();
+  const title = document.getElementById('adminNewTitle').value;
+  const company = document.getElementById('adminNewComp').value;
+  const location = document.getElementById('adminNewLoc').value;
+  const url = document.getElementById('adminNewURL').value;
+  const email = document.getElementById('adminNewEmail').value;
+
+  try {
+    const res = await fetch('/api/admin/jobs/add', {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({
+        title, company, location, url, contact_email: email,
+        token: localStorage.getItem('iq_token')
+      })
+    });
+    const d = await res.json();
+    if (d.success) {
+      showAlert(`Successfully published opportunity: ${title}!`, 'success');
+      toggleAddJobForm();
+      loadAdminJobs();
+      loadAdminOverview();
+      loadData();
+    }
+  } catch(e) {
+    showAlert('Failed to publish opportunity.', 'danger');
+  }
+}
+
+async function deleteAdminJob(jobId, title) {
+  if (!confirm(`Delete listing "${title}"?`)) return;
+  try {
+    const res = await fetch('/api/admin/jobs/delete', {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ job_id: jobId, token: localStorage.getItem('iq_token') })
+    });
+    const d = await res.json();
+    if (d.success) {
+      showAlert(`Removed job ${title}.`, 'info');
+      loadAdminJobs();
+      loadAdminOverview();
+      loadData();
+    }
+  } catch(e) {
+    showAlert('Error deleting listing.', 'danger');
+  }
+}
+
+async function loadAdminSettings() {
+  try {
+    const res = await fetch('/api/settings');
+    const d = await res.json();
+    document.getElementById('adminSettingTitle').value = d.site_title || 'InternQuest AI';
+    document.getElementById('adminSettingAnnouncement').value = d.announcement || '';
+    document.getElementById('adminSettingShowAnnouncement').checked = (d.show_announcement === 'true');
+    document.getElementById('adminSettingMinScore').value = d.min_match_score || 55;
+    document.getElementById('adminSettingDailyLimit').value = d.daily_email_limit || 5;
+    document.getElementById('adminSettingGuest').checked = (d.allow_guest_mode === 'true');
+  } catch(e) {}
+}
+
+async function handleAdminSaveSettings(e) {
+  e.preventDefault();
+  const payload = {
+    settings: {
+      site_title: document.getElementById('adminSettingTitle').value,
+      announcement: document.getElementById('adminSettingAnnouncement').value,
+      show_announcement: document.getElementById('adminSettingShowAnnouncement').checked ? 'true' : 'false',
+      min_match_score: document.getElementById('adminSettingMinScore').value,
+      daily_email_limit: document.getElementById('adminSettingDailyLimit').value,
+      allow_guest_mode: document.getElementById('adminSettingGuest').checked ? 'true' : 'false'
+    },
+    token: localStorage.getItem('iq_token')
+  };
+
+  try {
+    const res = await fetch('/api/admin/settings', {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(payload)
+    });
+    const d = await res.json();
+    if (d.success) {
+      showAlert('WordPress site settings saved successfully!', 'success');
+      loadSiteSettings();
+    }
+  } catch(e) {
+    showAlert('Error saving settings.', 'danger');
+  }
+}
+
+async function loadAdminActivity() {
+  const tbody = document.getElementById('adminLogsTbody');
+  tbody.innerHTML = '<tr><td colspan="3" class="text-center py-4 text-muted"><i class="fa-solid fa-spinner fa-spin me-2"></i>Loading audit logs...</td></tr>';
+  try {
+    const token = localStorage.getItem('iq_token') || '';
+    const res = await fetch(`/api/admin/activity?token=${encodeURIComponent(token)}`);
+    const d = await res.json();
+    if (!d.success || !d.activity || d.activity.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="3" class="text-center py-4 text-muted">No activity recorded yet.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = d.activity.map(a => `
+      <tr>
+        <td><small class="text-muted font-monospace">${a.timestamp || ''}</small></td>
+        <td><span class="badge bg-secondary">${a.activity_type}</span></td>
+        <td>${a.details}</td>
+      </tr>
+    `).join('');
+  } catch(e) {
+    tbody.innerHTML = '<tr><td colspan="3" class="text-center py-4 text-danger">Failed to load activity log.</td></tr>';
+  }
+}
+
+async function triggerAdminScrape() {
+  showAlert('🚀 Triggering live job scrapers across Bangladesh companies & remote boards...', 'info');
+  try {
+    const res = await fetch('/api/admin/trigger-scrape', {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ token: localStorage.getItem('iq_token') })
+    });
+    const d = await res.json();
+    showAlert(d.message || 'Scraper started!', 'success');
+    setTimeout(() => { loadAdminOverview(); loadData(); }, 15000);
+  } catch(e) {
+    showAlert('Failed to trigger scraper.', 'danger');
+  }
+}
+
+async function triggerAdminDigest() {
+  showAlert('⏰ Dispatching test 10:00 AM Morning Digest...', 'info');
+  try {
+    const res = await fetch('/api/test-digest', {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ token: localStorage.getItem('iq_token') })
+    });
+    const d = await res.json();
+    showAlert(d.message || 'Digest dispatched!', 'success');
+  } catch(e) {
+    showAlert('Error dispatching digest.', 'danger');
+  }
+}
+
 window.addEventListener('load', () => {
+  initTheme();
+  loadSiteSettings();
   checkAuthSession();
   loadData();
 });
