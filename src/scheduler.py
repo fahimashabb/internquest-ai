@@ -167,13 +167,14 @@ class InternshipBot:
             user_track = user.get("track") or "General"
             user_skills = user.get("skills") or []
 
-            user_profile = CandidateProfile(
-                name=user_name,
-                degree=user.get("degree") or "Student / Graduate",
-                institution=user.get("institution") or "University",
-                skills=user_skills,
-                target_domains=user.get("target_domains") or [user_track]
-            )
+            user_profile = CandidateProfile.from_dict({
+                "name": user_name,
+                "degree": user.get("degree") or "Student / Graduate",
+                "institution": user.get("institution") or "University",
+                "skills": user_skills,
+                "target_domains": user.get("target_domains") or [user_track],
+                "resume_text": user.get("resume_text") or ""
+            }, settings=self.settings)
             evaluator = GeminiEvaluator(self.settings, user_profile)
 
             matched_for_user = []

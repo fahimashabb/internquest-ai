@@ -42,7 +42,31 @@ class ApplicationTracker:
                     notes TEXT
                 )
             """)
+            conn.execute("""
+                CREATE TABLE IF NOT EXISTS activity_log (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    activity_type TEXT NOT NULL,
+                    details TEXT NOT NULL,
+                    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            """)
             conn.commit()
+
+    def log_activity(self, activity_type: str, details: str) -> None:
+        try:
+            with self._get_connection() as conn:
+                conn.execute(
+                    "INSERT INTO activity_log (activity_type, details) VALUES (?, ?)",
+                    (activity_type, details)
+                )
+                conn.commit()
+        except Exception:
+            pass
+
+    def get_all_jobs(self) -> List[Dict[str, Any]]:
+        with self._get_connection() as conn:
+            cur = conn.execute("SELECT * FROM jobs ORDER BY found_at DESC")
+            return [dict(r) for r in cur.fetchall()]
 
     def has_job(self, job_id: str) -> bool:
         with self._get_connection() as conn:
