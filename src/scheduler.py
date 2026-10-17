@@ -12,7 +12,16 @@ from src.tracker import ApplicationTracker
 from src.appliers.email_applier import EmailApplier
 from src.appliers.web_applier import WebApplier
 
-console = Console()
+import sys
+if sys.platform == "win32":
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+        sys.stderr.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
+
+console = Console(legacy_windows=False)
+
 
 
 class InternshipBot:

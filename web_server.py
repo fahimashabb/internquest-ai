@@ -24,6 +24,13 @@ os.chdir(BASE_DIR)
 if str(BASE_DIR) not in sys.path:
     sys.path.insert(0, str(BASE_DIR))
 
+if sys.platform == "win32":
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+        sys.stderr.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
+
 from src.config import load_settings, ENV_FILE
 from src.scheduler import InternshipBot
 from src.profile import CandidateProfile
