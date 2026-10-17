@@ -1,0 +1,31 @@
+# Virtual Environment
+.venv/
+venv/
+env/
+ENV/
+
+# Environment Variables & Secrets (CRITICAL: Do NOT commit credentials)
+.env
+.env.local
+*.env
+
+# Python bytecode & cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+
+# Logs
+*.log
+daily_runs.log
+
+# Private personal files
+data/*Resume*.pdf
+data/private/
+
+# OS artifacts
+.DS_Store
+Thumbs.db
+desktop.ini

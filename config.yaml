@@ -1,0 +1,46 @@
+﻿candidate:
+  name: "Fahim Ashab"
+  email: "fahimashabofficial@gmail.com"
+  phone: "+880 1832-383642"
+  linkedin: "https://linkedin.com/in/fahim-ashab-0473542b6"
+  location: "Rajshahi / Jashore, Bangladesh"
+  degree: "Bachelor of Business Administration (BBA) in Finance & Banking"
+  institution: "Jashore University of Science and Technology (JUST)"
+  resume_path: "data/Fahim_Ashab_Resume.pdf"
+  interests:
+    - "Financial Analysis & Valuation"
+    - "Corporate Budgeting & Financial Modeling"
+    - "Banking & Retail Banking Operations"
+    - "FinTech & Digital Financial Services"
+    - "Business Operations & Supply Chain Logistics"
+    - "Capital Markets & Investment Banking"
+
+search:
+  keywords:
+    - "Finance Intern"
+    - "Financial Analyst Intern"
+    - "Banking Intern"
+    - "Business Operations Intern"
+    - "Corporate Finance Intern"
+    - "Investment Intern"
+    - "FinTech Intern"
+  locations:
+    - "Bangladesh"
+    - "Dhaka"
+    - "Remote"
+    - "Worldwide"
+  max_results_per_source: 15
+
+filtering:
+  min_match_score: 65 # 0-100 threshold evaluated by Gemini
+  require_internship: true
+
+application:
+  mode: "supervised" # "supervised" (requires confirmation) or "autopilot"
+  dry_run: true      # Set to false only when ready to send live emails
+  daily_email_limit: 5
+  email_subject_template: "Application for {role} - {candidate_name}"
+  sender_name: "Fahim Ashab"
+
+schedule:
+  run_daily_at: "10:00" # 24h format (e.g. 8:30 AM local time)

@@ -1,0 +1,27 @@
+[project]
+name = "internship-hunter"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "beautifulsoup4>=4.15.0",
+    "google-genai>=2.22.0",
+    "httpx>=0.28.1",
+    "playwright>=1.62.0",
+    "pydantic>=2.13.5",
+    "pypdf>=6.16.2",
+    "python-dotenv>=1.2.3",
+    "pyyaml>=6.0.3",
+    "requests>=2.34.2",
+    "rich>=15.0.0",
+    "schedule>=1.2.2",
+    "streamlit>=1.66.0",
+]
+
+[project.scripts]
+internship-hunter = "internship_hunter:main"
+
+[build-system]
+requires = ["uv_build>=0.12.7,<0.13.0"]
+build-backend = "uv_build"
