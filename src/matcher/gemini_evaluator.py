@@ -314,3 +314,15 @@ Warm regards,
             "email_pitch": email_pitch.strip()
         }
 
+
+def generate_custom_cover_letter(
+    job: JobListing,
+    candidate_profile: Optional[Dict[str, Any]] = None,
+    tone: str = "professional",
+    settings: Optional[AppSettings] = None
+) -> Dict[str, str]:
+    """Top-level convenience function to generate a tailored cover letter and email pitch."""
+    evaluator = GeminiEvaluator(settings=settings)
+    return evaluator.generate_custom_cover_letter(job, candidate_profile=candidate_profile, tone=tone)
+
+
