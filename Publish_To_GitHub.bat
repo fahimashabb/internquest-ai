@@ -13,20 +13,25 @@ if not exist %GIT_EXE% (
     set GIT_EXE=git
 )
 
-echo [1/3] Checking Git Status...
+echo [1/3] Checking & Staging Changes...
 cd /d "E:\CV hunter Webapp"
-%GIT_EXE% status --short
+%GIT_EXE% add -A
+%GIT_EXE% diff --cached --quiet
+if %ERRORLEVEL% neq 0 (
+    echo Staging and committing latest changes...
+    %GIT_EXE% commit -m "chore: auto-sync updates from local workspace"
+) else (
+    echo No new local changes to commit.
+)
 
 echo.
-echo [2/3] Configuring Remote Origin for https://github.com/fahimashabb/internquest-ai.git ...
+echo [2/3] Verifying Remote Origin (https://github.com/fahimashabb/internquest-ai.git)...
 %GIT_EXE% remote remove origin >nul 2>&1
 %GIT_EXE% remote add origin https://github.com/fahimashabb/internquest-ai.git
 %GIT_EXE% branch -M main
 
 echo.
 echo [3/3] Pushing to GitHub (origin main)...
-echo If a GitHub login window appears, please authorize your account.
-echo.
 
 %GIT_EXE% push -u origin main
 
