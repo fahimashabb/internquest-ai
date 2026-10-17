@@ -8,20 +8,26 @@ Users can **register for an account**, **sign in**, **upload their CV**, and hav
 
 ## 🌟 Key Platform Features
 
-1. **🔐 Multi-User Authentication & Profile Storage**:
-   - Built-in **Sign In** and **Register Free** system with salted password encryption and session persistence in SQLite.
+1. **🔐 1-Click Social & Email Authentication**:
+   - Built-in **1-Click Continue with Google** and **Continue with Facebook** social authentication, as well as traditional email registration.
+   - **Optional Education**: University/College and Degree fields are completely optional.
    - Automatically stores each user's uploaded CV, extracted skills, contact info, and academic track (**Science & Engineering**, **Commerce & Business**, **Arts, Media & Law**, **Health & Pharma**, or **General Studies**).
 
-2. **📄 Dynamic CV Analysis & Alignment**:
-   - Drag-and-drop any PDF resume to extract key competencies and educational background in real time.
-   - No hardcoded profiles—every analysis is tailored 100% to the specific applicant's resume.
+2. **🚀 Frictionless Guest Mode (No Signup Required)**:
+   - Anyone can drop or upload their CV immediately without registering.
+   - Real-time scoring, vacancy discovery, and tailored cold outreach pitches are unlocked instantly for guests.
 
-3. **⚡ Universal Multi-Discipline Search & Matching**:
+3. **⏰ 10:00 AM Daily Morning Auto-Refresh & Email Digest**:
+   - Registered users have their profiles automatically refreshed every morning at 10:00 AM.
+   - The engine discovers newly opened listings, scores them against the user's CV, and dispatches a personalized morning digest with direct application links.
+   - Includes an instant **"Test 10 AM Digest"** control in the dashboard for real-time testing.
+
+4. **⚡ Universal Multi-Discipline Search & Matching**:
    - Searches across 100+ Bangladesh Banks, MNCs, NGOs, FinTechs, Software Houses, Creative Agencies, and Global Remote boards.
    - Intelligent keyword and level filtering prioritizes student internships and traineeships while filtering out senior executive roles requiring 5+ years of experience.
    - Match scores (0–100%) and instant rationales explain why an opportunity aligns with the applicant.
 
-4. **✉️ 1-Click Tailored Cold Outreach Generator**:
+5. **✉️ 1-Click Tailored Cold Outreach Generator**:
    - Drafts a compelling email subject line and a personalized 3-paragraph cold email / cover letter highlighting the applicant's real coursework, projects, and skills.
    - Includes 1-click **"📋 Copy Pitch"** button and official portal links.
 

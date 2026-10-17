@@ -24,6 +24,9 @@ daily_runs.log
 # Private personal files
 data/*Resume*.pdf
 data/private/
+data/*.db
+data/*.sqlite3
+*.db
 
 # OS artifacts
 .DS_Store
