@@ -189,3 +189,128 @@ Warm regards,
 """
         return job
 
+    def generate_custom_cover_letter(
+        self,
+        job: JobListing,
+        candidate_profile: Optional[Dict[str, Any]] = None,
+        tone: str = "professional"
+    ) -> Dict[str, str]:
+        """Generate a bespoke, formal 4-paragraph cover letter and email pitch tailored to this opportunity."""
+        prof = candidate_profile or self.profile.get_structured_profile()
+        c_name = prof.get("name", "Candidate")
+        c_degree = prof.get("degree", "Undergraduate Student")
+        c_inst = prof.get("institution", "University")
+        c_email = prof.get("email", "")
+        c_phone = prof.get("phone", "")
+        c_li = prof.get("linkedin", "")
+        c_skills = prof.get("skills", [])
+        skills_str = ", ".join(c_skills[:5]) or "critical thinking, analytics, and cross-functional communication"
+
+        # Try with Gemini if available
+        if self._client:
+            try:
+                from google.genai import types
+                cover_prompt = f"""
+Write a high-caliber, tailored formal cover letter for an internship applicant.
+
+Applicant Information:
+Name: {c_name}
+Degree & Major: {c_degree}
+Institution: {c_inst}
+Contact: {c_email} | {c_phone}
+Skills: {skills_str}
+Strengths: {', '.join(prof.get('strengths', []))}
+
+Target Company & Position:
+Role: {job.title}
+Company: {job.company}
+Location: {job.location}
+Job Details: {job.description[:1500]}
+
+Format Requirements:
+1. Include formal applicant header and date.
+2. Address to 'Hiring Team / Internship Selection Committee at {job.company}'.
+3. Four clear, compelling paragraphs:
+   - Paragraph 1: Enthusiastic opening with specific mention of {job.company} and the role.
+   - Paragraph 2: Core competencies, projects, and academic coursework that prepare the candidate for this exact role.
+   - Paragraph 3: Passion for {job.company}'s market impact and why the candidate is eager to learn and contribute.
+   - Paragraph 4: Confident sign-off requesting an interview.
+4. Professional sign-off.
+
+Return ONLY a JSON object:
+{{
+  "subject": "Application for {job.title} - {c_name}",
+  "formal_letter": "<Full formatted text of the letter>",
+  "email_pitch": "<Concise 3-paragraph executive cold email pitch>"
+}}
+"""
+                resp = self._client.models.generate_content(
+                    model="gemini-3.8-flash",
+                    contents=cover_prompt,
+                    config=types.GenerateContentConfig(response_mime_type="application/json")
+                )
+                res_data = json.loads(resp.text.strip())
+                return {
+                    "subject": res_data.get("subject", f"Application for {job.title} - {c_name}"),
+                    "formal_letter": res_data.get("formal_letter", ""),
+                    "email_pitch": res_data.get("email_pitch", "")
+                }
+            except Exception as e:
+                print(f"[CoverLetter Generator] Gemini generation fallback: {e}")
+
+        # Deterministic High-Quality Heuristic Cover Letter
+        from datetime import date
+        today_str = date.today().strftime("%B %d, %Y")
+        
+        formal_letter = f"""{c_name}
+{c_email} | {c_phone}
+{prof.get('location', 'Dhaka, Bangladesh')}
+{c_li}
+
+{today_str}
+
+To:
+The Internship Selection Committee / Hiring Team
+{job.company}
+{job.location}
+
+Subject: Formal Application for {job.title}
+
+Dear Hiring Team at {job.company},
+
+I am writing to express my strong enthusiasm and formal application for the {job.title} opportunity at {job.company}. As a dedicated student pursuing {c_degree} at {c_inst}, I have actively followed {job.company}'s impactful work in the sector. I am keen to channel my academic rigor and practical skillset into supporting your team's ongoing operational and strategic initiatives.
+
+Throughout my academic coursework and hands-on projects, I have developed solid foundational competencies in {skills_str}. I take pride in my analytical discipline, capacity for fast learning, and ability to translate project briefs into actionable outcomes. Whether collaborating cross-functionally or executing self-directed assignments, I ensure accuracy, proactive communication, and high attention to detail.
+
+What particularly draws me to {job.company} is your commitment to excellence, innovation, and cultivating emerging talent. I am eager to contribute fresh perspectives, absorb practical industry mentorship, and deliver tangible value across day-to-day deliverables.
+
+Thank you very much for reviewing my credentials. My complete resume is attached for your consideration, and I welcome the opportunity to discuss my candidacy during an interview at your earliest convenience.
+
+Sincerely,
+
+{c_name}
+{c_email} | {c_phone}
+"""
+
+        email_pitch = f"""Subject: Application for {job.title} - {c_name}
+
+Dear Hiring Team at {job.company},
+
+I hope this email finds you well. I am reaching out to formally apply for the {job.title} position at {job.company}. As a {c_degree} candidate at {c_inst}, I have built strong hands-on capabilities in {skills_str}.
+
+I am passionate about {job.company}'s work and confident that my strong work ethic, problem-solving mindset, and dedication will make me a productive addition to your team.
+
+My resume is attached for your review. I would welcome a brief conversation to discuss how I can contribute to {job.company} this term.
+
+Warm regards,
+{c_name}
+{c_email} | {c_phone}
+{c_li}
+"""
+
+        return {
+            "subject": f"Application for {job.title} - {c_name}",
+            "formal_letter": formal_letter.strip(),
+            "email_pitch": email_pitch.strip()
+        }
+

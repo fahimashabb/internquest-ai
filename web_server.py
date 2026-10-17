@@ -58,6 +58,24 @@ class DashboardHandler(BaseHTTPRequestHandler):
             self.wfile.write((WEB_DIR / "index.html").read_bytes())
             return
 
+        if path == "/robots.txt":
+            r_path = WEB_DIR / "robots.txt"
+            if r_path.exists():
+                self.send_response(200)
+                self.send_header("Content-type", "text/plain; charset=utf-8")
+                self.end_headers()
+                self.wfile.write(r_path.read_bytes())
+                return
+
+        if path == "/sitemap.xml":
+            s_path = WEB_DIR / "sitemap.xml"
+            if s_path.exists():
+                self.send_response(200)
+                self.send_header("Content-type", "application/xml; charset=utf-8")
+                self.end_headers()
+                self.wfile.write(s_path.read_bytes())
+                return
+
         if path == "/api/auth/me":
             auth_header = self.headers.get("Authorization", "")
             token = ""
@@ -357,6 +375,49 @@ class DashboardHandler(BaseHTTPRequestHandler):
                 "pitch": evaluated.tailored_cover_letter,
                 "contact_email": evaluated.contact_email or rj.get("contact_email") or ""
             })
+            return
+
+        if path == "/api/generate-cover-letter":
+            job_id = payload.get("job_id")
+            job_dict = payload.get("job")
+            profile_data = payload.get("candidate_profile") or payload.get("profile", {})
+            tone = payload.get("tone", "professional")
+            profile = CandidateProfile.from_dict(profile_data, settings=self.bot.settings)
+            evaluator = GeminiEvaluator(settings=self.bot.settings, profile=profile)
+
+            job_obj = None
+            if job_dict and isinstance(job_dict, dict):
+                job_obj = JobListing(
+                    title=job_dict.get("title", "Internship"),
+                    company=job_dict.get("company", "Company"),
+                    location=job_dict.get("location") or "Bangladesh",
+                    url=job_dict.get("url") or "#",
+                    description=job_dict.get("description") or "",
+                    source=job_dict.get("source") or "web",
+                    contact_email=job_dict.get("contact_email")
+                )
+            elif job_id:
+                with self.bot.tracker._get_connection() as conn:
+                    cur = conn.execute("SELECT * FROM jobs WHERE id = ?", (job_id,))
+                    row = cur.fetchone()
+                    if row:
+                        rj = dict(row)
+                        job_obj = JobListing(
+                            title=rj["title"],
+                            company=rj["company"],
+                            location=rj.get("location") or "Bangladesh",
+                            url=rj["url"],
+                            description=rj.get("description") or "",
+                            source=rj.get("source") or "web",
+                            contact_email=rj.get("contact_email")
+                        )
+
+            if not job_obj:
+                self._send_json({"success": False, "message": "Job not found or invalid job details."})
+                return
+
+            result = evaluator.generate_custom_cover_letter(job_obj, candidate_profile=profile_data, tone=tone)
+            self._send_json({"success": True, **result})
             return
 
         if path == "/api/scan":

@@ -89,10 +89,41 @@ class ApplicationTracker:
         except Exception:
             pass
 
-    def get_all_jobs(self) -> List[Dict[str, Any]]:
+    def get_all_jobs(self, include_expired: bool = False, scope: Optional[str] = None) -> List[Dict[str, Any]]:
+        """Retrieve stored jobs, optionally filtering by location scope and excluding expired."""
+        query = "SELECT * FROM jobs"
+        clauses = []
+        params = []
+        if not include_expired:
+            clauses.append("status != 'EXPIRED'")
+        if scope and scope.lower() in ("bangladesh", "global"):
+            clauses.append("location_scope = ?")
+            params.append(scope.lower())
+        if clauses:
+            query += " WHERE " + " AND ".join(clauses)
+        query += " ORDER BY found_at DESC"
         with self._get_connection() as conn:
-            cur = conn.execute("SELECT * FROM jobs ORDER BY found_at DESC")
+            cur = conn.execute(query, params)
             return [dict(r) for r in cur.fetchall()]
+
+    def expire_closed_jobs(self) -> int:
+        """Mark jobs as EXPIRED if past explicit application deadline or older than 90 days."""
+        today_str = date.today().isoformat()
+        with self._get_connection() as conn:
+            cur = conn.execute("""
+                UPDATE jobs 
+                SET status = 'EXPIRED'
+                WHERE status != 'EXPIRED' 
+                  AND (
+                    (deadline IS NOT NULL AND deadline != '' AND deadline < ?)
+                    OR (julianday('now') - julianday(found_at) > 90)
+                  )
+            """, (today_str,))
+            expired_count = cur.rowcount
+            conn.commit()
+        if expired_count > 0:
+            self.log_activity("JOBS_EXPIRED", f"Archived {expired_count} closed internship positions past deadline.")
+        return expired_count
 
     def has_job(self, job_id: str) -> bool:
         with self._get_connection() as conn:
@@ -106,21 +137,25 @@ class ApplicationTracker:
                     id, title, company, location, url, source, contact_email,
                     is_internship, match_score, match_rationale,
                     tailored_email_subject, tailored_cover_letter,
-                    application_channel, status, notes
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    application_channel, status, deadline, location_scope, discipline, notes
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ON CONFLICT(id) DO UPDATE SET
                     match_score = excluded.match_score,
                     match_rationale = excluded.match_rationale,
                     tailored_email_subject = excluded.tailored_email_subject,
                     tailored_cover_letter = excluded.tailored_cover_letter,
                     status = CASE WHEN jobs.status = 'FOUND' THEN excluded.status ELSE jobs.status END,
+                    deadline = COALESCE(excluded.deadline, jobs.deadline),
+                    location_scope = COALESCE(excluded.location_scope, jobs.location_scope),
                     contact_email = COALESCE(excluded.contact_email, jobs.contact_email),
                     notes = COALESCE(excluded.notes, jobs.notes)
             """, (
                 job.id, job.title, job.company, job.location, job.url, job.source,
                 job.contact_email, job.is_internship, job.match_score, job.match_rationale,
                 job.tailored_email_subject, job.tailored_cover_letter,
-                job.application_channel, status, notes
+                job.application_channel, status, getattr(job, "deadline", None),
+                getattr(job, "location_scope", "bangladesh"), getattr(job, "discipline", "General"),
+                notes
             ))
             conn.commit()
 

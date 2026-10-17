@@ -3,7 +3,43 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>InternQuest AI - Universal Internship Hunter & Matcher</title>
+  <title>Internship Hunter AI - Universal Internship Hunter & Precision Matcher</title>
+  <meta name="description" content="Internship Hunter AI automatically discovers and tailors internship positions in Bangladesh and globally across Science, Tech, Business, Commerce, Arts, Media, and MNCs with deep CV scanning and customized cover letters.">
+  <meta name="keywords" content="internship hunter ai, internship bangladesh, global internships, remote internships, student internships, cv scanner, cover letter generator, dhaka internships, summer intern, tech intern">
+  <meta name="author" content="Internship Hunter AI">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://fahimashabb.github.io/internquest-ai/">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://fahimashabb.github.io/internquest-ai/">
+  <meta property="og:title" content="Internship Hunter AI - Precision Internship Discovery & CV Matcher">
+  <meta property="og:description" content="Discover internships across Bangladesh and globally. Upload your CV (under 10 MB) to get tailored match scores and instant custom cover letters.">
+  <meta property="og:site_name" content="Internship Hunter AI">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Internship Hunter AI">
+  <meta name="twitter:description" content="Universal internship hunter for Science, Commerce, Arts, and Tech in Bangladesh & Globally.">
+
+  <!-- JSON-LD Structured Data for High Search Engine Visibility -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Internship Hunter AI",
+    "url": "https://fahimashabb.github.io/internquest-ai/",
+    "description": "Universal AI-powered internship hunter and CV precision matcher for Bangladesh and global remote opportunities.",
+    "applicationCategory": "BusinessApplication",
+    "operatingSystem": "All",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    }
+  }
+  </script>
+
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
@@ -44,6 +80,9 @@
     html.dark .channel-tab { background: #0f172a; color: #94a3b8; border-color: #1e293b; }
     html.dark .channel-tab:hover { background: #1e293b; color: #f1f5f9; }
     html.dark .channel-tab.active { background: #4f46e5; color: #fff; }
+    html.dark .scope-tab { background: #0f172a; color: #94a3b8; border-color: #1e293b; }
+    html.dark .scope-tab:hover { background: #1e293b; color: #f1f5f9; }
+    html.dark .scope-tab.active { background: #0284c7 !important; color: #ffffff !important; border-color: #0284c7 !important; }
     html.dark .table { color: #f1f5f9; }
     html.dark .table thead th { border-bottom-color: #334155; color: #cbd5e1; }
     html.dark .table tbody td { border-bottom-color: #1e293b; color: #f1f5f9; }
@@ -307,6 +346,29 @@
       border-color: #4f46e5;
     }
 
+    /* Scope tabs */
+    .scope-tab {
+      border-radius: 8px;
+      font-size: 0.84rem;
+      font-weight: 600;
+      padding: 6px 14px;
+      background: #ffffff;
+      color: #475569;
+      border: 1px solid #cbd5e1;
+      transition: all 0.2s ease;
+    }
+    .scope-tab:hover {
+      background: #f8fafc;
+      color: #1e293b;
+      border-color: #94a3b8;
+    }
+    .scope-tab.active {
+      background: #0284c7 !important;
+      color: #ffffff !important;
+      border-color: #0284c7 !important;
+      box-shadow: 0 2px 8px rgba(2, 132, 199, 0.25);
+    }
+
     .email-preview {
       background: #f8fafc;
       border: 1px solid #cbd5e1;
@@ -350,7 +412,7 @@
           </linearGradient>
         </defs>
       </svg>
-      <span>InternQuest <span class="badge bg-primary fs-6 fw-semibold px-2 py-1 ms-1">AI</span></span>
+      <span>Internship Hunter <span class="badge bg-primary fs-6 fw-semibold px-2 py-1 ms-1">AI</span></span>
     </a>
 
     <div class="d-flex align-items-center gap-2 ms-auto">
@@ -439,9 +501,9 @@
           <div class="upload-icon-wrapper">
             <i class="fa-solid fa-cloud-arrow-up"></i>
           </div>
-          <span class="fw-bold d-block fs-5 text-dark mb-1" id="uploadLabel">Drop your CV (PDF) here</span>
-          <span class="text-secondary small d-block mb-2">Upload as guest or member to auto-match 85+ opportunities</span>
-          <span class="badge bg-primary px-3 py-2 fw-semibold"><i class="fa-regular fa-file-pdf me-1"></i> Browse Computer (PDF)</span>
+          <span class="fw-bold d-block fs-5 text-dark mb-1" id="uploadLabel">Drop your CV (PDF &lt; 10 MB) here</span>
+          <span class="text-secondary small d-block mb-2">Universal precision scanner for Science, Commerce, Arts &amp; Tech (&le; 10 MB)</span>
+          <span class="badge bg-primary px-3 py-2 fw-semibold"><i class="fa-regular fa-file-pdf me-1"></i> Browse Computer (PDF &lt; 10 MB)</span>
         </div>
       </div>
     </div>
@@ -498,12 +560,20 @@
     </div>
   </div>
 
-  <!-- Section Header -->
+  <!-- Section Header with Location Scope & Channel Filters -->
   <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
-    <h5 class="fw-bold mb-0 text-dark">
-      <i class="fa-solid fa-briefcase text-primary me-2"></i>Internship Opportunities
-      <span id="countLabel" class="badge bg-primary text-white fs-6 ms-2 px-3 py-1 fw-bold"></span>
-    </h5>
+    <div class="d-flex align-items-center flex-wrap gap-2">
+      <h5 class="fw-bold mb-0 text-dark">
+        <i class="fa-solid fa-briefcase text-primary me-2"></i>Internship Opportunities
+        <span id="countLabel" class="badge bg-primary text-white fs-6 ms-2 px-3 py-1 fw-bold"></span>
+      </h5>
+      <!-- Location Scope Filter (All / Bangladesh / Global) -->
+      <div class="d-flex gap-1 ms-md-2" id="scopeFilters">
+        <button class="btn btn-sm scope-tab active" id="scope-all" onclick="setScopeFilter('all', this)"><i class="fa-solid fa-earth-americas me-1"></i>All</button>
+        <button class="btn btn-sm scope-tab" id="scope-bangladesh" onclick="setScopeFilter('bangladesh', this)">🇧🇩 Bangladesh</button>
+        <button class="btn btn-sm scope-tab" id="scope-global" onclick="setScopeFilter('global', this)">🌐 Global Remote</button>
+      </div>
+    </div>
     <div class="d-flex gap-2" id="channelFilters">
       <button class="btn channel-tab active" id="ch-all" onclick="setChannelFilter('all')">All Channels</button>
       <button class="btn channel-tab" id="ch-email" onclick="setChannelFilter('email')"><i class="fa-regular fa-envelope me-1 text-primary"></i>Email Direct</button>
@@ -536,7 +606,7 @@
     <div class="modal-content border-0 shadow">
       <div class="modal-header text-white" style="background: #0f172a;">
         <h5 class="modal-title fw-bold" id="authModalTitle">
-          <i class="fa-solid fa-user-circle me-2 text-primary"></i>InternQuest AI Account
+          <i class="fa-solid fa-user-circle me-2 text-primary"></i>Internship Hunter AI Account
         </h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
@@ -714,12 +784,82 @@
   </div>
 </div>
 
+<!-- Bespoke Tailored Cover Letter Modal -->
+<div class="modal fade" id="coverLetterModal" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-header text-white" style="background: linear-gradient(135deg, #064e3b, #047857);">
+        <div>
+          <h5 class="modal-title fw-bold mb-1">
+            <i class="fa-solid fa-file-signature me-2 text-warning"></i>Tailored Cover Letter Generator
+          </h5>
+          <small class="opacity-75">Bespoke 4-paragraph formal application &amp; cold pitch aligned to your CV</small>
+        </div>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-4">
+        <!-- Target Job Overview -->
+        <div class="d-flex flex-wrap align-items-center justify-content-between p-3 rounded-3 mb-3" style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25);">
+          <div>
+            <span class="badge bg-success me-2">Target Opportunity</span>
+            <strong id="clJobTitle" class="fs-6">Internship Position</strong>
+            <span class="text-muted mx-2">at</span>
+            <strong id="clCompany" class="text-primary">Company</strong>
+          </div>
+          <div id="clCandidateBadge" class="small text-muted mt-1 mt-md-0">
+            <i class="fa-solid fa-user-check text-success me-1"></i>Tailored to Active Candidate CV
+          </div>
+        </div>
+
+        <div class="row g-3">
+          <div class="col-lg-8">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <label class="form-label fw-bold small text-dark mb-0">FORMAL 4-PARAGRAPH COVER LETTER (EDITABLE)</label>
+              <span class="text-muted small">You can edit the text directly before copying or downloading</span>
+            </div>
+            <textarea id="clBody" class="form-control font-monospace p-3" rows="14" style="font-size: 0.92rem; line-height: 1.65;"></textarea>
+          </div>
+          <div class="col-lg-4">
+            <div class="mb-3">
+              <label class="form-label fw-bold small text-dark">COLD EMAIL / LINKEDIN INMAIL PITCH</label>
+              <textarea id="clColdPitch" class="form-control email-preview p-3" rows="6" style="font-size: 0.88rem;"></textarea>
+              <button class="btn btn-sm btn-outline-primary w-100 mt-2" onclick="copyModalField('clColdPitch')">
+                <i class="fa-regular fa-copy me-1"></i> Copy Cold Pitch
+              </button>
+            </div>
+            <div class="p-3 rounded-3 bg-light border">
+              <h6 class="fw-bold text-dark mb-2"><i class="fa-solid fa-lightbulb text-warning me-1"></i> Application Tips</h6>
+              <ul class="small text-muted ps-3 mb-0">
+                <li>Personalize the hiring manager name if known.</li>
+                <li>Highlight 2-3 specific coursework or projects from your CV.</li>
+                <li>Attach your CV (PDF &le; 10 MB) when sending via email.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-flex flex-wrap justify-content-between align-items-center mt-4 pt-3 border-top gap-2">
+          <div class="d-flex gap-2">
+            <button class="btn btn-success fw-bold px-4 py-2" onclick="copyCoverLetterText()">
+              <i class="fa-solid fa-copy me-1"></i> Copy Cover Letter
+            </button>
+            <button class="btn btn-outline-secondary fw-semibold px-3 py-2" onclick="downloadCoverLetterTxt()">
+              <i class="fa-solid fa-download me-1"></i> Download as .txt
+            </button>
+          </div>
+          <button type="button" class="btn btn-light border px-4" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- WordPress-Style Admin Control Hub Modal -->
 <div class="modal fade" id="adminModal" tabindex="-1">
   <div class="modal-dialog modal-xl modal-dialog-scrollable">
     <div class="modal-content border-0 shadow-lg">
       <div class="modal-header text-white" style="background: linear-gradient(135deg, #1e1b4b, #312e81);">
-        <h5 class="modal-title fw-bold"><i class="fa-solid fa-crown text-warning me-2"></i>InternQuest Control Hub (WordPress-Style Admin)</h5>
+        <h5 class="modal-title fw-bold"><i class="fa-solid fa-crown text-warning me-2"></i>Internship Hunter AI Control Hub (Admin)</h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body p-0">
@@ -885,7 +1025,7 @@
               <form onsubmit="handleAdminSaveSettings(event)">
                 <div class="mb-3">
                   <label class="form-label small fw-bold">Platform Brand Title</label>
-                  <input type="text" id="adminSettingTitle" class="form-control" value="InternQuest AI">
+                  <input type="text" id="adminSettingTitle" class="form-control" value="Internship Hunter AI">
                 </div>
                 <div class="mb-3">
                   <label class="form-label small fw-bold">Public Announcement Banner</label>
@@ -951,8 +1091,11 @@ let currentUser = null;
 let guestProfile = null;
 let currentSector = 'All';
 let currentChannel = 'all';
+let currentScope = 'all';
 let authModal = null;
 let pitchModal = null;
+let coverLetterModal = null;
+let activeCoverLetterJob = null;
 
 const dropZone = document.getElementById('dropZone');
 ['dragenter', 'dragover'].forEach(name => {
@@ -1248,6 +1391,10 @@ async function handleRegister(e) {
 
   if (fileInput.files && fileInput.files[0]) {
     const file = fileInput.files[0];
+    if (file.size > 10 * 1024 * 1024) {
+      showAlert('⚠️ CV must be under 10 MB. Please choose a PDF file smaller than 10 MB.', 'danger');
+      return;
+    }
     filename = file.name;
     file_base64 = await readFileAsBase64(file);
   }
@@ -1313,6 +1460,10 @@ function readFileAsBase64(file) {
 async function handleCvFile(file) {
   if (!file || !file.name.toLowerCase().endsWith('.pdf')) {
     showAlert('Please upload a valid PDF file.', 'danger');
+    return;
+  }
+  if (file.size > 10 * 1024 * 1024) {
+    showAlert('⚠️ CV exceeds maximum 10 MB limit. Please upload a PDF under 10 MB.', 'danger');
     return;
   }
   document.getElementById('uploadLabel').innerText = `Analyzing: ${file.name}...`;
@@ -1458,6 +1609,13 @@ function setSector(sec, btn) {
   filterJobs();
 }
 
+function setScopeFilter(scope, btn) {
+  currentScope = scope;
+  document.querySelectorAll('#scopeFilters button').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  filterJobs();
+}
+
 function setChannelFilter(ch) {
   currentChannel = ch;
   document.querySelectorAll('#channelFilters button').forEach(b => b.classList.remove('active'));
@@ -1487,6 +1645,15 @@ function filterJobs() {
       matchesSector = /remote/.test((job.location || '').toLowerCase()) || job.source === 'jobicy' || job.source === 'remotive';
     }
 
+    // Location Scope filter (All, Bangladesh, Global)
+    let matchesScope = true;
+    const isGlobal = (job.location_scope === 'global') || /remote|worldwide|global|apac|usa|canada|europe|uk|singapore/i.test((job.location || '') + ' ' + (job.source || ''));
+    if (currentScope === 'bangladesh') {
+      matchesScope = !isGlobal;
+    } else if (currentScope === 'global') {
+      matchesScope = isGlobal;
+    }
+
     // Channel filter
     let matchesChannel = true;
     const isEmail = job.application_channel === 'email' && job.contact_email;
@@ -1499,7 +1666,7 @@ function filterJobs() {
       matchesQuery = textFull.includes(query) || (job.location || '').toLowerCase().includes(query);
     }
 
-    return matchesSector && matchesChannel && matchesQuery;
+    return matchesSector && matchesScope && matchesChannel && matchesQuery;
   });
 
   renderJobs();
@@ -1562,6 +1729,10 @@ function renderJobs() {
 
           <div class="d-flex flex-wrap gap-2 mb-3">
             ${categoryTag}
+            ${(job.location_scope === 'global' || /remote|worldwide|global|apac|usa|canada|europe|uk|singapore/i.test((job.location || '') + ' ' + (job.source || '')))
+              ? `<span class="badge" style="background: rgba(6, 182, 212, 0.15); color: #0891b2; border: 1px solid rgba(6, 182, 212, 0.3); font-weight: 600;"><i class="fa-solid fa-earth-americas me-1"></i>Global Remote</span>`
+              : `<span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #059669; border: 1px solid rgba(16, 185, 129, 0.3); font-weight: 600;">🇧🇩 Bangladesh</span>`}
+            ${job.deadline ? `<span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1"><i class="fa-solid fa-hourglass-half me-1"></i>Deadline: ${job.deadline}</span>` : ''}
             ${channelTag}
           </div>
 
@@ -1571,10 +1742,15 @@ function renderJobs() {
             </div>` : ''}
         </div>
 
-        <div class="d-flex gap-2 justify-content-between pt-3 border-top mt-2">
-          <button class="btn btn-outline-primary btn-sm btn-act px-3" onclick="openPitchModal('${job.id}')">
-            <i class="fa-solid fa-envelope-open-text me-1"></i> Tailored Outreach Pitch
-          </button>
+        <div class="d-flex flex-wrap gap-2 justify-content-between pt-3 border-top mt-2">
+          <div class="d-flex flex-wrap gap-2">
+            <button class="btn btn-outline-primary btn-sm btn-act px-2" onclick="openPitchModal('${job.id}')" title="Quick outreach email draft">
+              <i class="fa-solid fa-envelope-open-text me-1"></i> Quick Pitch
+            </button>
+            <button class="btn btn-outline-success btn-sm btn-act px-2 fw-semibold" onclick="openCoverLetterModal('${job.id}')" title="Full tailored 4-paragraph formal cover letter">
+              <i class="fa-solid fa-file-signature me-1"></i> Tailored Cover Letter
+            </button>
+          </div>
           <a href="${job.url}" target="_blank" class="btn btn-primary btn-sm btn-act px-3">
             <i class="fa-solid fa-arrow-up-right-from-square me-1"></i> Apply Link
           </a>
@@ -1618,6 +1794,67 @@ function copyModalField(fieldId) {
   el.select();
   navigator.clipboard.writeText(el.value);
   showAlert('📋 Copied pitch to clipboard!', 'success');
+}
+
+async function openCoverLetterModal(jobId) {
+  const job = allJobs.find(j => String(j.id) === String(jobId));
+  if (!job) return;
+
+  activeCoverLetterJob = job;
+  if (!coverLetterModal) coverLetterModal = new bootstrap.Modal(document.getElementById('coverLetterModal'));
+
+  document.getElementById('clJobTitle').innerText = job.title;
+  document.getElementById('clCompany').innerText = job.company;
+  document.getElementById('clBody').value = '✍️ Drafting tailored formal 4-paragraph cover letter using your CV credentials... Please wait a moment...';
+  document.getElementById('clColdPitch').value = 'Generating cold outreach pitch...';
+
+  coverLetterModal.show();
+
+  const activeProfile = currentUser || guestProfile || {};
+  try {
+    const res = await fetch('/api/generate-cover-letter', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        job: job,
+        candidate_profile: activeProfile
+      })
+    });
+    const d = await res.json();
+    if (d.success) {
+      document.getElementById('clBody').value = d.formal_letter || d.cover_letter || '';
+      document.getElementById('clColdPitch').value = d.email_pitch || d.cold_email_pitch || '';
+    } else {
+      document.getElementById('clBody').value = `Error generating cover letter: ${d.message}`;
+    }
+  } catch(e) {
+    document.getElementById('clBody').value = `Network error drafting cover letter: ${e}`;
+  }
+}
+
+function copyCoverLetterText() {
+  const el = document.getElementById('clBody');
+  el.select();
+  navigator.clipboard.writeText(el.value);
+  showAlert('📋 Tailored Cover Letter copied to clipboard!', 'success');
+}
+
+function downloadCoverLetterTxt() {
+  const text = document.getElementById('clBody').value;
+  const company = (activeCoverLetterJob && activeCoverLetterJob.company) ? activeCoverLetterJob.company.replace(/[^a-zA-Z0-9]/g, '_') : 'Company';
+  const role = (activeCoverLetterJob && activeCoverLetterJob.title) ? activeCoverLetterJob.title.replace(/[^a-zA-Z0-9]/g, '_') : 'Internship';
+  const filename = `Cover_Letter_${company}_${role}.txt`;
+
+  const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showAlert(`💾 Downloaded ${filename}!`, 'success');
 }
 
 async function scanJobs() {
@@ -1887,7 +2124,7 @@ async function loadAdminSettings() {
   try {
     const res = await fetch('/api/settings');
     const d = await res.json();
-    document.getElementById('adminSettingTitle').value = d.site_title || 'InternQuest AI';
+    document.getElementById('adminSettingTitle').value = d.site_title || 'Internship Hunter AI';
     document.getElementById('adminSettingAnnouncement').value = d.announcement || '';
     document.getElementById('adminSettingShowAnnouncement').checked = (d.show_announcement === 'true');
     document.getElementById('adminSettingMinScore').value = d.min_match_score || 55;

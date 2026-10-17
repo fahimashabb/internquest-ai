@@ -1,4 +1,4 @@
-﻿"""Base models and abstract scraper for internship hunting."""
+"""Base models and abstract scraper for internship hunting."""
 from abc import ABC, abstractmethod
 from typing import List, Optional
 import hashlib
@@ -22,6 +22,9 @@ class JobListing(BaseModel):
     tailored_email_subject: Optional[str] = None
     tailored_cover_letter: Optional[str] = None
     application_channel: str = "web"  # "email" or "web"
+    deadline: Optional[str] = None
+    location_scope: str = "bangladesh"  # "bangladesh" or "global"
+    discipline: str = "General"
     created_at: str = Field(default_factory=lambda: datetime.now().isoformat())
 
     def model_post_init(self, __context):
@@ -29,6 +32,12 @@ class JobListing(BaseModel):
             # Generate deterministic hash from title, company, and url
             raw = f"{self.company.lower()}:{self.title.lower()}:{self.url.strip()}"
             self.id = hashlib.sha256(raw.encode("utf-8")).hexdigest()[:16]
+
+        loc_low = self.location.lower()
+        if any(g in loc_low for g in ["remote", "worldwide", "global", "apac", "usa", "canada", "europe", "uk", "singapore", "india"]):
+            self.location_scope = "global"
+        else:
+            self.location_scope = "bangladesh"
 
 
 class BaseScraper(ABC):

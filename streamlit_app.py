@@ -1,10 +1,11 @@
 """
-🎯 InternQuest AI - Universal Internship Hunter & Matcher
+🎯 Internship Hunter AI - Universal Internship Hunter & Precision Matcher
 Cloud Web Application for Science, Commerce, Arts, Engineering & All Majors.
 Includes:
 - Dark & Light Theme Switcher
 - WordPress-Style Admin Control Hub (Exclusively for Platform Admin)
 - Candidate CV Matcher & Multi-Discipline Search
+- Bespoke 4-Paragraph Tailored Cover Letter Generator
 """
 
 import os
@@ -22,14 +23,14 @@ if str(BASE_DIR) not in sys.path:
     sys.path.insert(0, str(BASE_DIR))
 
 from src.profile import CandidateProfile, extract_text_from_pdf_bytes, parse_resume_content
-from src.matcher.gemini_evaluator import GeminiEvaluator
+from src.matcher.gemini_evaluator import GeminiEvaluator, generate_custom_cover_letter
 from src.scrapers.base import JobListing
 from src.config import load_settings
 from src.auth import user_manager
 from src.tracker import ApplicationTracker
 
 st.set_page_config(
-    page_title="InternQuest AI - Universal Internship Hunter",
+    page_title="Internship Hunter AI - Universal Internship Hunter",
     page_icon="🎯",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -45,7 +46,7 @@ if "admin_unlocked" not in st.session_state:
 
 # Fetch Site Settings from DB
 site_settings = user_manager.get_site_settings()
-site_title = site_settings.get("site_title", "InternQuest AI")
+site_title = site_settings.get("site_title", "Internship Hunter AI")
 announcement = site_settings.get("announcement", "")
 show_announcement = site_settings.get("show_announcement", "true") == "true"
 default_min_score = int(site_settings.get("min_match_score", "55"))
@@ -273,7 +274,7 @@ def is_super_admin() -> bool:
 def render_admin_panel():
     st.markdown("""
     <div class="admin-banner">
-        <h2 style="margin: 0 0 6px 0;">👑 InternQuest Control Hub (WordPress-Style Admin)</h2>
+        <h2 style="margin: 0 0 6px 0;">👑 Internship Hunter AI Control Hub (WordPress-Style Admin)</h2>
         <div>Super Administrator: <strong>Fahim Ashab</strong> &nbsp;•&nbsp; Full Platform Access & Settings</div>
     </div>
     """, unsafe_allow_html=True)
@@ -581,6 +582,12 @@ def main():
             active_view = "💼 Public Internship Portal"
 
         st.markdown("### 🎯 Discipline & Sector Filters")
+        scope_choice = st.radio(
+            "Location Scope",
+            ["All Locations", "🇧🇩 Bangladesh Only", "🌐 Global Remote"],
+            index=0,
+            horizontal=True
+        )
         sector_filter = st.selectbox(
             "Target Discipline",
             [
@@ -596,7 +603,7 @@ def main():
         min_score = st.slider("Minimum Match Threshold (%)", min_value=30, max_value=95, value=default_min_score, step=5)
 
         st.divider()
-        st.caption("InternQuest AI • Developed by Fahim Ashab")
+        st.caption("Internship Hunter AI • Developed by Fahim Ashab")
 
     # If Admin selected the WordPress Admin Panel, route directly to it
     if is_super_admin() and active_view == "👑 WordPress Admin Panel":
@@ -606,14 +613,17 @@ def main():
     # ── CANDIDATE PORTAL VIEW ──
     # Step 1: Resume Upload / Active Profile
     st.markdown("### 📄 Step 1: Upload or Connect Your CV")
-    st.caption("Drop your resume in PDF format (Science, Commerce, Arts, or Tech) to unlock instant AI matching:")
-    uploaded_file = st.file_uploader("Upload PDF Resume:", type=["pdf"], label_visibility="collapsed")
+    st.caption("Drop your resume in PDF format (Science, Commerce, Arts, or Tech; Max 10 MB) to unlock instant AI matching:")
+    uploaded_file = st.file_uploader("Upload PDF Resume (< 10 MB):", type=["pdf"], label_visibility="collapsed")
 
     settings = load_settings()
     profile_data = None
     profile = None
 
     if uploaded_file is not None:
+        if uploaded_file.size > 10 * 1024 * 1024:
+            st.error("⚠️ Uploaded CV exceeds the maximum 10 MB limit. Please upload a PDF under 10 MB.")
+            st.stop()
         pdf_bytes = uploaded_file.read()
         profile = CandidateProfile.from_pdf_bytes(pdf_bytes, settings=settings)
         profile_data = profile.get_structured_profile()
@@ -627,10 +637,15 @@ def main():
         col1, col2, col3 = st.columns([1, 1, 1.2])
         with col1:
             st.success(f"👤 **Candidate**: {profile_data.get('name', 'Candidate')}")
-            st.info(f"🎓 **Degree**: {profile_data.get('degree', 'Student')}")
+            major_text = f" - {profile_data.get('major')}" if profile_data.get('major') else ""
+            st.info(f"🎓 **Degree**: {profile_data.get('degree', 'Student')}{major_text}")
+            if profile_data.get('career_archetype'):
+                st.caption(f"⚡ **Archetype**: `{profile_data.get('career_archetype')}`")
         with col2:
             st.info(f"🏛️ **Institution**: {profile_data.get('institution', 'University')}")
             st.info(f"📍 **Location**: {profile_data.get('location', 'Bangladesh')}")
+            if profile_data.get('cgpa'):
+                st.caption(f"📊 **CGPA**: {profile_data.get('cgpa')}")
         with col3:
             skills = profile_data.get("skills", [])
             st.write("**Detected Skills & Alignment**:")
@@ -638,6 +653,8 @@ def main():
                 st.write(" • " + "\n • ".join(skills[:8]))
             else:
                 st.write("Multi-disciplinary skillset")
+            if profile_data.get("strengths"):
+                st.caption("💪 Strengths: " + ", ".join(profile_data["strengths"][:3]))
     elif st.session_state.user and st.session_state.user.get("has_resume"):
         # Load from saved profile
         u = st.session_state.user
@@ -691,6 +708,13 @@ def main():
         elif "remote" in job_obj.location.lower() or job_obj.source in ("jobicy", "remotive"):
             category = "🌐 Global Remote"
 
+        # Scope filtering
+        is_global = (rj.get("location_scope") == "global") or any(k in f"{job_obj.location} {job_obj.source}".lower() for k in ["remote", "worldwide", "global", "apac", "usa", "canada", "europe", "uk", "singapore"])
+        if scope_choice == "🇧🇩 Bangladesh Only" and is_global:
+            continue
+        if scope_choice == "🌐 Global Remote" and not is_global:
+            continue
+
         if sector_filter != "All Disciplines" and category != sector_filter:
             continue
 
@@ -699,6 +723,8 @@ def main():
                 "job": job_obj,
                 "score": score,
                 "category": category,
+                "is_global": is_global,
+                "deadline": rj.get("deadline"),
                 "rationale": evaluated.match_rationale,
                 "subject": evaluated.tailored_email_subject,
                 "cover_letter": evaluated.tailored_cover_letter,
@@ -713,6 +739,8 @@ def main():
         j = item["job"]
         score = item["score"]
         badge_class = "badge-high" if score >= 80 else ("badge-med" if score >= 65 else "badge-low")
+        scope_pill = "🌐 Global Remote" if item["is_global"] else "🇧🇩 Bangladesh"
+        deadline_info = f" &nbsp;•&nbsp; ⏳ <strong>Deadline:</strong> {item['deadline']}" if item.get('deadline') else ""
 
         with st.container():
             st.markdown(f"""
@@ -721,7 +749,7 @@ def main():
                     <div>
                         <h4 style="margin: 0 0 4px 0;">{j.title}</h4>
                         <div style="font-weight: 600; margin-bottom: 6px; opacity: 0.85;">
-                            🏢 {j.company} &nbsp;•&nbsp; 📍 {j.location} &nbsp;•&nbsp; <span class="track-pill">{item['category']}</span>
+                            🏢 {j.company} &nbsp;•&nbsp; 📍 {j.location} &nbsp;•&nbsp; <span class="track-pill">{scope_pill}</span> &nbsp;•&nbsp; <span class="track-pill">{item['category']}</span>{deadline_info}
                         </div>
                     </div>
                     <div>
@@ -732,13 +760,35 @@ def main():
             </div>
             """, unsafe_allow_html=True)
 
-            colA, colB = st.columns([1, 1])
+            colA, colB = st.columns([1.1, 0.9])
             with colA:
-                with st.expander(f"✉️ View Tailored Pitch for {j.company}"):
+                with st.expander(f"✉️ Quick Pitch for {j.company}"):
                     st.text_input("Subject Line", value=item["subject"], key=f"subj_{idx}")
-                    st.text_area("Tailored Outreach Pitch", value=item["cover_letter"], height=200, key=f"pitch_{idx}")
+                    st.text_area("Tailored Outreach Pitch", value=item["cover_letter"], height=160, key=f"pitch_{idx}")
                     if item.get("contact_email"):
                         st.caption(f"📫 Official Contact Email: `{item['contact_email']}`")
+
+                with st.expander(f"✍️ Tailored Cover Letter Generator (Formal 4-Paragraph)"):
+                    cl_data = generate_custom_cover_letter(j, profile_data or {})
+                    cl_text = st.text_area(
+                        "Formal Application Cover Letter (Live Editable)",
+                        value=cl_data.get("formal_letter") or cl_data.get("cover_letter", ""),
+                        height=260,
+                        key=f"cl_body_{idx}"
+                    )
+                    st.text_area(
+                        "LinkedIn / Cold InMail Pitch",
+                        value=cl_data.get("email_pitch") or cl_data.get("cold_email_pitch", ""),
+                        height=90,
+                        key=f"cl_cold_{idx}"
+                    )
+                    st.download_button(
+                        label=f"💾 Download Cover Letter ({j.company}.txt)",
+                        data=cl_text,
+                        file_name=f"Cover_Letter_{j.company.replace(' ', '_')}.txt",
+                        mime="text/plain",
+                        key=f"dl_cl_{idx}"
+                    )
             with colB:
                 st.link_button("🔗 View & Apply on Official Portal", j.url, use_container_width=True)
 

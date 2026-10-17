@@ -35,8 +35,12 @@ class InternshipBot:
         self.web_applier = WebApplier(self.settings, self.tracker)
 
     def run_discovery_cycle(self) -> int:
-        """Find new jobs, evaluate with Gemini, and store in database."""
-        console.print("[bold cyan]🔍 Starting Daily Internship Discovery...[/bold cyan]")
+        """Find new jobs, evaluate with Gemini, and store in database while retaining past positions."""
+        console.print("[bold cyan]🔍 Starting Daily Internship Discovery (10:00 AM Engine)...[/bold cyan]")
+        expired = self.tracker.expire_closed_jobs()
+        if expired:
+            console.print(f"[yellow]Archived {expired} closed listings past deadline.[/yellow]")
+
         raw_jobs = self.aggregator.fetch_all()
         console.print(f"Aggregated [bold green]{len(raw_jobs)}[/bold green] raw opportunities across sources.")
 
