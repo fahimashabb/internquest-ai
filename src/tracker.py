@@ -52,6 +52,32 @@ class ApplicationTracker:
             """)
             conn.commit()
 
+            # Auto-seed initial opportunities if table is empty
+            try:
+                cursor = conn.execute("SELECT COUNT(*) FROM jobs")
+                if cursor.fetchone()[0] == 0:
+                    seed_file = self.db_path.parent / "seed_jobs.json"
+                    if seed_file.exists():
+                        import json
+                        with open(seed_file, "r", encoding="utf-8") as sf:
+                            seeds = json.load(sf)
+                        for s in seeds:
+                            conn.execute("""
+                                INSERT OR IGNORE INTO jobs (
+                                    id, title, company, location, url, source, contact_email,
+                                    is_internship, match_score, match_rationale, tailored_email_subject,
+                                    tailored_cover_letter, application_channel, status, found_at
+                                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                            """, (
+                                s.get("id"), s.get("title"), s.get("company"), s.get("location"),
+                                s.get("url"), s.get("source"), s.get("contact_email"),
+                                s.get("is_internship", 1), 0, "", "", "",
+                                "web", "NEW", s.get("found_at")
+                            ))
+                        conn.commit()
+            except Exception:
+                pass
+
     def log_activity(self, activity_type: str, details: str) -> None:
         try:
             with self._get_connection() as conn:

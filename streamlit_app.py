@@ -91,18 +91,10 @@ st.markdown("""
 @st.cache_data(ttl=300)
 def load_all_jobs():
     """Load cached internship opportunities from the database."""
-    db_path = BASE_DIR / "data" / "applications.db"
-    if not db_path.exists():
-        return []
-
     try:
-        conn = sqlite3.connect(str(db_path))
-        conn.row_factory = sqlite3.Row
-        cur = conn.cursor()
-        cur.execute("SELECT * FROM jobs ORDER BY found_at DESC")
-        rows = [dict(r) for r in cur.fetchall()]
-        conn.close()
-        return rows
+        from src.tracker import ApplicationTracker
+        tracker = ApplicationTracker()
+        return tracker.get_all_jobs()
     except Exception as e:
         st.error(f"Failed to load jobs database: {e}")
         return []
