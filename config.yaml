@@ -1,4 +1,4 @@
-﻿candidate:
+candidate:
   name: "Fahim Ashab"
   email: "fahimashabofficial@gmail.com"
   phone: "+880 1832-383642"
@@ -37,7 +37,7 @@ filtering:
 
 application:
   mode: "supervised" # "supervised" (requires confirmation) or "autopilot"
-  dry_run: true      # Set to false only when ready to send live emails
+  dry_run: false     # Live applications active
   daily_email_limit: 5
   email_subject_template: "Application for {role} - {candidate_name}"
   sender_name: "Fahim Ashab"

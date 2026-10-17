@@ -194,7 +194,7 @@ class DashboardHandler(BaseHTTPRequestHandler):
                 subject=job["tailored_email_subject"] or f"Application for {job['title']} - Fahim Ashab",
                 body_text=job["tailored_cover_letter"] or f"Dear Hiring Team,\nPlease find my CV attached for the {job['title']} role.\n\nBest regards,\nFahim Ashab"
             )
-            if res.get("success") and not self.bot.settings.is_dry_run:
+            if res.get("success"):
                 self.bot.tracker.mark_applied(job["id"], channel="email")
             self._send_json(res)
             return
@@ -205,7 +205,7 @@ class DashboardHandler(BaseHTTPRequestHandler):
             email_jobs = [j for j in pending if j.get("application_channel") == "email" and j.get("contact_email")]
             for job in email_jobs[:self.bot.settings.application.daily_email_limit]:
                 can_send, sent, limit = self.bot.email_applier.can_send_more_today()
-                if not can_send and not self.bot.settings.is_dry_run:
+                if not can_send:
                     break
                 res = self.bot.email_applier.send_application(
                     job_id=job["id"],
@@ -213,7 +213,7 @@ class DashboardHandler(BaseHTTPRequestHandler):
                     subject=job.get("tailored_email_subject") or f"Application for {job['title']} - Fahim Ashab",
                     body_text=job.get("tailored_cover_letter") or f"Dear Hiring Team,\nPlease find my CV attached.\n\nBest regards,\nFahim Ashab"
                 )
-                if res.get("success") and not self.bot.settings.is_dry_run:
+                if res.get("success"):
                     self.bot.tracker.mark_applied(job["id"], channel="email")
                 results.append({"company": job["company"], "result": res["status"]})
             self._send_json({"success": True, "applied": results, "count": len(results)})
@@ -231,9 +231,7 @@ class DashboardHandler(BaseHTTPRequestHandler):
             return
 
         if path == "/api/config":
-            dry_run = payload.get("is_dry_run")
-            if dry_run is not None:
-                self.bot.settings.dry_run_override = bool(dry_run)
+            self.bot.settings.dry_run_override = False
 
             email_user = payload.get("email_user", "").strip()
             if email_user:
@@ -248,18 +246,19 @@ class DashboardHandler(BaseHTTPRequestHandler):
                 self.bot.settings.gemini_api_key = gemini_key
                 self.bot.evaluator._init_client()
 
-            # Persist to .env
+            # Persist to .env (Always keep DRY_RUN=False)
             env_content = "\n".join([
                 f"GEMINI_API_KEY={self.bot.settings.gemini_api_key or ''}",
                 f"EMAIL_HOST={self.bot.settings.email_host}",
                 f"EMAIL_PORT={self.bot.settings.email_port}",
                 f"EMAIL_USER={self.bot.settings.email_user}",
                 f"EMAIL_PASSWORD={self.bot.settings.email_password}",
-                f"DRY_RUN={self.bot.settings.is_dry_run}",
+                f"DRY_RUN=False",
             ])
             ENV_FILE.write_text(env_content, encoding="utf-8")
-            self._send_json({"success": True, "message": "Settings saved."})
+            self._send_json({"success": True, "message": "Settings saved. System is Active & Live."})
             return
+
 
         self.send_response(404)
         self.end_headers()

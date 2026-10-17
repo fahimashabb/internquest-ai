@@ -1,4 +1,4 @@
-﻿"""Email application engine for sending cold outreach and direct applications with CV."""
+"""Email application engine for sending cold outreach and direct applications with CV."""
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -56,29 +56,16 @@ class EmailApplier:
         to_email: str,
         subject: str,
         body_text: str,
-        force_live: bool = False
+        force_live: bool = True
     ) -> Dict[str, Any]:
-        """Send an application email to a company or HR contact."""
-        is_dry = self.settings.is_dry_run and not force_live
-
+        """Send an application email directly to a company or HR contact."""
         # Check daily quota
         can_send, sent_count, limit = self.can_send_more_today()
-        if not can_send and not is_dry:
+        if not can_send:
             return {
                 "success": False,
                 "status": "QUOTA_EXCEEDED",
                 "message": f"Daily email limit reached ({sent_count}/{limit}). Quota resets tomorrow."
-            }
-
-        if is_dry:
-            # Simulation / Dry Run
-            print(f"[DRY RUN - Simulation] Would send email to: {to_email}")
-            print(f"Subject: {subject}")
-            print(f"CV Attached: {self.settings.absolute_resume_path.name}")
-            return {
-                "success": True,
-                "status": "SIMULATED",
-                "message": f"[DRY RUN] Email drafted and simulated for {to_email}."
             }
 
         # Live SMTP sending
@@ -86,7 +73,7 @@ class EmailApplier:
             return {
                 "success": False,
                 "status": "MISSING_CREDENTIALS",
-                "message": "EMAIL_PASSWORD not configured in .env. Please set up a Google App Password."
+                "message": "Gmail App Password not configured. Please enter your 16-character App Password in Admin Settings."
             }
 
         try:

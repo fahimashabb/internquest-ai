@@ -1,4 +1,4 @@
-﻿"""Configuration manager for Internship Hunter."""
+"""Configuration manager for Internship Hunter."""
 from pathlib import Path
 from typing import List, Optional
 import os
@@ -41,7 +41,7 @@ class FilteringConfig(BaseModel):
 
 class ApplicationConfig(BaseModel):
     mode: str = "supervised"
-    dry_run: bool = True
+    dry_run: bool = False
     daily_email_limit: int = 5
     email_subject_template: str = "Application for {role} - {candidate_name}"
     sender_name: str = "Fahim Ashab"

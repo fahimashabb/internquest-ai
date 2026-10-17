@@ -1,4 +1,4 @@
-﻿"""Daily runner and background scheduler for Internship Hunter."""
+"""Daily runner and background scheduler for Internship Hunter."""
 import time
 from typing import Optional
 import schedule
@@ -95,7 +95,7 @@ class InternshipBot:
 
             # Execute application
             if channel == "email" and email:
-                if not can_send and not self.settings.is_dry_run:
+                if not can_send:
                     console.print(f"[bold red]Daily email quota reached ({sent_today}/{limit}). Pausing email applications.[/bold red]")
                     break
 

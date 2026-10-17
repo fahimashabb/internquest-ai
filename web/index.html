@@ -61,16 +61,13 @@
       <i class="fa-solid fa-graduation-cap text-primary me-2"></i>AI Internship Hunter &amp; Matcher
     </span>
     <div class="d-flex gap-2 align-items-center">
-      <span id="modeBadge" class="badge px-3 py-2 fs-6"></span>
+      <span class="badge bg-success px-3 py-2 fs-6"><i class="fa-solid fa-circle-check me-1"></i> System Active &amp; Live</span>
       <button class="btn btn-outline-light btn-sm" onclick="openSettings()">
         <i class="fa-solid fa-gear me-1"></i> Admin Settings
       </button>
     </div>
   </div>
 </nav>
-
-<!-- Mode Banner -->
-<div id="modeBar" class="alert mb-0 rounded-0 text-center py-2 fw-semibold d-none" role="alert"></div>
 
 <div class="container-lg py-4">
 
@@ -253,12 +250,8 @@
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body p-4">
-        <div class="mb-3">
-          <label class="form-label fw-bold">Safe Test Mode</label>
-          <div class="form-check form-switch">
-            <input class="form-check-input" type="checkbox" id="settingDryRun">
-            <label class="form-check-label" for="settingDryRun">Simulate emails without sending live</label>
-          </div>
+        <div class="alert alert-success py-2 small mb-3">
+          <i class="fa-solid fa-circle-check me-1"></i> <strong>Live Mode Active</strong> — Real email applications will be sent when you click apply.
         </div>
         <div class="mb-3">
           <label class="form-label fw-bold">Gmail Address</label>
@@ -401,20 +394,6 @@ async function loadData() {
     document.getElementById('statTotal').innerText = stats.TOTAL_FOUND ?? jobs.length;
     document.getElementById('statMatched').innerText = stats.MATCHED ?? jobs.filter(j => (j.match_score||0)>=65).length;
     document.getElementById('statEmailReady').innerText = jobs.filter(j => j.application_channel === 'email' && j.contact_email).length;
-
-    const badge = document.getElementById('modeBadge');
-    const bar = document.getElementById('modeBar');
-    if (cfg.is_dry_run) {
-      badge.className = 'badge bg-warning text-dark px-3 py-2 fs-6';
-      badge.innerHTML = '<i class="fa-solid fa-shield-halved me-1"></i> Safe Test Mode';
-      bar.className = 'alert alert-warning mb-0 rounded-0 text-center py-2 fw-semibold';
-      bar.innerHTML = '🛡️ <strong>Safe Mode Active</strong> — Email generation is active; live sending requires configuring Gmail in Settings.';
-      bar.classList.remove('d-none');
-    } else {
-      badge.className = 'badge bg-success px-3 py-2 fs-6';
-      badge.innerHTML = '<i class="fa-solid fa-bolt me-1"></i> Live Mode';
-      bar.classList.add('d-none');
-    }
 
     allJobs = jobs;
     filterJobs();
@@ -613,7 +592,7 @@ function openSettings() {
 
 async function saveSettings() {
   const payload = {
-    is_dry_run: document.getElementById('settingDryRun').checked,
+    is_dry_run: false,
     email_user: document.getElementById('settingEmail').value,
     email_password: document.getElementById('settingPassword').value,
     gemini_api_key: document.getElementById('settingGemini').value,
