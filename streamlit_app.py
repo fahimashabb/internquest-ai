@@ -392,7 +392,7 @@ def render_admin_panel():
                     new_comp = st.text_input("Company Name *", placeholder="e.g. Standard Chartered Bank")
                     new_loc = st.text_input("Location", value="Dhaka, Bangladesh")
                 with nf_col2:
-                    new_url = st.text_input("Application Portal URL *", placeholder="https://company.com/apply")
+                    new_url = st.text_input("Original Post Link (LinkedIn, Bdjobs, etc.) *", placeholder="https://bd.linkedin.com/jobs/view/... or Bdjobs link")
                     new_email = st.text_input("Contact HR Email (Optional)", placeholder="hr@company.com")
                     new_score = st.slider("Initial Match Score (%)", 50, 95, 80)
 
@@ -792,9 +792,9 @@ def main():
                         key=f"dl_cl_{idx}"
                     )
             with colB:
-                st.link_button("🔗 Apply on Career Portal", j.url, use_container_width=True)
+                st.link_button("👀 See the Post", j.url, use_container_width=True)
                 if item.get("contact_email"):
-                    st.link_button("✉️ Apply via HR Email", f"mailto:{item['contact_email']}?subject=Internship%20Application%20-%20{j.title}", use_container_width=True)
+                    st.link_button("✉️ Email HR Directly", f"mailto:{item['contact_email']}?subject=Internship%20Application%20-%20{j.title}", use_container_width=True)
 
             st.write("")
 

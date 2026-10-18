@@ -84,10 +84,10 @@ def main():
     db_file = BASE_DIR / "data" / "applications.db"
     tracker = ApplicationTracker(db_path=db_file)
     with tracker._get_connection() as conn:
-        # Purge any unverified or global listings
-        deleted = conn.execute("DELETE FROM jobs WHERE location_scope = 'global' OR location_scope IS NULL OR source IN ('Jobicy', 'Remotive', 'Test')").rowcount
+        # Purge any unverified, global, or outdated intake listings
+        deleted = conn.execute("DELETE FROM jobs WHERE location_scope = 'global' OR location_scope IS NULL OR source IN ('Jobicy', 'Remotive', 'Test') OR source LIKE 'Bangladesh%Intake'").rowcount
         if deleted:
-            print(f"🧹 Purged {deleted} global/unverified postings from database.")
+            print(f"🧹 Purged {deleted} global/unverified/outdated postings from database.")
 
         for s in seed_data:
             conn.execute("""

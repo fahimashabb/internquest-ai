@@ -642,12 +642,12 @@
         <span id="countLabel" class="badge bg-primary text-white fs-6 ms-2 px-3 py-1 fw-bold"></span>
       </h5>
       <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1">
-        <i class="fa-solid fa-circle-check me-1"></i>100% Verified Bangladesh Portals
+        <i class="fa-solid fa-circle-check me-1"></i>100% Verified Bangladesh Posts
       </span>
     </div>
     <div class="d-flex gap-2" id="channelFilters">
       <button class="btn channel-tab active" id="ch-all" onclick="setChannelFilter('all')">All Channels</button>
-      <button class="btn channel-tab" id="ch-web" onclick="setChannelFilter('web')"><i class="fa-solid fa-globe me-1 text-info"></i>Career Portals</button>
+      <button class="btn channel-tab" id="ch-web" onclick="setChannelFilter('web')"><i class="fa-solid fa-file-lines me-1 text-info"></i>Official Posts</button>
       <button class="btn channel-tab" id="ch-email" onclick="setChannelFilter('email')"><i class="fa-regular fa-envelope me-1 text-primary"></i>HR Direct Pitch</button>
     </div>
   </div>
@@ -1056,8 +1056,8 @@
                       <input type="text" id="adminNewLoc" class="form-control form-control-sm" value="Dhaka, Bangladesh">
                     </div>
                     <div class="col-md-5">
-                      <label class="form-label small fw-bold">Application URL *</label>
-                      <input type="url" id="adminNewURL" class="form-control form-control-sm" required placeholder="https://company.com/career">
+                      <label class="form-label small fw-bold"><i class="fa-brands fa-linkedin text-primary me-1"></i>Original Post Link (LinkedIn, Bdjobs, etc.) *</label>
+                      <input type="url" id="adminNewURL" class="form-control form-control-sm" required placeholder="https://bd.linkedin.com/jobs/view/... or Bdjobs link">
                     </div>
                     <div class="col-md-3">
                       <label class="form-label small fw-bold">Contact Email</label>
@@ -1820,7 +1820,7 @@ function renderJobs(reset = true) {
 
     const channelTag = hasEmail
       ? `<span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1"><i class="fa-regular fa-envelope me-1"></i>Direct HR Email: <strong>${job.contact_email}</strong></span>`
-      : `<span class="badge text-dark border px-2 py-1" style="background:#f1f5f9;"><i class="fa-solid fa-globe me-1 text-primary"></i>Official Career Portal</span>`;
+      : `<span class="badge text-dark border px-2 py-1" style="background:#f1f5f9;"><i class="fa-brands fa-linkedin me-1 text-primary"></i>Official Post Listing</span>`;
 
     // Categorization badge
     let categoryTag = '';
@@ -1882,8 +1882,8 @@ function renderJobs(reset = true) {
                 <i class="fa-regular fa-paper-plane me-1"></i> Email HR
               </a>` : ''}
           </div>
-          <a href="${job.url}" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm btn-act px-3 shadow-sm">
-            <i class="fa-solid fa-arrow-up-right-from-square me-1"></i> Apply on Portal
+          <a href="${job.url}" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm btn-act px-3 shadow-sm fw-bold" title="See original post on LinkedIn, Bdjobs, or job board">
+            <i class="fa-solid fa-eye me-1"></i> See the Post
           </a>
         </div>
       </div>`;
@@ -1927,7 +1927,7 @@ async function openPitchModal(jobId) {
 
   document.getElementById('modalSubject').value = job.tailored_email_subject || `Application for ${job.title}`;
   document.getElementById('modalPitch').value = job.tailored_cover_letter || 'Drafting tailored pitch...';
-  document.getElementById('modalContactEmail').innerText = job.contact_email ? `Company Contact: ${job.contact_email}` : 'Apply via Official Career Portal';
+  document.getElementById('modalContactEmail').innerText = job.contact_email ? `Company Contact: ${job.contact_email}` : 'View via Original Post Link';
 
   pitchModal.show();
 
@@ -2214,7 +2214,7 @@ async function loadAdminJobs() {
         <td><small class="text-muted">${j.location || 'Dhaka'}</small></td>
         <td><span class="badge bg-light text-dark border">${j.application_channel || 'web'}</span></td>
         <td class="text-end">
-          <a href="${j.url}" target="_blank" class="btn btn-sm btn-outline-secondary py-0 px-2 me-1"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+          <a href="${j.url}" target="_blank" class="btn btn-sm btn-outline-primary py-0 px-2 me-1" title="See original post"><i class="fa-solid fa-eye me-1"></i>See Post</a>
           <button class="btn btn-sm btn-outline-danger py-0 px-2" onclick="deleteAdminJob('${j.id}', '${j.title}')"><i class="fa-solid fa-trash-can"></i></button>
         </td>
       </tr>

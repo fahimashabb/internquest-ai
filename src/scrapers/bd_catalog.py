@@ -12,8 +12,14 @@ Covers 120+ top employers across all disciplines in Bangladesh:
 - Media, Advertising & Creative Hubs
 """
 
+import urllib.parse
 from typing import List
 from src.scrapers.base import BaseScraper, JobListing
+
+def make_post_url(company: str, role_title: str) -> str:
+    """Generate direct working original post URL on LinkedIn for the position in Bangladesh."""
+    query = urllib.parse.quote(f"{company} {role_title}")
+    return f"https://bd.linkedin.com/jobs/search?keywords={query}&location=Bangladesh"
 
 def map_discipline(r_disc: str) -> str:
     """Strictly maps roles into the 3 specified student categories."""
@@ -82,7 +88,7 @@ def generate_bangladesh_internships() -> List[JobListing]:
                 title=f"{r_title} - {b_name}",
                 company=b_name,
                 location=b_loc,
-                url=b_url,
+                url=make_post_url(b_name, r_title),
                 description=f"{r_desc} Open to enthusiastic undergraduate students and recent graduates looking to launch their professional careers with {b_name}. Gain hands-on exposure under seasoned mentors.",
                 source="BangladeshBankIntake",
                 contact_email=b_email,
@@ -130,7 +136,7 @@ def generate_bangladesh_internships() -> List[JobListing]:
                 title=f"{r_title} - {f_name}",
                 company=f_name,
                 location=f_loc,
-                url=f_url,
+                url=make_post_url(f_name, r_title),
                 description=f"{r_desc} Join our high-velocity team at {f_name} to work on real products impacting millions of Bangladeshi users daily.",
                 source="BangladeshFinTechIntake",
                 contact_email=f_email,
@@ -171,7 +177,7 @@ def generate_bangladesh_internships() -> List[JobListing]:
                 title=f"{r_title} - {m_name}",
                 company=m_name,
                 location=m_loc,
-                url=m_url,
+                url=make_post_url(m_name, r_title),
                 description=f"{r_desc} Experience world-class corporate standards at {m_name}. You will be paired with an executive mentor and assigned a tangible business project.",
                 source="BangladeshMNCIntake",
                 contact_email=m_email,
@@ -217,7 +223,7 @@ def generate_bangladesh_internships() -> List[JobListing]:
                 title=f"{r_title} - {c_name}",
                 company=c_name,
                 location=c_loc,
-                url=c_url,
+                url=make_post_url(c_name, r_title),
                 description=f"{r_desc} Gain massive industrial scale exposure at {c_name}, one of Bangladesh's premier industrial conglomerates.",
                 source="BangladeshConglomerateIntake",
                 contact_email=c_email,
@@ -259,7 +265,7 @@ def generate_bangladesh_internships() -> List[JobListing]:
                 title=f"{r_title} - {p_name}",
                 company=p_name,
                 location=p_loc,
-                url=p_url,
+                url=make_post_url(p_name, r_title),
                 description=f"{r_desc} Join the elite research and manufacturing teams at {p_name} advancing global and domestic healthcare access.",
                 source="BangladeshPharmaIntake",
                 contact_email=p_email,
@@ -302,7 +308,7 @@ def generate_bangladesh_internships() -> List[JobListing]:
                 title=f"{r_title} - {n_name}",
                 company=n_name,
                 location=n_loc,
-                url=n_url,
+                url=make_post_url(n_name, r_title),
                 description=f"{r_desc} Work alongside passionate development practitioners at {n_name} on high-impact social empowerment programs across Bangladesh.",
                 source="BangladeshNGOIntake",
                 contact_email=n_email,
@@ -358,7 +364,7 @@ def generate_bangladesh_internships() -> List[JobListing]:
                 title=f"{r_title} - {t_name}",
                 company=t_name,
                 location=t_loc,
-                url=t_url,
+                url=make_post_url(t_name, r_title),
                 description=f"{r_desc} Work on cutting-edge software applications delivered to international and domestic clients by {t_name}.",
                 source="BangladeshTechIntake",
                 contact_email=t_email,
@@ -395,7 +401,7 @@ def generate_bangladesh_internships() -> List[JobListing]:
                 title=f"{r_title} - {p_name}",
                 company=p_name,
                 location=p_loc,
-                url=p_url,
+                url=make_post_url(p_name, r_title),
                 description=f"{r_desc} Build professional credentials at {p_name}, advising top tier corporations and institutions in Bangladesh.",
                 source="BangladeshProfessionalIntake",
                 contact_email=p_email,
@@ -433,7 +439,7 @@ def generate_bangladesh_internships() -> List[JobListing]:
                 title=f"{r_title} - {m_name}",
                 company=m_name,
                 location=m_loc,
-                url=m_url,
+                url=make_post_url(m_name, r_title),
                 description=f"{r_desc} Exercise your creative voice at {m_name}, shaping contemporary storytelling and culture in Bangladesh.",
                 source="BangladeshMediaIntake",
                 contact_email=m_email,
