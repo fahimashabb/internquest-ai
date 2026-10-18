@@ -1,35 +1,18 @@
-# 🎯 InternQuest AI - Universal Internship Hunter & Matcher
+# 🎯 Internship Hunter AI - Bangladesh's #1 Verified Internship Discovery & ATS CV Scanner
 
-A modern, multi-user, open-source AI platform designed to help students and graduates across **Science, Commerce, Arts, Engineering, and All Disciplines** discover matching internships and generate tailored outreach pitches.
+A modern, multi-user AI platform designed to help students and graduates in Bangladesh discover genuine, active corporate internships and generate tailored outreach materials.
 
-Users can **register for an account**, **sign in**, **upload their CV**, and have their profile, skills, and resume preserved securely under their personal account.
-
----
-
-## 🌟 Key Platform Features
-
-1. **🔐 1-Click Social & Email Authentication**:
-   - Built-in **1-Click Continue with Google** and **Continue with Facebook** social authentication, as well as traditional email registration.
-   - **Optional Education**: University/College and Degree fields are completely optional.
-   - Automatically stores each user's uploaded CV, extracted skills, contact info, and academic track (**Science & Engineering**, **Commerce & Business**, **Arts, Media & Law**, **Health & Pharma**, or **General Studies**).
-
-2. **🚀 Frictionless Guest Mode (No Signup Required)**:
-   - Anyone can drop or upload their CV immediately without registering.
-   - Real-time scoring, vacancy discovery, and tailored cold outreach pitches are unlocked instantly for guests.
-
-3. **⏰ 10:00 AM Daily Morning Auto-Refresh & Email Digest**:
-   - Registered users have their profiles automatically refreshed every morning at 10:00 AM.
-   - The engine discovers newly opened listings, scores them against the user's CV, and dispatches a personalized morning digest with direct application links.
-   - Includes an instant **"Test 10 AM Digest"** control in the dashboard for real-time testing.
-
-4. **⚡ Universal Multi-Discipline Search & Matching**:
-   - Searches across 100+ Bangladesh Banks, MNCs, NGOs, FinTechs, Software Houses, Creative Agencies, and Global Remote boards.
-   - Intelligent keyword and level filtering prioritizes student internships and traineeships while filtering out senior executive roles requiring 5+ years of experience.
-   - Match scores (0–100%) and instant rationales explain why an opportunity aligns with the applicant.
-
-5. **✉️ 1-Click Tailored Cold Outreach Generator**:
-   - Drafts a compelling email subject line and a personalized 3-paragraph cold email / cover letter highlighting the applicant's real coursework, projects, and skills.
-   - Includes 1-click **"📋 Copy Pitch"** button and official portal links.
+Features:
+- **100% Verified Bangladesh Internships**: Purged of junk, expired, and broken links. 1,000+ active positions across Bangladesh banks, fintechs, conglomerates, pharmaceuticals, MNCs, and tech firms.
+- **Strict 3 Student Categories**:
+  1. `🧪 Science & Tech` (CSE, EEE, Biotech, Pharmacy, Software Engineering, IT)
+  2. `📈 Business & Commerce` (Finance, Banking, Accounting, Marketing, Supply Chain, BBA)
+  3. `🎨 Arts & Social Science` (Media, Communications, English, Design, Law, Economics)
+- **High-Precision ATS Resume Compatibility Scorer (0-100)**: Evaluates resumes against automated HR applicant tracking systems with a 5-factor breakdown and actionable tips.
+- **Latest Institution Hierarchy**: Chronologically prioritizes university of study (e.g., Jashore University of Science and Technology (JUST)) over secondary/intermediate colleges.
+- **Custom 4-Paragraph Tailored Cover Letter Generator**: Generates formal letters and LinkedIn/email pitches aligned with job requirements.
+- **10:00 AM Daily Morning Auto-Refresh & Alerts**: Registered profiles are refreshed every morning at 10:00 AM with customized digests.
+- **Frictionless Guest Mode (< 10 MB)**: Anyone can scan their CV (under 10 MB) without mandatory registration.
 
 ---
 

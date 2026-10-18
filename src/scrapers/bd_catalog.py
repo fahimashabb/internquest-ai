@@ -15,6 +15,15 @@ Covers 120+ top employers across all disciplines in Bangladesh:
 from typing import List
 from src.scrapers.base import BaseScraper, JobListing
 
+def map_discipline(r_disc: str) -> str:
+    """Strictly maps roles into the 3 specified student categories."""
+    if r_disc == "Science":
+        return "🧪 Science & Tech"
+    elif r_disc == "Commerce":
+        return "📈 Business & Commerce"
+    else:
+        return "🎨 Arts & Social Science"
+
 def generate_bangladesh_internships() -> List[JobListing]:
     """Generate extensive catalog of verified Bangladesh internship opportunities."""
     listings: List[JobListing] = []
@@ -24,7 +33,7 @@ def generate_bangladesh_internships() -> List[JobListing]:
     banks = [
         ("BRAC Bank", "https://www.bracbank.com/en/career", "hr@bracbank.com", "Anik Tower, 220/B Tejgaon I/A, Dhaka"),
         ("Dutch-Bangla Bank (DBBL)", "https://www.dutchbanglabank.com/career", "recruitment@dutchbanglabank.com", "Sena Kalyan Bhaban, Motijheel, Dhaka"),
-        ("City Bank", "https://www.thecitybank.com/career", "career@thecitybank.com", "City Bank Center, Gulshan-2, Dhaka"),
+        ("City Bank", "https://www.citybankplc.com/p/careers", "career@thecitybank.com", "City Bank Center, Gulshan-2, Dhaka"),
         ("Prime Bank", "https://www.primebank.com.bd/career", "career@primebank.com.bd", "Prime Tower, Nikunja-2, Dhaka"),
         ("Eastern Bank (EBL)", "https://www.ebl.com.bd/career", "recruitment@ebl.com.bd", "EBL Head Office, Gulshan-1, Dhaka"),
         ("Mutual Trust Bank (MTB)", "https://www.mutualtrustbank.com/career", "careers@mutualtrustbank.com", "MTB Center, Gulshan-1, Dhaka"),
@@ -79,7 +88,7 @@ def generate_bangladesh_internships() -> List[JobListing]:
                 contact_email=b_email,
                 is_internship=True,
                 location_scope="bangladesh",
-                discipline="Commerce & Banking" if r_disc == "Commerce" else ("Science & Tech" if r_disc == "Science" else "Arts & Media"),
+                discipline=map_discipline(r_disc),
                 application_channel="email" if b_email else "web",
                 deadline="Rolling / Seasonal 2026 Intake"
             ))
@@ -88,7 +97,7 @@ def generate_bangladesh_internships() -> List[JobListing]:
     fintechs = [
         ("bKash Limited", "https://www.bkash.com/career", "career@bkash.com", "Shadhinata Tower, Dhaka Cantonment, Dhaka"),
         ("Nagad", "https://www.nagad.com.bd/career", "career@nagad.com.bd", "Delta Dahlia Tower, Kemal Ataturk Avenue, Banani, Dhaka"),
-        ("Pathao", "https://www.pathao.com/careers", "careers@pathao.com", "Midland Tower, Gulshan-2, Dhaka"),
+        ("Pathao", "https://pathao.com", "careers@pathao.com", "Midland Tower, Gulshan-2, Dhaka"),
         ("Chaldal", "https://chaldal.com/careers", "hr@chaldal.com", "House 1, Road 2, Block D, Niketan, Gulshan, Dhaka"),
         ("ShopUp", "https://shopup.com.bd/careers", "people@shopup.org", "Plot 14, Road 17, Block E, Banani, Dhaka"),
         ("10 Minute School", "https://10minuteschool.com/careers", "join@10minuteschool.com", "Mohakhali DOHS, Dhaka"),
@@ -127,7 +136,7 @@ def generate_bangladesh_internships() -> List[JobListing]:
                 contact_email=f_email,
                 is_internship=True,
                 location_scope="bangladesh",
-                discipline="Science & Tech" if r_disc == "Science" else ("Commerce & Banking" if r_disc == "Commerce" else "Arts & Media"),
+                discipline=map_discipline(r_disc),
                 application_channel="email" if f_email else "web",
                 deadline="Rolling Admissions"
             ))
@@ -168,7 +177,7 @@ def generate_bangladesh_internships() -> List[JobListing]:
                 contact_email=m_email,
                 is_internship=True,
                 location_scope="bangladesh",
-                discipline="Commerce & Banking" if r_disc == "Commerce" else ("Science & Tech" if r_disc == "Science" else "Arts & Media"),
+                discipline=map_discipline(r_disc),
                 application_channel="email" if m_email else "web",
                 deadline="Competitive Intake 2026"
             ))
@@ -214,7 +223,7 @@ def generate_bangladesh_internships() -> List[JobListing]:
                 contact_email=c_email,
                 is_internship=True,
                 location_scope="bangladesh",
-                discipline="Commerce & Banking" if r_disc == "Commerce" else ("Science & Tech" if r_disc == "Science" else "Arts & Media"),
+                discipline=map_discipline(r_disc),
                 application_channel="email" if c_email else "web",
                 deadline="Continuous Intake 2026"
             ))
@@ -256,7 +265,7 @@ def generate_bangladesh_internships() -> List[JobListing]:
                 contact_email=p_email,
                 is_internship=True,
                 location_scope="bangladesh",
-                discipline="Science & Tech",
+                discipline=map_discipline(r_disc),
                 application_channel="email" if p_email else "web",
                 deadline="Spring/Summer 2026 Intake"
             ))
@@ -279,7 +288,7 @@ def generate_bangladesh_internships() -> List[JobListing]:
     ]
 
     ngo_roles = [
-        ("Monitoring, Evaluation & Learning (MEL) Intern", "Commerce", "Design survey instruments in KoboToolbox, analyze field evaluation datasets in R/Stata, verify field project KPIs, and author indicator progress briefs."),
+        ("Monitoring, Evaluation & Learning (MEL) Intern", "Science", "Design survey instruments in KoboToolbox, analyze field evaluation datasets in R/Stata, verify field project KPIs, and author indicator progress briefs."),
         ("Program Operations & Humanitarian Field Intern", "Commerce", "Coordinate logistics for disaster risk reduction workshops, track community cash voucher disbursements, and liaise with district local partners."),
         ("Grant Writing & Institutional Partnership Intern", "Arts", "Research multilateral donor tenders (USAID, FCDO, EU, GIZ), synthesize theory of change frameworks, and draft narrative proposal sections."),
         ("Communications & Digital Storytelling Intern", "Arts", "Document beneficiary success stories, photograph community interventions, write donor impact spotlights, and design infographics for annual reports."),
@@ -299,7 +308,7 @@ def generate_bangladesh_internships() -> List[JobListing]:
                 contact_email=n_email,
                 is_internship=True,
                 location_scope="bangladesh",
-                discipline="NGOs & Dev",
+                discipline=map_discipline(r_disc),
                 application_channel="email" if n_email else "web",
                 deadline="Rolling Intake 2026"
             ))
@@ -355,7 +364,7 @@ def generate_bangladesh_internships() -> List[JobListing]:
                 contact_email=t_email,
                 is_internship=True,
                 location_scope="bangladesh",
-                discipline="Science & Tech",
+                discipline=map_discipline(r_disc),
                 application_channel="email" if t_email else "web",
                 deadline="Continuous Rolling Review"
             ))
@@ -392,7 +401,7 @@ def generate_bangladesh_internships() -> List[JobListing]:
                 contact_email=p_email,
                 is_internship=True,
                 location_scope="bangladesh",
-                discipline="Commerce & Banking" if r_disc == "Commerce" else "Arts & Media",
+                discipline=map_discipline(r_disc),
                 application_channel="email" if p_email else "web",
                 deadline="Spring/Autumn Intake 2026"
             ))
@@ -430,7 +439,7 @@ def generate_bangladesh_internships() -> List[JobListing]:
                 contact_email=m_email,
                 is_internship=True,
                 location_scope="bangladesh",
-                discipline="Arts & Media",
+                discipline="🎨 Arts & Social Science",
                 application_channel="email" if m_email else "web",
                 deadline="Rolling Review 2026"
             ))

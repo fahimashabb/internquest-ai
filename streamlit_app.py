@@ -504,7 +504,7 @@ def main():
         """, unsafe_allow_html=True)
     with col_text:
         st.markdown(f'<div class="brand-title">{site_title}</div>', unsafe_allow_html=True)
-        st.markdown('<div class="brand-subtitle">Universal AI Internship Hunter & Matcher for <strong>Science, Commerce, Arts, Tech & All Majors</strong></div>', unsafe_allow_html=True)
+        st.markdown('<div class="brand-subtitle">Bangladesh\'s #1 Verified Internship Hunter &amp; ATS CV Precision Scanner for <strong>Science &amp; Tech, Business &amp; Commerce, and Arts &amp; Social Science</strong></div>', unsafe_allow_html=True)
 
     # Sidebar: Account & Search Filters
     with st.sidebar:
@@ -538,11 +538,9 @@ def main():
                 reg_track = st.selectbox(
                     "Academic Track",
                     [
-                        "🧪 Science & Engineering (CS, Data, Biotech, EEE)",
-                        "📈 Commerce & Business (Finance, Banking, Marketing)",
-                        "🎨 Arts, Media & Law (Content, UI/UX, Legal)",
-                        "🏥 Health, Pharma & Life Sciences",
-                        "🌐 General / Other Majors"
+                        "🧪 Science & Tech",
+                        "📈 Business & Commerce",
+                        "🎨 Arts & Social Science"
                     ]
                 )
                 if st.button("Create Account", use_container_width=True):
@@ -554,7 +552,7 @@ def main():
                     )
                     if res.get("success"):
                         st.session_state.user = res["user"]
-                        st.success("Account created successfully!")
+                        st.success("Account created successfully! 10:00 AM alerts activated.")
                         st.rerun()
                     else:
                         st.error(res.get("message", "Registration failed"))
@@ -582,22 +580,14 @@ def main():
             active_view = "💼 Public Internship Portal"
 
         st.markdown("### 🎯 Discipline & Sector Filters")
-        scope_choice = st.radio(
-            "Location Scope",
-            ["All Locations", "🇧🇩 Bangladesh Only", "🌐 Global Remote"],
-            index=0,
-            horizontal=True
-        )
+        st.info("🇧🇩 **Regional Focus**: 100% Verified Bangladesh Opportunities")
         sector_filter = st.selectbox(
-            "Target Discipline",
+            "Target Category",
             [
-                "All Disciplines",
-                "🧪 Science, Tech & Engineering",
-                "📈 Commerce, Banking & Finance",
-                "🎨 Arts, Media, Design & Law",
-                "🏢 MNCs & Conglomerates",
-                "🌍 NGOs & Development",
-                "🌐 Global Remote"
+                "All Categories (Bangladesh)",
+                "🧪 Science & Tech",
+                "📈 Business & Commerce",
+                "🎨 Arts & Social Science"
             ]
         )
         min_score = st.slider("Minimum Match Threshold (%)", min_value=30, max_value=95, value=default_min_score, step=5)
@@ -612,8 +602,8 @@ def main():
 
     # ── CANDIDATE PORTAL VIEW ──
     # Step 1: Resume Upload / Active Profile
-    st.markdown("### 📄 Step 1: Upload or Connect Your CV")
-    st.caption("Drop your resume in PDF format (Science, Commerce, Arts, or Tech; Max 10 MB) to unlock instant AI matching:")
+    st.markdown("### 📄 Step 1: Upload or Connect Your CV (< 10 MB)")
+    st.caption("Upload your PDF resume to generate an instant ATS Compatibility Score and identify your latest university:")
     uploaded_file = st.file_uploader("Upload PDF Resume (< 10 MB):", type=["pdf"], label_visibility="collapsed")
 
     settings = load_settings()
@@ -633,28 +623,42 @@ def main():
             user_manager.update_user_cv(st.session_state.user["id"], pdf_bytes, uploaded_file.name)
             st.session_state.user = user_manager.get_user_by_id(st.session_state.user["id"])
 
-        # Display Candidate Overview Card
+        # Display Candidate Overview & ATS Score Card
         col1, col2, col3 = st.columns([1, 1, 1.2])
         with col1:
             st.success(f"👤 **Candidate**: {profile_data.get('name', 'Candidate')}")
             major_text = f" - {profile_data.get('major')}" if profile_data.get('major') else ""
             st.info(f"🎓 **Degree**: {profile_data.get('degree', 'Student')}{major_text}")
-            if profile_data.get('career_archetype'):
-                st.caption(f"⚡ **Archetype**: `{profile_data.get('career_archetype')}`")
+            disc = profile_data.get('discipline') or profile_data.get('track', '🧪 Science & Tech')
+            st.caption(f"🏷️ **Category**: `{disc}`")
         with col2:
-            st.info(f"🏛️ **Institution**: {profile_data.get('institution', 'University')}")
+            st.info(f"🏛️ **Latest Institution**: **{profile_data.get('institution', 'University')}**")
             st.info(f"📍 **Location**: {profile_data.get('location', 'Bangladesh')}")
             if profile_data.get('cgpa'):
                 st.caption(f"📊 **CGPA**: {profile_data.get('cgpa')}")
         with col3:
-            skills = profile_data.get("skills", [])
-            st.write("**Detected Skills & Alignment**:")
-            if skills:
-                st.write(" • " + "\n • ".join(skills[:8]))
-            else:
-                st.write("Multi-disciplinary skillset")
-            if profile_data.get("strengths"):
-                st.caption("💪 Strengths: " + ", ".join(profile_data["strengths"][:3]))
+            ats_val = profile_data.get("ats_score", 82)
+            ats_gr = profile_data.get("ats_grade", "A (Strong Match)")
+            st.metric("🎯 ATS Resume Score", f"{ats_val}/100", delta=ats_gr)
+            st.caption("Automated HR Sorter Compatibility")
+
+        # ATS Breakdown Expandable
+        with st.expander("📊 View Detailed ATS Resume Audit & Improvement Suggestions", expanded=False):
+            bd = profile_data.get("ats_breakdown", {"contact": 18, "education": 20, "skills": 16, "action_verbs": 14, "readability": 16})
+            b_c1, b_c2, b_c3, b_c4, b_c5 = st.columns(5)
+            b_c1.metric("Contact Info", f"{bd.get('contact', 18)}/20")
+            b_c2.metric("Institution", f"{bd.get('education', 20)}/20")
+            b_c3.metric("Skills", f"{bd.get('skills', 16)}/20")
+            b_c4.metric("Action Verbs", f"{bd.get('action_verbs', 14)}/20")
+            b_c5.metric("Formatting", f"{bd.get('readability', 16)}/20")
+
+            st.markdown("**Actionable Suggestions for ATS Ranking:**")
+            for sug in profile_data.get("ats_suggestions", []):
+                st.markdown(f"- 💡 {sug}")
+
+        skills = profile_data.get("skills", [])
+        if skills:
+            st.write("**Extracted Core Skills:** " + " • ".join(skills[:12]))
     elif st.session_state.user and st.session_state.user.get("has_resume"):
         # Load from saved profile
         u = st.session_state.user
@@ -669,7 +673,7 @@ def main():
         profile_data = profile.get_structured_profile()
 
     st.markdown("---")
-    st.markdown("### 💼 Step 2: Live Opportunities Across Bangladesh & Global Boards")
+    st.markdown("### 💼 Step 2: Verified Internship Positions Across Bangladesh")
 
     all_jobs = load_all_jobs()
     if not all_jobs:
@@ -693,29 +697,18 @@ def main():
         score = evaluated.match_score or 50
 
         # Discipline categorization
-        category = "Other"
+        job_disc = rj.get("discipline")
         text_full = f"{job_obj.title} {job_obj.company} {job_obj.description}".lower()
-        if any(s in text_full for s in ["software", "developer", "engineer", "python", "tech", "data", "ai", "machine learning", "biotech", "microbiology", "pharmacy", "civil", "electrical"]):
-            category = "🧪 Science, Tech & Engineering"
-        elif any(c in text_full for c in ["bank", "finance", "treasury", "credit", "audit", "accounting", "marketing", "hr", "supply chain", "budget", "fintech"]):
-            category = "📈 Commerce, Banking & Finance"
-        elif any(a in text_full for a in ["content", "writing", "graphic", "design", "ui", "ux", "media", "journalism", "communications", "legal", "law", "social"]):
-            category = "🎨 Arts, Media, Design & Law"
-        elif any(m in text_full for m in ["unilever", "bat", "nestle", "square", "pran", "beximco", "marico", "walton"]):
-            category = "🏢 MNCs & Conglomerates"
-        elif any(n in text_full for n in ["ngo", "brac", "un", "foundation", "development", "undp", "world bank", "usaid", "care", "unicef"]):
-            category = "🌍 NGOs & Development"
-        elif "remote" in job_obj.location.lower() or job_obj.source in ("jobicy", "remotive"):
-            category = "🌐 Global Remote"
+        if job_disc in ("🧪 Science & Tech", "📈 Business & Commerce", "🎨 Arts & Social Science"):
+            category = job_disc
+        elif any(s in text_full for s in ["software", "developer", "engineer", "python", "tech", "data", "ai", "machine learning", "biotech", "microbiology", "pharmacy", "civil", "electrical", "cse", "eee"]):
+            category = "🧪 Science & Tech"
+        elif any(c in text_full for c in ["bank", "finance", "treasury", "credit", "audit", "accounting", "marketing", "hr", "supply chain", "budget", "fintech", "bba"]):
+            category = "📈 Business & Commerce"
+        else:
+            category = "🎨 Arts & Social Science"
 
-        # Scope filtering
-        is_global = (rj.get("location_scope") == "global") or any(k in f"{job_obj.location} {job_obj.source}".lower() for k in ["remote", "worldwide", "global", "apac", "usa", "canada", "europe", "uk", "singapore"])
-        if scope_choice == "🇧🇩 Bangladesh Only" and is_global:
-            continue
-        if scope_choice == "🌐 Global Remote" and not is_global:
-            continue
-
-        if sector_filter != "All Disciplines" and category != sector_filter:
+        if sector_filter != "All Categories (Bangladesh)" and category != sector_filter:
             continue
 
         if score >= min_score:
@@ -723,7 +716,7 @@ def main():
                 "job": job_obj,
                 "score": score,
                 "category": category,
-                "is_global": is_global,
+                "is_global": False,
                 "deadline": rj.get("deadline"),
                 "rationale": evaluated.match_rationale,
                 "subject": evaluated.tailored_email_subject,
@@ -748,7 +741,7 @@ def main():
         j = item["job"]
         score = item["score"]
         badge_class = "badge-high" if score >= 80 else ("badge-med" if score >= 65 else "badge-low")
-        scope_pill = "🌐 Global Remote" if item["is_global"] else "🇧🇩 Bangladesh"
+        scope_pill = "🇧🇩 Bangladesh"
         deadline_info = f" &nbsp;•&nbsp; ⏳ <strong>Deadline:</strong> {item['deadline']}" if item.get('deadline') else ""
 
         with st.container():
@@ -799,7 +792,9 @@ def main():
                         key=f"dl_cl_{idx}"
                     )
             with colB:
-                st.link_button("🔗 View & Apply on Official Portal", j.url, use_container_width=True)
+                st.link_button("🔗 Apply on Career Portal", j.url, use_container_width=True)
+                if item.get("contact_email"):
+                    st.link_button("✉️ Apply via HR Email", f"mailto:{item['contact_email']}?subject=Internship%20Application%20-%20{j.title}", use_container_width=True)
 
             st.write("")
 

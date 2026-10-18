@@ -48,8 +48,9 @@ search:
     - "Bangladesh"
     - "Dhaka"
     - "Chittagong"
-    - "Remote"
-    - "Worldwide"
+    - "Sylhet"
+    - "Rajshahi"
+    - "Khulna"
   max_results_per_source: 3500
 
 filtering:

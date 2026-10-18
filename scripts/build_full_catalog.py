@@ -36,8 +36,8 @@ def main():
     all_listings = []
     seen_ids = set()
 
-    # 1. Bangladesh Corporate, Bank, MNC, NGO & Tech Catalog
-    print("📦 [1/3] Ingesting Bangladesh Corporate & Institutional Catalog...")
+    # Bangladesh Corporate, Bank, MNC, NGO & Tech Catalog (Strict regional Bangladesh only)
+    print("📦 Ingesting Verified Bangladesh Corporate, Banking, MNC & Tech Catalog...")
     bd_jobs = generate_bangladesh_internships()
     bd_count = 0
     for j in bd_jobs:
@@ -45,66 +45,9 @@ def main():
             seen_ids.add(j.id)
             all_listings.append(j)
             bd_count += 1
-    print(f"✅ Ingested {bd_count} verified Bangladesh corporate opportunities.")
+    print(f"✅ Ingested {bd_count} verified, active Bangladesh corporate opportunities.")
 
-    # 2. GitHub Simplify / Pitt CSC Global Open-Source Index
-    print("🌐 [2/3] Ingesting Simplify & Pitt CSC Global Summer Internships...")
-    gh_scraper = GithubInternshipsScraper()
-    gh_jobs = gh_scraper.search(max_results=3000)
-    gh_count = 0
-    for j in gh_jobs:
-        if j.id not in seen_ids:
-            seen_ids.add(j.id)
-            all_listings.append(j)
-            gh_count += 1
-    print(f"✅ Ingested {gh_count} verified Global tech, quant & engineering opportunities.")
-
-    # 3. Arbeitnow Remote API
-    print("☁️ [3/3] Ingesting Arbeitnow Remote Opportunities...")
-    try:
-        headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
-        resp = requests.get("https://www.arbeitnow.com/api/job-board-api", headers=headers, timeout=12)
-        if resp.status_code == 200:
-            data = resp.json()
-            jobs_data = data.get("data", [])
-            arbeit_count = 0
-            for item in jobs_data:
-                title = str(item.get("title") or "")
-                comp = str(item.get("company_name") or "Global Remote")
-                loc = str(item.get("location") or "Remote / Worldwide")
-                url = str(item.get("url") or "")
-                desc = str(item.get("description") or "")
-                tags = [t.lower() for t in item.get("tags", [])]
-
-                # Determine discipline
-                discipline = "Science & Tech"
-                if any(t in tags for t in ["finance", "business", "accounting", "operations", "sales", "marketing"]):
-                    discipline = "Commerce & Banking"
-                elif any(t in tags for t in ["design", "writing", "content", "hr", "legal"]):
-                    discipline = "Arts & Media"
-
-                listing = JobListing(
-                    title=f"{title} ({comp})",
-                    company=comp,
-                    location=loc,
-                    url=url,
-                    description=desc[:1500] if desc else f"Remote opportunity at {comp}.",
-                    source="ArbeitnowRemote",
-                    is_internship=True,
-                    location_scope="global",
-                    discipline=discipline,
-                    deadline="Rolling Application",
-                    application_channel="web"
-                )
-                if listing.id not in seen_ids:
-                    seen_ids.add(listing.id)
-                    all_listings.append(listing)
-                    arbeit_count += 1
-            print(f"✅ Ingested {arbeit_count} remote opportunities from Arbeitnow.")
-    except Exception as e:
-        print(f"⚠️ Arbeitnow ingestion error: {e}")
-
-    print(f"\n🎉 Total aggregated listings: {len(all_listings)}")
+    print(f"\n🎉 Total verified Bangladesh listings: {len(all_listings)}")
 
     # Convert to JSON serializable dictionaries
     seed_data = []
@@ -141,6 +84,11 @@ def main():
     db_file = BASE_DIR / "data" / "applications.db"
     tracker = ApplicationTracker(db_path=db_file)
     with tracker._get_connection() as conn:
+        # Purge any unverified or global listings
+        deleted = conn.execute("DELETE FROM jobs WHERE location_scope = 'global' OR location_scope IS NULL OR source IN ('Jobicy', 'Remotive', 'Test')").rowcount
+        if deleted:
+            print(f"🧹 Purged {deleted} global/unverified postings from database.")
+
         for s in seed_data:
             conn.execute("""
                 INSERT INTO jobs (

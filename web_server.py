@@ -293,6 +293,12 @@ class DashboardHandler(BaseHTTPRequestHandler):
             try:
                 resume_bytes = base64.b64decode(file_base64)
                 res = user_manager.update_user_cv(user["id"], resume_bytes, filename)
+                if res.get("success"):
+                    try:
+                        profile = CandidateProfile.from_pdf_bytes(resume_bytes, settings=self.bot.settings)
+                        res["profile"] = profile.get_structured_profile()
+                    except Exception:
+                        pass
                 self._send_json(res)
             except Exception as e:
                 self._send_json({"success": False, "message": f"Upload failed: {e}"})
