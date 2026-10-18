@@ -1,20 +1,24 @@
-﻿"""Job Aggregator combining ALL scrapers — Bangladesh-focused + remote boards."""
+"""Job Aggregator combining ALL scrapers — Bangladesh-focused + remote boards."""
 from typing import List
 from src.config import AppSettings, load_settings
 from src.scrapers.base import JobListing
 from src.scrapers.remote_boards import JobicyScraper, RemotiveScraper
 from src.scrapers.linkedin_guest import LinkedInGuestScraper
 from src.scrapers.bangladesh_companies import BangladeshCompanyScraper
+from src.scrapers.bd_catalog import BangladeshCatalogScraper
+from src.scrapers.github_internships import GithubInternshipsScraper
 
 
 class JobAggregator:
     def __init__(self, settings: AppSettings = None):
         self.settings = settings or load_settings()
         self.scrapers = [
-            BangladeshCompanyScraper(),   # Priority 1: Every major BD company/bank/NGO
-            LinkedInGuestScraper(),        # Priority 2: General LinkedIn Bangladesh search
-            JobicyScraper(),               # Priority 3: Remote finance boards
-            RemotiveScraper(),             # Priority 4: Remote business/finance boards
+            BangladeshCatalogScraper(),   # Verified catalog: 985 BD positions (Banks, MNCs, NGOs, Pharma, Tech)
+            GithubInternshipsScraper(),   # Verified index: 1,820+ Global tech, data, finance internships
+            JobicyScraper(),              # Global remote internships
+            RemotiveScraper(),            # Remote business & finance internships
+            BangladeshCompanyScraper(),   # Dynamic BD company queries
+            LinkedInGuestScraper(),       # Dynamic LinkedIn BD search
         ]
 
     def fetch_all(self) -> List[JobListing]:

@@ -472,13 +472,14 @@
   <div class="card shadow-sm mb-4 p-4" style="background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%); color: #fff; border: 1px solid rgba(255,255,255,0.1);">
     <div class="row align-items-center g-4">
       <div class="col-lg-7">
-        <div class="d-flex align-items-center gap-2 mb-3">
-          <span class="hero-badge-header"><i class="fa-solid fa-atom me-1"></i> Universal Multi-Discipline</span>
+        <div class="d-flex align-items-center gap-2 mb-3 flex-wrap">
+          <span class="hero-badge-header"><i class="fa-solid fa-bolt me-1"></i> 3,100+ Live Opportunities</span>
           <span class="hero-badge-tag"><i class="fa-solid fa-layer-group me-1"></i> Science • Commerce • Arts • Tech</span>
+          <span class="badge" style="background: rgba(56, 189, 248, 0.2); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.4); font-size: 0.8rem; font-weight: 600;"><i class="fa-solid fa-earth-americas me-1"></i> Bangladesh &amp; Global</span>
         </div>
         <h2 class="fw-bold mb-3 text-white" style="letter-spacing: -0.02em;">Find Internships Aligned With Your CV 🎯</h2>
         <p class="hero-subtitle mb-4">
-          Upload your resume in PDF. Our AI reads your background—whether in <strong class="text-white">Science, Commerce, Arts, or Tech</strong>—scans 100+ Bangladesh companies, banks, MNCs, NGOs &amp; remote boards, calculates personalized match scores, and drafts tailored outreach pitches.
+          Upload your resume in PDF. Our AI reads your background—whether in <strong class="text-white">Science, Commerce, Arts, or Tech</strong>—scans <strong>3,100+ active positions</strong> across 120+ Bangladesh banks, MNCs, NGOs, pharmaceuticals and top global technology giants (Google, Meta, Microsoft, Apple, Remote), calculates personalized alignment scores, and drafts tailored outreach pitches.
         </p>
         <div class="d-flex flex-wrap gap-2">
           <span class="hero-discipline-pill hero-pill-science"><i class="fa-solid fa-flask me-2"></i> Science &amp; Tech</span>
@@ -1087,6 +1088,8 @@
 <script>
 let allJobs = [];
 let displayedJobs = [];
+let jobsPage = 1;
+const JOBS_PAGE_SIZE = 30;
 let currentUser = null;
 let guestProfile = null;
 let currentSector = 'All';
@@ -1669,12 +1672,13 @@ function filterJobs() {
     return matchesSector && matchesScope && matchesChannel && matchesQuery;
   });
 
-  renderJobs();
+  renderJobs(true);
 }
 
-function renderJobs() {
+function renderJobs(reset = true) {
+  if (reset) jobsPage = 1;
   const list = document.getElementById('jobList');
-  list.innerHTML = '';
+  if (reset) list.innerHTML = '';
   document.getElementById('countLabel').innerText = `${displayedJobs.length} Opportunities`;
 
   if (!displayedJobs.length) {
@@ -1685,10 +1689,17 @@ function renderJobs() {
         <p class="text-secondary small mb-0">Try clearing your search query or selecting a different sector filter.</p>
       </div>
     </div>`;
+    removeLoadMoreBtn();
     return;
   }
 
-  displayedJobs.forEach(job => {
+  removeLoadMoreBtn();
+
+  const startIdx = (jobsPage - 1) * JOBS_PAGE_SIZE;
+  const endIdx = Math.min(jobsPage * JOBS_PAGE_SIZE, displayedJobs.length);
+  const currentBatch = displayedJobs.slice(startIdx, endIdx);
+
+  currentBatch.forEach(job => {
     const score = job.match_score || 55;
     const scClass = score >= 80 ? 'score-high' : score >= 65 ? 'score-med' : 'score-low';
     const isEmail = job.application_channel === 'email' && job.contact_email;
@@ -1758,7 +1769,35 @@ function renderJobs() {
       </div>`;
     list.appendChild(card);
   });
+
+  if (endIdx < displayedJobs.length) {
+    const moreWrapper = document.createElement('div');
+    moreWrapper.id = 'loadMoreJobsWrapper';
+    moreWrapper.className = 'col-12 text-center py-4 my-2';
+    moreWrapper.innerHTML = `
+      <div class="p-3 shadow-sm border d-inline-block text-center bg-white" style="border-radius: 16px;">
+        <div class="text-secondary small mb-2 fw-semibold">
+          Showing <span class="text-primary fw-bold">${endIdx}</span> of <span class="text-dark fw-bold">${displayedJobs.length}</span> opportunities
+        </div>
+        <button class="btn btn-primary px-4 py-2 rounded-pill fw-bold shadow-sm" onclick="loadMoreJobs()">
+          <i class="fa-solid fa-angles-down me-2"></i> Show More Opportunities (+${Math.min(JOBS_PAGE_SIZE, displayedJobs.length - endIdx)})
+        </button>
+      </div>
+    `;
+    list.appendChild(moreWrapper);
+  }
 }
+
+function loadMoreJobs() {
+  jobsPage++;
+  renderJobs(false);
+}
+
+function removeLoadMoreBtn() {
+  const existing = document.getElementById('loadMoreJobsWrapper');
+  if (existing) existing.remove();
+}
+
 
 async function openPitchModal(jobId) {
   const job = allJobs.find(j => String(j.id) === String(jobId));

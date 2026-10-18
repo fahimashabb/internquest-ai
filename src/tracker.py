@@ -39,7 +39,10 @@ class ApplicationTracker:
                     status TEXT NOT NULL,
                     found_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     applied_at TIMESTAMP,
-                    notes TEXT
+                    notes TEXT,
+                    deadline TEXT,
+                    location_scope TEXT DEFAULT 'bangladesh',
+                    discipline TEXT DEFAULT 'General'
                 )
             """)
             conn.execute("""
@@ -50,6 +53,15 @@ class ApplicationTracker:
                     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )
             """)
+            # Migration: Ensure all columns exist
+            cur = conn.execute("PRAGMA table_info(jobs)")
+            cols = [r[1] for r in cur.fetchall()]
+            if "deadline" not in cols:
+                conn.execute("ALTER TABLE jobs ADD COLUMN deadline TEXT")
+            if "location_scope" not in cols:
+                conn.execute("ALTER TABLE jobs ADD COLUMN location_scope TEXT DEFAULT 'bangladesh'")
+            if "discipline" not in cols:
+                conn.execute("ALTER TABLE jobs ADD COLUMN discipline TEXT DEFAULT 'General'")
             conn.commit()
 
             # Auto-seed initial opportunities if table is empty
@@ -66,13 +78,17 @@ class ApplicationTracker:
                                 INSERT OR IGNORE INTO jobs (
                                     id, title, company, location, url, source, contact_email,
                                     is_internship, match_score, match_rationale, tailored_email_subject,
-                                    tailored_cover_letter, application_channel, status, found_at
-                                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                                    tailored_cover_letter, application_channel, status, found_at,
+                                    deadline, location_scope, discipline
+                                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                             """, (
                                 s.get("id"), s.get("title"), s.get("company"), s.get("location"),
                                 s.get("url"), s.get("source"), s.get("contact_email"),
-                                s.get("is_internship", 1), 0, "", "", "",
-                                "web", "NEW", s.get("found_at")
+                                s.get("is_internship", 1), s.get("match_score", 0), s.get("match_rationale", ""),
+                                s.get("tailored_email_subject", ""), s.get("tailored_cover_letter", ""),
+                                s.get("application_channel", "web"), s.get("status", "NEW"), s.get("found_at"),
+                                s.get("deadline", "Open / Rolling"), s.get("location_scope", "bangladesh"),
+                                s.get("discipline", "General")
                             ))
                         conn.commit()
             except Exception:

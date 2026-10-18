@@ -733,9 +733,18 @@ def main():
 
     evaluated_jobs.sort(key=lambda x: x["score"], reverse=True)
 
-    st.write(f"Showing **{len(evaluated_jobs)}** internships matching your criteria:")
+    col_meta1, col_meta2 = st.columns([0.7, 0.3])
+    with col_meta1:
+        st.write(f"Found **{len(evaluated_jobs)}** total matching internships (Database: **{len(all_jobs):,}** available):")
+    with col_meta2:
+        display_cap = st.selectbox("Display Limit:", [50, 100, 200, "All"], index=0, key="display_cap_select")
 
-    for idx, item in enumerate(evaluated_jobs):
+    limit_n = len(evaluated_jobs) if display_cap == "All" else int(display_cap)
+    items_to_render = evaluated_jobs[:limit_n]
+    if len(evaluated_jobs) > limit_n:
+        st.info(f"Showing top **{limit_n}** highest-match opportunities (ranked by CV alignment) of **{len(evaluated_jobs)}** available matches.")
+
+    for idx, item in enumerate(items_to_render):
         j = item["job"]
         score = item["score"]
         badge_class = "badge-high" if score >= 80 else ("badge-med" if score >= 65 else "badge-low")

@@ -23,7 +23,7 @@ class JobListing(BaseModel):
     tailored_cover_letter: Optional[str] = None
     application_channel: str = "web"  # "email" or "web"
     deadline: Optional[str] = None
-    location_scope: str = "bangladesh"  # "bangladesh" or "global"
+    location_scope: Optional[str] = None  # "bangladesh" or "global"
     discipline: str = "General"
     created_at: str = Field(default_factory=lambda: datetime.now().isoformat())
 
@@ -33,11 +33,13 @@ class JobListing(BaseModel):
             raw = f"{self.company.lower()}:{self.title.lower()}:{self.url.strip()}"
             self.id = hashlib.sha256(raw.encode("utf-8")).hexdigest()[:16]
 
-        loc_low = self.location.lower()
-        if any(g in loc_low for g in ["remote", "worldwide", "global", "apac", "usa", "canada", "europe", "uk", "singapore", "india"]):
-            self.location_scope = "global"
-        else:
-            self.location_scope = "bangladesh"
+        if not self.location_scope:
+            loc_low = self.location.lower()
+            bd_indicators = ["bangladesh", "dhaka", "chittagong", "sylhet", "rajshahi", "khulna", "barisal", "rangpur", "gazipur", "narayanganj", "comilla", "mymensingh"]
+            if any(b in loc_low for b in bd_indicators):
+                self.location_scope = "bangladesh"
+            else:
+                self.location_scope = "global"
 
 
 class BaseScraper(ABC):

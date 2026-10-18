@@ -50,7 +50,7 @@ search:
     - "Chittagong"
     - "Remote"
     - "Worldwide"
-  max_results_per_source: 25
+  max_results_per_source: 3500
 
 filtering:
   min_match_score: 60
