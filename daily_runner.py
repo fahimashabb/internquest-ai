@@ -1,4 +1,8 @@
-﻿"""Daily automated search runner executed by Windows Task Scheduler."""
+"""
+Daily automated search runner executed by Windows Task Scheduler at 10:00 AM.
+Scrapes, filters authentic student business internships, cross-checks all URLs (HTTP 200),
+updates the JSON & website, syncs to GitHub Pages, and triggers a desktop notification.
+"""
 import os
 import sys
 from datetime import datetime
@@ -11,8 +15,7 @@ os.chdir(BASE_DIR)
 if str(BASE_DIR) not in sys.path:
     sys.path.insert(0, str(BASE_DIR))
 
-from src.config import load_settings
-from src.scheduler import InternshipBot
+from src.internship_auto_updater import run_daily_update
 from src.notifier import show_desktop_notification
 
 
@@ -21,45 +24,38 @@ def main():
     log_file.parent.mkdir(parents=True, exist_ok=True)
 
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    header = f"[{timestamp}] Running 10:00 AM Daily Internship Search..."
+    header = f"[{timestamp}] 🚀 Running 10:00 AM Daily Internship Placement Discovery..."
     print(header)
 
     with open(log_file, "a", encoding="utf-8") as f:
         f.write(f"\n{header}\n")
 
     try:
-        settings = load_settings()
-        bot = InternshipBot(settings)
-        matched_count = bot.run_discovery_cycle()
+        # Run autonomous daily discovery, verification & GitHub deployment
+        verified_count = run_daily_update()
 
-        msg = f"Completed 10:00 AM scan. {matched_count} new matching opportunities found."
+        msg = f"[{datetime.now().strftime('%H:%M:%S')}] ✅ Completed 10:00 AM scan: {verified_count} verified authentic internship placements active."
         print(msg)
         with open(log_file, "a", encoding="utf-8") as f:
-            f.write(f"[{datetime.now().strftime('%H:%M:%S')}] {msg}\n")
+            f.write(f"{msg}\n")
 
-        # Desktop notification
-        if matched_count > 0:
+        # Desktop toast notification
+        if verified_count > 0:
             show_desktop_notification(
                 title="🎯 Internship Hunter (10:00 AM Scan)",
-                message=f"Found {matched_count} new finance/banking internships matching your CV!"
+                message=f"Daily scan complete! {verified_count} verified business internships active & published."
             )
         else:
             show_desktop_notification(
                 title="🎯 Internship Hunter (10:00 AM Scan)",
-                message="Daily search complete! No new postings today. Existing matches are saved."
+                message="Daily search complete! All existing links verified."
             )
 
-        # Autopilot processing if enabled
-        if settings.application.mode == "autopilot":
-            applied = bot.apply_pending(interactive=False)
-            with open(log_file, "a", encoding="utf-8") as f:
-                f.write(f"[{datetime.now().strftime('%H:%M:%S')}] Autopilot applied to {applied} opportunities.\n")
-
     except Exception as e:
-        err = f"Error during daily run: {e}"
+        err = f"[{datetime.now().strftime('%H:%M:%S')}] ❌ ERROR during daily run: {e}"
         print(err)
         with open(log_file, "a", encoding="utf-8") as f:
-            f.write(f"[{datetime.now().strftime('%H:%M:%S')}] ERROR: {err}\n")
+            f.write(f"{err}\n")
 
 
 if __name__ == "__main__":

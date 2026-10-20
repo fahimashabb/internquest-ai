@@ -1,0 +1,44 @@
+name: Daily 10:00 AM Internship Placement Scan
+
+on:
+  schedule:
+    # 04:00 UTC = 10:00 AM Bangladesh Standard Time (BST, UTC+6) daily
+    - cron: '0 4 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  daily-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests beautifulsoup4
+
+      - name: Run Internship Placement Discovery & Verification Engine
+        run: |
+          python src/internship_auto_updater.py
+
+      - name: Commit & Push Daily Updates
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/business_internships.json index.html web/index.html || true
+          if git diff --staged --quiet; then
+            echo "No changes in internship placements today."
+          else
+            git commit -m "auto: daily 10:00 AM verified internship placements update [$(date +'%Y-%m-%d')]"
+            git push origin main
+          fi
