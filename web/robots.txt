@@ -1,4 +1,3 @@
 User-agent: *
 Allow: /
-
 Sitemap: https://fahimashabb.github.io/internquest-ai/sitemap.xml

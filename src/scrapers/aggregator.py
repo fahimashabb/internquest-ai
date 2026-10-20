@@ -2,18 +2,19 @@
 from typing import List
 from src.config import AppSettings, load_settings
 from src.scrapers.base import JobListing
+from src.scrapers.remote_boards import JobicyScraper, RemotiveScraper
 from src.scrapers.linkedin_guest import LinkedInGuestScraper
 from src.scrapers.bangladesh_companies import BangladeshCompanyScraper
-from src.scrapers.bd_catalog import BangladeshCatalogScraper
 
 
 class JobAggregator:
     def __init__(self, settings: AppSettings = None):
         self.settings = settings or load_settings()
         self.scrapers = [
-            BangladeshCatalogScraper(),   # Verified catalog: 985 BD positions across 120+ top employers
-            BangladeshCompanyScraper(),   # Dynamic Bangladesh company queries
-            LinkedInGuestScraper(),       # Dynamic LinkedIn Bangladesh search
+            BangladeshCompanyScraper(),   # Priority 1: Every major BD company/bank/NGO
+            LinkedInGuestScraper(),        # Priority 2: General LinkedIn Bangladesh search
+            JobicyScraper(),               # Priority 3: Remote finance boards
+            RemotiveScraper(),             # Priority 4: Remote business/finance boards
         ]
 
     def fetch_all(self) -> List[JobListing]:

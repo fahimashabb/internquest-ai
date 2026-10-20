@@ -39,107 +39,10 @@ class ApplicationTracker:
                     status TEXT NOT NULL,
                     found_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     applied_at TIMESTAMP,
-                    notes TEXT,
-                    deadline TEXT,
-                    location_scope TEXT DEFAULT 'bangladesh',
-                    discipline TEXT DEFAULT 'General'
+                    notes TEXT
                 )
             """)
-            conn.execute("""
-                CREATE TABLE IF NOT EXISTS activity_log (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    activity_type TEXT NOT NULL,
-                    details TEXT NOT NULL,
-                    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                )
-            """)
-            # Migration: Ensure all columns exist
-            cur = conn.execute("PRAGMA table_info(jobs)")
-            cols = [r[1] for r in cur.fetchall()]
-            if "deadline" not in cols:
-                conn.execute("ALTER TABLE jobs ADD COLUMN deadline TEXT")
-            if "location_scope" not in cols:
-                conn.execute("ALTER TABLE jobs ADD COLUMN location_scope TEXT DEFAULT 'bangladesh'")
-            if "discipline" not in cols:
-                conn.execute("ALTER TABLE jobs ADD COLUMN discipline TEXT DEFAULT 'General'")
             conn.commit()
-
-            # Auto-seed initial opportunities if table is empty
-            try:
-                cursor = conn.execute("SELECT COUNT(*) FROM jobs")
-                if cursor.fetchone()[0] == 0:
-                    seed_file = self.db_path.parent / "seed_jobs.json"
-                    if seed_file.exists():
-                        import json
-                        with open(seed_file, "r", encoding="utf-8") as sf:
-                            seeds = json.load(sf)
-                        for s in seeds:
-                            conn.execute("""
-                                INSERT OR IGNORE INTO jobs (
-                                    id, title, company, location, url, source, contact_email,
-                                    is_internship, match_score, match_rationale, tailored_email_subject,
-                                    tailored_cover_letter, application_channel, status, found_at,
-                                    deadline, location_scope, discipline
-                                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                            """, (
-                                s.get("id"), s.get("title"), s.get("company"), s.get("location"),
-                                s.get("url"), s.get("source"), s.get("contact_email"),
-                                s.get("is_internship", 1), s.get("match_score", 0), s.get("match_rationale", ""),
-                                s.get("tailored_email_subject", ""), s.get("tailored_cover_letter", ""),
-                                s.get("application_channel", "web"), s.get("status", "NEW"), s.get("found_at"),
-                                s.get("deadline", "Open / Rolling"), s.get("location_scope", "bangladesh"),
-                                s.get("discipline", "General")
-                            ))
-                        conn.commit()
-            except Exception:
-                pass
-
-    def log_activity(self, activity_type: str, details: str) -> None:
-        try:
-            with self._get_connection() as conn:
-                conn.execute(
-                    "INSERT INTO activity_log (activity_type, details) VALUES (?, ?)",
-                    (activity_type, details)
-                )
-                conn.commit()
-        except Exception:
-            pass
-
-    def get_all_jobs(self, include_expired: bool = False, scope: Optional[str] = None) -> List[Dict[str, Any]]:
-        """Retrieve stored jobs, optionally filtering by location scope and excluding expired."""
-        query = "SELECT * FROM jobs"
-        clauses = []
-        params = []
-        if not include_expired:
-            clauses.append("status != 'EXPIRED'")
-        if scope and scope.lower() in ("bangladesh", "global"):
-            clauses.append("location_scope = ?")
-            params.append(scope.lower())
-        if clauses:
-            query += " WHERE " + " AND ".join(clauses)
-        query += " ORDER BY found_at DESC"
-        with self._get_connection() as conn:
-            cur = conn.execute(query, params)
-            return [dict(r) for r in cur.fetchall()]
-
-    def expire_closed_jobs(self) -> int:
-        """Mark jobs as EXPIRED if past explicit application deadline or older than 90 days."""
-        today_str = date.today().isoformat()
-        with self._get_connection() as conn:
-            cur = conn.execute("""
-                UPDATE jobs 
-                SET status = 'EXPIRED'
-                WHERE status != 'EXPIRED' 
-                  AND (
-                    (deadline IS NOT NULL AND deadline != '' AND deadline < ?)
-                    OR (julianday('now') - julianday(found_at) > 90)
-                  )
-            """, (today_str,))
-            expired_count = cur.rowcount
-            conn.commit()
-        if expired_count > 0:
-            self.log_activity("JOBS_EXPIRED", f"Archived {expired_count} closed internship positions past deadline.")
-        return expired_count
 
     def has_job(self, job_id: str) -> bool:
         with self._get_connection() as conn:
@@ -153,25 +56,21 @@ class ApplicationTracker:
                     id, title, company, location, url, source, contact_email,
                     is_internship, match_score, match_rationale,
                     tailored_email_subject, tailored_cover_letter,
-                    application_channel, status, deadline, location_scope, discipline, notes
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    application_channel, status, notes
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ON CONFLICT(id) DO UPDATE SET
                     match_score = excluded.match_score,
                     match_rationale = excluded.match_rationale,
                     tailored_email_subject = excluded.tailored_email_subject,
                     tailored_cover_letter = excluded.tailored_cover_letter,
                     status = CASE WHEN jobs.status = 'FOUND' THEN excluded.status ELSE jobs.status END,
-                    deadline = COALESCE(excluded.deadline, jobs.deadline),
-                    location_scope = COALESCE(excluded.location_scope, jobs.location_scope),
                     contact_email = COALESCE(excluded.contact_email, jobs.contact_email),
                     notes = COALESCE(excluded.notes, jobs.notes)
             """, (
                 job.id, job.title, job.company, job.location, job.url, job.source,
                 job.contact_email, job.is_internship, job.match_score, job.match_rationale,
                 job.tailored_email_subject, job.tailored_cover_letter,
-                job.application_channel, status, getattr(job, "deadline", None),
-                getattr(job, "location_scope", "bangladesh"), getattr(job, "discipline", "General"),
-                notes
+                job.application_channel, status, notes
             ))
             conn.commit()
 
@@ -254,48 +153,3 @@ class ApplicationTracker:
 
         target.write_text("\n".join(lines), encoding="utf-8")
         return target
-
-    def delete_job_admin(self, job_id: str) -> bool:
-        """Delete a job listing by its ID."""
-        with self._get_connection() as conn:
-            conn.execute("DELETE FROM jobs WHERE id = ?", (job_id,))
-            conn.commit()
-        return True
-
-    def add_job_admin(
-        self,
-        title: str,
-        company: str,
-        location: str = "Dhaka",
-        url: str = "#",
-        contact_email: str = "",
-        is_internship: bool = True,
-        match_score: int = 75,
-        source: str = "Admin Portal"
-    ) -> str:
-        """Manually add an internship opportunity from the Admin Panel."""
-        import hashlib
-        job_id = hashlib.md5(f"{company}_{title}_{url}".encode("utf-8")).hexdigest()[:12]
-        with self._get_connection() as conn:
-            conn.execute("""
-                INSERT OR REPLACE INTO jobs (
-                    id, title, company, location, url, source, contact_email,
-                    is_internship, match_score, match_rationale, tailored_email_subject,
-                    tailored_cover_letter, application_channel, status, found_at
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
-            """, (
-                job_id, title, company, location, url, source, contact_email,
-                1 if is_internship else 0, match_score, "Verified by Platform Administrator",
-                f"Application: {title} - [Applicant Name]", "",
-                "email" if contact_email else "web", "MATCHED"
-            ))
-            conn.commit()
-        self.log_activity("ADMIN_ADD_JOB", f"Admin posted new listing: '{title}' at '{company}'")
-        return job_id
-
-    def get_recent_activity(self, limit: int = 50) -> List[Dict[str, Any]]:
-        """Fetch recent system activity and audit logs."""
-        with self._get_connection() as conn:
-            cur = conn.execute("SELECT * FROM activity_log ORDER BY timestamp DESC LIMIT ?", (limit,))
-            return [dict(r) for r in cur.fetchall()]
-

@@ -17,14 +17,14 @@ load_dotenv(dotenv_path=ENV_FILE)
 
 
 class CandidateConfig(BaseModel):
-    name: str = "Candidate"
-    email: str = ""
-    phone: str = ""
-    linkedin: str = ""
-    location: str = "Bangladesh"
-    degree: str = "Student / Graduate"
-    institution: str = "University"
-    resume_path: str = ""
+    name: str = "Business & Commerce Graduate"
+    email: str = "applicant@example.com"
+    phone: str = "+880 1700-000000"
+    linkedin: str = "https://linkedin.com/in/business-student"
+    location: str = "Dhaka, Bangladesh"
+    degree: str = "Bachelor of Business Administration (BBA) / Commerce"
+    institution: str = "University in Bangladesh"
+    resume_path: str = "data/sample_resume.pdf"
     interests: List[str] = Field(default_factory=list)
 
 
@@ -41,14 +41,14 @@ class FilteringConfig(BaseModel):
 
 class ApplicationConfig(BaseModel):
     mode: str = "supervised"
-    dry_run: bool = False
+    dry_run: bool = True
     daily_email_limit: int = 5
     email_subject_template: str = "Application for {role} - {candidate_name}"
-    sender_name: str = "Fahim Ashab"
+    sender_name: str = "Business Intern Applicant"
 
 
 class ScheduleConfig(BaseModel):
-    run_daily_at: str = "08:30"
+    run_daily_at: str = "10:00"
 
 
 class AppSettings(BaseModel):
@@ -62,7 +62,7 @@ class AppSettings(BaseModel):
     gemini_api_key: Optional[str] = None
     email_host: str = "smtp.gmail.com"
     email_port: int = 587
-    email_user: str = "fahimashabofficial@gmail.com"
+    email_user: str = "applicant@example.com"
     email_password: str = ""
     dry_run_override: Optional[bool] = None
 
@@ -73,9 +73,7 @@ class AppSettings(BaseModel):
         return self.application.dry_run
 
     @property
-    def absolute_resume_path(self) -> Optional[Path]:
-        if not self.candidate.resume_path:
-            return None
+    def absolute_resume_path(self) -> Path:
         rel = Path(self.candidate.resume_path)
         if rel.is_absolute():
             return rel

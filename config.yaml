@@ -1,68 +1,49 @@
 candidate:
-  name: "Candidate"
-  email: ""
-  phone: ""
-  linkedin: ""
-  location: "Bangladesh"
-  degree: "Student / Graduate"
-  institution: "University"
-  resume_path: ""
+  name: "Business & Commerce Graduate"
+  email: "applicant@example.com"
+  phone: "+880 1700-000000"
+  linkedin: "https://linkedin.com/in/business-student"
+  location: "Dhaka, Bangladesh"
+  degree: "Bachelor of Business Administration (BBA) / Commerce"
+  institution: "University in Bangladesh"
+  resume_path: "data/sample_resume.pdf"
   interests:
-    - "Software Engineering & Computer Science"
-    - "Data Science & Artificial Intelligence"
-    - "Finance, Banking & Accounting"
-    - "Marketing, Communications & Content"
-    - "Business Operations & Supply Chain"
-    - "Biotech, Pharma & Health Sciences"
-    - "Humanities, Design, Media & Law"
+    - "Financial Analysis & Valuation"
+    - "Corporate Budgeting & Financial Modeling"
+    - "Banking & Retail Banking Operations"
+    - "Marketing & Brand Strategy"
+    - "Supply Chain & Procurement"
+    - "Accounting & Audit"
+    - "FinTech & Digital Financial Services"
 
 search:
   keywords:
-    # Science, Tech & Engineering
-    - "Software Engineer Intern"
-    - "Computer Science Intern"
-    - "Data Science Intern"
-    - "Web Developer Intern"
-    - "IT Intern"
-    - "Electrical Engineer Intern"
-    - "Civil Engineer Intern"
-    - "Pharma Intern"
-    - "Biotech Intern"
-    # Commerce, Banking & Business
     - "Finance Intern"
+    - "Financial Analyst Intern"
     - "Banking Intern"
-    - "Accounting Intern"
-    - "Business Analyst Intern"
     - "Marketing Intern"
-    - "HR Intern"
     - "Supply Chain Intern"
-    # Arts, Media, Design & Humanities
-    - "Content Writing Intern"
-    - "Graphic Design Intern"
-    - "UI/UX Intern"
-    - "Communications Intern"
-    - "Legal Intern"
-    - "Research Assistant Intern"
-    - "NGO Intern"
+    - "Accounting Intern"
+    - "Business Operations Intern"
+    - "Corporate Finance Intern"
+    - "FinTech Intern"
   locations:
     - "Bangladesh"
     - "Dhaka"
-    - "Chittagong"
-    - "Sylhet"
-    - "Rajshahi"
-    - "Khulna"
-  max_results_per_source: 3500
+    - "Remote"
+    - "Worldwide"
+  max_results_per_source: 25
 
 filtering:
-  min_match_score: 60
+  min_match_score: 65 # 0-100 threshold evaluated by Gemini
   require_internship: true
 
 application:
-  mode: "supervised"
-  dry_run: false
+  mode: "supervised" # "supervised" (requires confirmation) or "autopilot"
+  dry_run: true      # Set to false only when ready to send live emails
   daily_email_limit: 5
   email_subject_template: "Application for {role} - {candidate_name}"
-  sender_name: "Candidate"
+  sender_name: "Business Intern Applicant"
 
 schedule:
-  run_daily_at: "10:00"
+  run_daily_at: "10:00" # 24h format (e.g. 10:00 AM local time)

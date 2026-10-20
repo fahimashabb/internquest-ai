@@ -1,34 +1,26 @@
-# Virtual Environment
+# Environment & Secrets
+.env
+.env.*
+!.env.example
+
+# Python virtual environment & bytecode
 .venv/
 venv/
-env/
-ENV/
-
-# Environment Variables & Secrets (CRITICAL: Do NOT commit credentials)
-.env
-.env.local
-*.env
-
-# Python bytecode & cache
 __pycache__/
 *.py[cod]
 *$py.class
-*.egg-info/
-dist/
-build/
 
-# Logs
-*.log
-daily_runs.log
-
-# Private personal files
-data/*Resume*.pdf
-data/private/
-data/*.db
-data/*.sqlite3
+# Local Databases & Logs
 *.db
+*.sqlite3
+*.log
+data/*.db
+data/*.log
 
-# OS artifacts
+# Personal files & resumes
+*.pdf
+*.docx
+
+# OS metadata
 .DS_Store
 Thumbs.db
-desktop.ini

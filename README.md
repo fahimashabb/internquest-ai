@@ -1,71 +1,85 @@
-# 🎯 Internship Hunter AI - Bangladesh's #1 Verified Internship Discovery & ATS CV Scanner
+# 💼 BizIntern BD — Premier Business & Commerce Internship Hub
 
-A modern, multi-user AI platform designed to help students and graduates in Bangladesh discover genuine, active corporate internships and generate tailored outreach materials.
+[![GitHub Pages](https://img.shields.io/badge/Live_Website-GitHub_Pages-indigo?style=for-the-badge&logo=github)](https://fahimashabb.github.io/internquest-ai/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-emerald?style=for-the-badge)](LICENSE)
+[![Target Audience](https://img.shields.io/badge/Audience-BBA_%26_Commerce_Students-blue?style=for-the-badge)](#)
 
-Features:
-- **100% Verified Bangladesh Internships**: Purged of junk, expired, and broken links. 1,000+ active positions across Bangladesh banks, fintechs, conglomerates, pharmaceuticals, MNCs, and tech firms.
-- **Strict 3 Student Categories**:
-  1. `🧪 Science & Tech` (CSE, EEE, Biotech, Pharmacy, Software Engineering, IT)
-  2. `📈 Business & Commerce` (Finance, Banking, Accounting, Marketing, Supply Chain, BBA)
-  3. `🎨 Arts & Social Science` (Media, Communications, English, Design, Law, Economics)
-- **High-Precision ATS Resume Compatibility Scorer (0-100)**: Evaluates resumes against automated HR applicant tracking systems with a 5-factor breakdown and actionable tips.
-- **Latest Institution Hierarchy**: Chronologically prioritizes university of study (e.g., Jashore University of Science and Technology (JUST)) over secondary/intermediate colleges.
-- **Custom 4-Paragraph Tailored Cover Letter Generator**: Generates formal letters and LinkedIn/email pitches aligned with job requirements.
-- **10:00 AM Daily Morning Auto-Refresh & Alerts**: Registered profiles are refreshed every morning at 10:00 AM with customized digests.
-- **Frictionless Guest Mode (< 10 MB)**: Anyone can scan their CV (under 10 MB) without mandatory registration.
+> **Live Website**: [https://fahimashabb.github.io/internquest-ai/](https://fahimashabb.github.io/internquest-ai/)
+
+**BizIntern BD** is a free, open-access internship discovery platform curated specifically for **Business and Commerce students** across Bangladesh and global remote channels.
+
+It aggregates and curates verified corporate internships from **130+ premier institutions**—including top multinationals, commercial banks, industrial conglomerates, FinTech leaders, audit firms, and international development agencies.
 
 ---
 
-## 🚀 Running Locally
+## 🌟 Key Features
 
-### Option 1: Modern Web Dashboard
-Double-click **`Start_Dashboard.bat`** (or run via terminal):
-```powershell
-.\.venv\Scripts\python.exe web_server.py
-```
-Open your browser at **`http://localhost:5000`**.
+1. **Ranked by Corporate Prestige & Market Value**:
+   - ⭐ **Tier 1**: Premier Multinationals & Foreign Banks (*Unilever, BAT, Nestlé, Standard Chartered, HSBC, Marico, Grameenphone, Big 4 Audit*)
+   - 🏛️ **Tier 2**: Leading Commercial Banks & FinTechs (*BRAC Bank, City Bank, Eastern Bank, bKash, Nagad, IDLC, IPDC*)
+   - 🏢 **Tier 3**: Top Industrial Conglomerates & FMCG Giants (*Square, Beximco, ACI, Meghna, Walton, PRAN-RFL, Apex*)
+   - 🌍 **Tier 4**: International Development & UN Agencies (*UNDP, BRAC International, Save the Children, CARE*)
+   - 🚀 **Tier 5**: High-Growth Startups & Remote Global Commerce (*ShopUp, Pathao, 10 Minute School, Jobicy/Remotive*)
 
-### Option 2: Streamlit Public Web UI
-Double-click **`Start_Streamlit_Public_App.bat`** (or run via terminal):
-```powershell
-.\.venv\Scripts\streamlit.exe run streamlit_app.py
-```
-Open your browser at **`http://localhost:8501`**.
+2. **Direct Official Postings**:
+   - Every role includes a direct **"See Original Post ↗"** button that opens the verified listing on LinkedIn, BDJobs, or the company's official career portal.
 
----
+3. **Curated Across All Business Sub-Disciplines**:
+   - 💼 **Finance & Banking**: Credit Analysis, Treasury Operations, Financial Modeling, Corporate Lending
+   - 📊 **Accounting, Audit & Tax**: Statutory Assurance, Tax/VAT Compliance, Cost Accounting
+   - 📢 **Marketing & Brand Management**: FMCG Brand Strategy, Consumer Insights, Trade Marketing
+   - 🚚 **Supply Chain & Procurement**: Sourcing, Inventory Control, Export/Import & Commercial LC
+   - 👥 **Human Resources & Talent**: People Operations, Campus Recruitment, Talent Analytics
+   - ⚡ **FinTech & Digital Business**: Payment Systems, Card Operations, Product Operations
+   - 🎯 **Management & Operations**: Business Development, Strategic Planning, Project Management
 
-## 🌐 How to Host Online with GitHub & Streamlit Cloud (Free Forever)
-
-You can publish this app to GitHub and launch it on **Streamlit Community Cloud** (backed by Snowflake) so anyone with a web link can create an account and upload their CV!
-
-### Step 1: Create a GitHub Repository
-1. Go to [GitHub.com](https://github.com) and log in.
-2. Click **`+`** at top-right ➔ **New repository**.
-3. Name it `internquest-ai` (or your preferred name).
-4. Keep it **Public** and leave "Add a README" **unchecked**.
-5. Click **Create repository**.
-
-### Step 2: Push Your Code
-Open PowerShell in the project directory (`E:\CV hunter Webapp\`) and run:
-```powershell
-$git = "$env:LOCALAPPDATA\Programs\MinGit\cmd\git.exe"
-& $git remote add origin https://github.com/YOUR_GITHUB_USERNAME/internquest-ai.git
-& $git push -u origin main
-```
-*(Replace `YOUR_GITHUB_USERNAME` with your actual GitHub username).*
-
-### Step 3: Deploy on Streamlit Cloud
-1. Go to [share.streamlit.io](https://share.streamlit.io) and log in with your GitHub account.
-2. Click **"New app"**.
-3. Select your repository: `YOUR_GITHUB_USERNAME/internquest-ai`.
-4. Set **Main file path** to: `streamlit_app.py`.
-5. Click **"Deploy"**!
-
-Within 60 seconds, your application is live on the internet with a public link (e.g. `https://internquest-ai.streamlit.app`)!
+4. **Fresh, Eye-Pleasing UI**:
+   - Modern, distraction-free aesthetic with instant live search and filtering
+   - One-click Dark / Light mode toggle
+   - Save & Bookmark favorite positions directly in your browser (`localStorage`)
+   - Built-in Commerce Student Career Guide with cold-email templates and resume tips
 
 ---
 
-## 🛡️ Security & Data Isolation
-- **No Personal CV Bundled**: No candidate resume is bundled in the source code; every user uploads their own CV.
-- **Credential Protection**: Private credentials (`.env`, local virtual environments, and personal passwords) are strictly excluded from GitHub by `.gitignore`.
-- **User Privacy**: Each user's uploaded CV is tied to their authenticated account.
+## 🚀 How to Run Locally
+
+If you wish to run the platform locally or contribute:
+
+```bash
+# Clone the repository
+git clone https://github.com/fahimashabb/internquest-ai.git
+cd internquest-ai
+
+# Open directly in browser (works 100% offline)
+start index.html
+
+# OR run with Python's built-in server
+python -m http.server 5000
+```
+Then visit `http://localhost:5000` in your browser.
+
+---
+
+## 📂 Project Architecture
+
+```
+internquest-ai/
+├── index.html                   ← Root static web application (served by GitHub Pages)
+├── data/
+│   └── business_internships.json← Verified master catalog of 500+ business internships
+├── scripts/
+│   └── build_business_catalog.py← Automation script to rebuild/update catalog
+├── .github/
+│   └── workflows/
+│       └── deploy-pages.yml     ← GitHub Actions automatic deployment to GitHub Pages
+├── web/
+│   └── index.html               ← Synced UI interface for local server runs
+├── web_server.py                ← Local Python web server
+└── README.md                    ← Documentation
+```
+
+---
+
+## 📄 License & Community
+
+This project is an open-source, community-driven initiative for business and commerce students in Bangladesh. Distributed under the MIT License.

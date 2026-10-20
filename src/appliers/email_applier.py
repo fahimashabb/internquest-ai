@@ -25,39 +25,26 @@ class EmailApplier:
         to_email: str,
         subject: str,
         body_text: str,
-        resume_path: Optional[Path] = None,
-        resume_bytes: Optional[bytes] = None,
-        resume_filename: str = "Resume.pdf",
-        sender_name: Optional[str] = None,
-        sender_email: Optional[str] = None
+        resume_path: Optional[Path] = None
     ) -> MIMEMultipart:
         """Construct MIME multipart email with resume attachment."""
         msg = MIMEMultipart()
-        from_name = sender_name or self.settings.application.sender_name or "Applicant"
-        from_addr = sender_email or self.settings.email_user
-        msg["From"] = f"{from_name} <{from_addr}>"
+        msg["From"] = f"{self.settings.application.sender_name} <{self.settings.email_user}>"
         msg["To"] = to_email
         msg["Subject"] = subject
 
         # Attach text body
         msg.attach(MIMEText(body_text, "plain", "utf-8"))
 
-        # Attach CV from user bytes or user file path
-        if resume_bytes:
-            attachment = MIMEApplication(resume_bytes, _subtype="pdf")
-            attachment.add_header(
-                "Content-Disposition",
-                "attachment",
-                filename=resume_filename or "Resume.pdf"
-            )
-            msg.attach(attachment)
-        elif resume_path and resume_path.exists():
-            with open(resume_path, "rb") as f:
+        # Attach CV
+        cv_path = resume_path or self.settings.absolute_resume_path
+        if cv_path and cv_path.exists():
+            with open(cv_path, "rb") as f:
                 attachment = MIMEApplication(f.read(), _subtype="pdf")
                 attachment.add_header(
                     "Content-Disposition",
                     "attachment",
-                    filename=resume_path.name
+                    filename=cv_path.name
                 )
                 msg.attach(attachment)
 
@@ -69,51 +56,46 @@ class EmailApplier:
         to_email: str,
         subject: str,
         body_text: str,
-        resume_path: Optional[Path] = None,
-        resume_bytes: Optional[bytes] = None,
-        resume_filename: str = "Resume.pdf",
-        sender_name: Optional[str] = None,
-        sender_email: Optional[str] = None,
-        sender_password: Optional[str] = None,
-        force_live: bool = True
+        force_live: bool = False
     ) -> Dict[str, Any]:
-        """Send an application email directly to a company or HR contact using the user's CV."""
+        """Send an application email to a company or HR contact."""
+        is_dry = self.settings.is_dry_run and not force_live
+
         # Check daily quota
         can_send, sent_count, limit = self.can_send_more_today()
-        if not can_send:
+        if not can_send and not is_dry:
             return {
                 "success": False,
                 "status": "QUOTA_EXCEEDED",
                 "message": f"Daily email limit reached ({sent_count}/{limit}). Quota resets tomorrow."
             }
 
-        user_email = sender_email or self.settings.email_user
-        user_password = sender_password or self.settings.email_password
+        if is_dry:
+            # Simulation / Dry Run
+            print(f"[DRY RUN - Simulation] Would send email to: {to_email}")
+            print(f"Subject: {subject}")
+            print(f"CV Attached: {self.settings.absolute_resume_path.name}")
+            return {
+                "success": True,
+                "status": "SIMULATED",
+                "message": f"[DRY RUN] Email drafted and simulated for {to_email}."
+            }
 
-        # Live SMTP sending requires credentials
-        if not user_password:
+        # Live SMTP sending
+        if not self.settings.email_password:
             return {
                 "success": False,
                 "status": "MISSING_CREDENTIALS",
-                "message": "Gmail App Password not configured. Please enter your 16-character App Password in Settings."
+                "message": "EMAIL_PASSWORD not configured in .env. Please set up a Google App Password."
             }
 
         try:
-            msg = self.prepare_message(
-                to_email=to_email,
-                subject=subject,
-                body_text=body_text,
-                resume_path=resume_path,
-                resume_bytes=resume_bytes,
-                resume_filename=resume_filename,
-                sender_name=sender_name,
-                sender_email=user_email
-            )
+            msg = self.prepare_message(to_email, subject, body_text)
             server = smtplib.SMTP(self.settings.email_host, self.settings.email_port)
             server.ehlo()
             server.starttls()
-            server.login(user_email, user_password)
-            server.sendmail(user_email, [to_email], msg.as_string())
+            server.login(self.settings.email_user, self.settings.email_password)
+            server.sendmail(self.settings.email_user, [to_email], msg.as_string())
             server.quit()
 
             # Record success in tracker
@@ -125,78 +107,9 @@ class EmailApplier:
                 "status": "SENT",
                 "message": f"Application successfully emailed to {to_email} with CV attached."
             }
-        except smtplib.SMTPAuthenticationError:
-            return {
-                "success": False,
-                "status": "AUTH_ERROR",
-                "message": "Authentication failed. Check your Gmail address and 16-character App Password."
-            }
         except Exception as e:
             return {
                 "success": False,
                 "status": "ERROR",
                 "message": f"SMTP Error sending to {to_email}: {e}"
             }
-
-    def send_digest_email(
-        self,
-        to_email: str,
-        recipient_name: str,
-        subject: str,
-        body_text: str,
-        body_html: Optional[str] = None
-    ) -> Dict[str, Any]:
-        """Send or record morning 10:00 AM digest email to registered candidate."""
-        user_email = self.settings.email_user
-        user_password = self.settings.email_password
-
-        # If credentials are not set, log digest generation gracefully
-        if not user_password or not user_email:
-            self.tracker.log_activity(
-                activity_type="DIGEST_GENERATED",
-                details=f"10:00 AM Daily Digest prepared for {recipient_name} <{to_email}>: {subject}"
-            )
-            return {
-                "success": True,
-                "status": "DIGEST_LOGGED",
-                "message": f"10:00 AM Digest prepared for {recipient_name} ({to_email}). (SMTP not configured, logged to system history)."
-            }
-
-        try:
-            msg = MIMEMultipart("alternative")
-            from_name = "InternQuest AI Updates"
-            msg["From"] = f"{from_name} <{user_email}>"
-            msg["To"] = to_email
-            msg["Subject"] = subject
-
-            msg.attach(MIMEText(body_text, "plain", "utf-8"))
-            if body_html:
-                msg.attach(MIMEText(body_html, "html", "utf-8"))
-
-            server = smtplib.SMTP(self.settings.email_host, self.settings.email_port)
-            server.ehlo()
-            server.starttls()
-            server.login(user_email, user_password)
-            server.sendmail(user_email, [to_email], msg.as_string())
-            server.quit()
-
-            self.tracker.log_activity(
-                activity_type="DIGEST_SENT",
-                details=f"Sent daily 10:00 AM digest email to {to_email} ({recipient_name})"
-            )
-            return {
-                "success": True,
-                "status": "SENT",
-                "message": f"Daily 10:00 AM digest successfully sent to {to_email}."
-            }
-        except Exception as e:
-            self.tracker.log_activity(
-                activity_type="DIGEST_ERROR",
-                details=f"Failed to email 10:00 AM digest to {to_email}: {e}"
-            )
-            return {
-                "success": False,
-                "status": "ERROR",
-                "message": f"SMTP digest error for {to_email}: {e}"
-            }
-
