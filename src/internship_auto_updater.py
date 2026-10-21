@@ -107,19 +107,15 @@ def is_valid_internship(title: str) -> bool:
     """Strictly checks that the title is an authentic internship/placement role for business students."""
     tl = title.strip().lower()
 
-    # Reject overly generic single-word titles
     if tl in ("intern", "internship", "trainee", "student"):
         return False
 
-    # 1. Must match word-boundary intern regex
     if not INTERN_REGEX.search(title):
         return False
 
-    # 2. Must not be a technical/engineering role
     if any(ex in tl for ex in NON_COMMERCE_EXCLUSIONS):
         return False
 
-    # 3. Must not be a full-time senior / executive role
     for s in SENIOR_FULLTIME_EXCLUSIONS:
         if s in tl and not ("intern" in tl or "internship" in tl or "placement" in tl):
             return False
@@ -160,18 +156,37 @@ def normalize_title(title: str) -> str:
 
 
 def verify_http_status(job: dict) -> bool:
-    """Sends a live HTTP GET request to verify the link returns 200 OK (no 404)."""
+    """
+    Sends a live HTTP GET request to verify the link returns 200 OK (no 404).
+    Handles rate-limiting (429/999) gracefully with backoff retry so valid jobs aren't dropped.
+    """
     url = job["post_url"]
-    try:
-        r = requests.get(url, headers=HEADERS, timeout=8, allow_redirects=True)
-        if r.status_code == 200:
-            final_u = r.url.lower()
-            if "404" in final_u or "page-not-found" in final_u or "error" in final_u:
+    is_pre_verified = job.get("is_existing", False)
+
+    for attempt in range(2):
+        try:
+            r = requests.get(url, headers=HEADERS, timeout=8, allow_redirects=True)
+            if r.status_code == 200:
+                final_u = r.url.lower()
+                if "404" in final_u or "page-not-found" in final_u or "error" in final_u:
+                    return False
+                return True
+            elif r.status_code in (404, 410):
                 return False
-            return True
-        return False
-    except Exception:
-        return False
+            elif r.status_code in (429, 999):
+                # Rate limited by LinkedIn guest endpoint
+                if attempt == 0:
+                    time.sleep(1.2)
+                    continue
+                # If still 429 and this is an already verified job, keep it
+                return is_pre_verified
+            return False
+        except Exception:
+            if attempt == 0:
+                time.sleep(1.0)
+                continue
+            return is_pre_verified
+    return is_pre_verified
 
 
 def scrape_linkedin_query(query: str):
@@ -200,7 +215,8 @@ def scrape_linkedin_query(query: str):
                             "company": comp,
                             "location": loc,
                             "post_url": url,
-                            "source": "LinkedIn Official Post"
+                            "source": "LinkedIn Official Post",
+                            "is_existing": False
                         })
     except Exception:
         pass
@@ -214,6 +230,12 @@ def run_daily_update() -> int:
     """
     start_time = datetime.now()
     print(f"[{start_time.strftime('%Y-%m-%d %H:%M:%S')}] [Scan] Starting 10:00 AM Internship Placement Scan...")
+
+    # Always ensure repository is up to date before running
+    try:
+        subprocess.run(["git", "pull", "--rebase", "origin", "main"], cwd=str(BASE_DIR), check=False, capture_output=True)
+    except Exception:
+        pass
 
     raw_candidates = []
 
@@ -233,7 +255,8 @@ def run_daily_update() -> int:
                         "company": comp,
                         "location": loc or "Dhaka, Bangladesh",
                         "post_url": clean_u,
-                        "source": "LinkedIn Official Post"
+                        "source": "LinkedIn Official Post",
+                        "is_existing": True
                     })
             conn.close()
         except Exception as e:
@@ -251,7 +274,8 @@ def run_daily_update() -> int:
                             "company": ej.get("company"),
                             "location": ej.get("location", "Dhaka, Bangladesh"),
                             "post_url": ej.get("post_url"),
-                            "source": ej.get("source", "Verified Post")
+                            "source": ej.get("source", "Verified Post"),
+                            "is_existing": True
                         })
         except Exception as e:
             print(f"[Warning] Failed loading existing business_internships: {e}")
@@ -291,7 +315,7 @@ def run_daily_update() -> int:
     for cand in candidates:
         if verify_http_status(cand):
             verified_jobs.append(cand)
-        time.sleep(0.06)
+        time.sleep(0.08)
 
     print(f"[Success] Verified {len(verified_jobs)} active, authentic internship postings returning HTTP 200 OK.")
 
@@ -396,11 +420,12 @@ def run_daily_update() -> int:
 
     print(f"[Done] Saved {len(catalog)} verified internship placements to {OUTPUT_PATH}")
 
-    # 9. Auto-push to GitHub if running locally in git repository
+    # 9. Auto-push to GitHub if running in git repository
     try:
         git_status = subprocess.check_output(["git", "status", "-s"], cwd=str(BASE_DIR), encoding="utf-8")
         if "data/business_internships.json" in git_status or "index.html" in git_status or "web/index.html" in git_status:
             print("[Git] Syncing updated internship placements to GitHub...")
+            subprocess.run(["git", "pull", "--rebase", "origin", "main"], cwd=str(BASE_DIR), check=False)
             subprocess.run(["git", "add", "data/business_internships.json", "index.html", "web/index.html"], cwd=str(BASE_DIR), check=True)
             subprocess.run(["git", "commit", "-m", f"auto: daily 10:00 AM verified internship placements update [{datetime.now().strftime('%Y-%m-%d')}]"], cwd=str(BASE_DIR), check=True)
             subprocess.run(["git", "push", "origin", "main"], cwd=str(BASE_DIR), check=True)
