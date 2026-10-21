@@ -1,6 +1,6 @@
 [
   {
-    "id": "biz-0002",
+    "id": "biz-0011",
     "title": "HSBC Bangladesh Student Work Placement Programme",
     "company": "HSBC",
     "tier": "Tier 1: Global Multinational",
@@ -26,7 +26,7 @@
     "posted_at": "2026-10-21"
   },
   {
-    "id": "biz-0004",
+    "id": "biz-0013",
     "title": "Fresh Start Internship Program",
     "company": "Singer Bangladesh Ltd",
     "tier": "Tier 1: Global Multinational",
@@ -52,7 +52,7 @@
     "posted_at": "2026-10-21"
   },
   {
-    "id": "biz-0008",
+    "id": "biz-0017",
     "title": "Sales Intern - E&P",
     "company": "TUV Austria Bureau of Inspection & Certification (Pvt.) Ltd.",
     "tier": "Tier 1: Global Multinational",
@@ -78,7 +78,59 @@
     "posted_at": "2026-10-21"
   },
   {
-    "id": "biz-0003",
+    "id": "biz-0001",
+    "title": "Finance Intern",
+    "company": "Grameen HealthTech Limited",
+    "tier": "Tier 2: Premier Bank / Enterprise",
+    "tier_badge": "🏛️ Tier 2: Premier Group",
+    "tier_class": "tier-2",
+    "value_score": 88,
+    "discipline": "Finance & Banking",
+    "discipline_icon": "fa-building-columns",
+    "location": "Dhaka, Bangladesh",
+    "work_mode": "On-site",
+    "stipend": "BDT 15,000 - 22,000 / mo",
+    "deadline": "Active Verified Placement",
+    "post_url": "https://bd.linkedin.com/jobs/view/finance-intern-at-grameen-healthtech-limited-4458184396",
+    "source": "LinkedIn Verified Post",
+    "source_type": "verified_post",
+    "description": "Direct authentic internship placement for Finance Intern at Grameen HealthTech Limited. Click 'See Original Post' to view the full verified post and apply directly.",
+    "requirements": [
+      "Enrolled in or recent graduate of BBA, B.Com, MBA or related business/commerce discipline",
+      "Strong analytical mindset, business acumen, and proficiency in MS Office / Excel",
+      "Good written and verbal communication abilities",
+      "Proactive attitude and motivation to learn in a real corporate team"
+    ],
+    "posted_at": "2026-10-21"
+  },
+  {
+    "id": "biz-0009",
+    "title": "Intern - Learning & Development",
+    "company": "NEXT Ventures",
+    "tier": "Tier 2: Premier Bank / Enterprise",
+    "tier_badge": "🏛️ Tier 2: Premier Group",
+    "tier_class": "tier-2",
+    "value_score": 88,
+    "discipline": "Human Resources & Talent",
+    "discipline_icon": "fa-users-gear",
+    "location": "Dhaka, Dhaka, Bangladesh",
+    "work_mode": "On-site",
+    "stipend": "BDT 15,000 - 22,000 / mo",
+    "deadline": "Active Verified Placement",
+    "post_url": "https://bd.linkedin.com/jobs/view/intern-learning-development-at-next-ventures-4477975690",
+    "source": "LinkedIn Verified Post",
+    "source_type": "verified_post",
+    "description": "Direct authentic internship placement for Intern - Learning & Development at NEXT Ventures. Click 'See Original Post' to view the full verified post and apply directly.",
+    "requirements": [
+      "Enrolled in or recent graduate of BBA, B.Com, MBA or related business/commerce discipline",
+      "Strong analytical mindset, business acumen, and proficiency in MS Office / Excel",
+      "Good written and verbal communication abilities",
+      "Proactive attitude and motivation to learn in a real corporate team"
+    ],
+    "posted_at": "2026-10-21"
+  },
+  {
+    "id": "biz-0012",
     "title": "Paid MIS Intern - Field Operations & Analysis",
     "company": "SSG (Super Star Group)",
     "tier": "Tier 2: Premier Bank / Enterprise",
@@ -104,7 +156,7 @@
     "posted_at": "2026-10-21"
   },
   {
-    "id": "biz-0005",
+    "id": "biz-0014",
     "title": "Paid IPE Intern- R&D & Operations",
     "company": "SSG (Super Star Group)",
     "tier": "Tier 2: Premier Bank / Enterprise",
@@ -130,7 +182,7 @@
     "posted_at": "2026-10-21"
   },
   {
-    "id": "biz-0007",
+    "id": "biz-0016",
     "title": "Lead Generation Intern",
     "company": "AKIJ iBOS",
     "tier": "Tier 2: Premier Bank / Enterprise",
@@ -156,7 +208,7 @@
     "posted_at": "2026-10-21"
   },
   {
-    "id": "biz-0019",
+    "id": "biz-0029",
     "title": "Intern – Learning & Culture",
     "company": "Confidence Infrastructure PLC",
     "tier": "Tier 2: Premier Bank / Enterprise",
@@ -182,7 +234,7 @@
     "posted_at": "2026-10-21"
   },
   {
-    "id": "biz-0001",
+    "id": "biz-0002",
     "title": "Finance Internship",
     "company": "Financial Services Institution",
     "tier": "Tier 3: Verified Corporate",
@@ -208,7 +260,189 @@
     "posted_at": "2026-10-21"
   },
   {
+    "id": "biz-0003",
+    "title": "Intern (Finance & Accounts)",
+    "company": "Financial Services Institution",
+    "tier": "Tier 3: Verified Corporate",
+    "tier_badge": "🏢 Tier 3: Corporate",
+    "tier_class": "tier-3",
+    "value_score": 78,
+    "discipline": "Finance & Banking",
+    "discipline_icon": "fa-building-columns",
+    "location": "Savar Cantonment, Dhaka, Bangladesh",
+    "work_mode": "On-site",
+    "stipend": "BDT 12,000 - 18,000 / mo",
+    "deadline": "Active Verified Placement",
+    "post_url": "https://bd.linkedin.com/jobs/view/intern-finance-accounts-at-nextjobz-4453864224",
+    "source": "LinkedIn Verified Post",
+    "source_type": "verified_post",
+    "description": "Direct authentic internship placement for Intern (Finance & Accounts) at Financial Services Institution. Click 'See Original Post' to view the full verified post and apply directly.",
+    "requirements": [
+      "Enrolled in or recent graduate of BBA, B.Com, MBA or related business/commerce discipline",
+      "Strong analytical mindset, business acumen, and proficiency in MS Office / Excel",
+      "Good written and verbal communication abilities",
+      "Proactive attitude and motivation to learn in a real corporate team"
+    ],
+    "posted_at": "2026-10-21"
+  },
+  {
+    "id": "biz-0004",
+    "title": "Research Intern",
+    "company": "TRACE Consulting",
+    "tier": "Tier 3: Verified Corporate",
+    "tier_badge": "🏢 Tier 3: Corporate",
+    "tier_class": "tier-3",
+    "value_score": 78,
+    "discipline": "Management & Operations",
+    "discipline_icon": "fa-briefcase",
+    "location": "Dhaka, Dhaka, Bangladesh",
+    "work_mode": "On-site",
+    "stipend": "BDT 12,000 - 18,000 / mo",
+    "deadline": "Active Verified Placement",
+    "post_url": "https://bd.linkedin.com/jobs/view/research-intern-at-trace-consulting-4454019681",
+    "source": "LinkedIn Verified Post",
+    "source_type": "verified_post",
+    "description": "Direct authentic internship placement for Research Intern at TRACE Consulting. Click 'See Original Post' to view the full verified post and apply directly.",
+    "requirements": [
+      "Enrolled in or recent graduate of BBA, B.Com, MBA or related business/commerce discipline",
+      "Strong analytical mindset, business acumen, and proficiency in MS Office / Excel",
+      "Good written and verbal communication abilities",
+      "Proactive attitude and motivation to learn in a real corporate team"
+    ],
+    "posted_at": "2026-10-21"
+  },
+  {
+    "id": "biz-0005",
+    "title": "Internship Program",
+    "company": "DIGIBOX",
+    "tier": "Tier 3: Verified Corporate",
+    "tier_badge": "🏢 Tier 3: Corporate",
+    "tier_class": "tier-3",
+    "value_score": 78,
+    "discipline": "Management & Operations",
+    "discipline_icon": "fa-briefcase",
+    "location": "Mohammadpur Thana, Dhaka, Bangladesh",
+    "work_mode": "On-site",
+    "stipend": "BDT 12,000 - 18,000 / mo",
+    "deadline": "Active Verified Placement",
+    "post_url": "https://bd.linkedin.com/jobs/view/internship-program-at-digibox-4457459901",
+    "source": "LinkedIn Verified Post",
+    "source_type": "verified_post",
+    "description": "Direct authentic internship placement for Internship Program at DIGIBOX. Click 'See Original Post' to view the full verified post and apply directly.",
+    "requirements": [
+      "Enrolled in or recent graduate of BBA, B.Com, MBA or related business/commerce discipline",
+      "Strong analytical mindset, business acumen, and proficiency in MS Office / Excel",
+      "Good written and verbal communication abilities",
+      "Proactive attitude and motivation to learn in a real corporate team"
+    ],
+    "posted_at": "2026-10-21"
+  },
+  {
     "id": "biz-0006",
+    "title": "Intern- Cost & Budgeting",
+    "company": "Verified Corporate Enterprise",
+    "tier": "Tier 3: Verified Corporate",
+    "tier_badge": "🏢 Tier 3: Corporate",
+    "tier_class": "tier-3",
+    "value_score": 78,
+    "discipline": "Management & Operations",
+    "discipline_icon": "fa-briefcase",
+    "location": "Dhaka, Dhaka, Bangladesh",
+    "work_mode": "On-site",
+    "stipend": "BDT 12,000 - 18,000 / mo",
+    "deadline": "Active Verified Placement",
+    "post_url": "https://bd.linkedin.com/jobs/view/intern-cost-budgeting-at-nextjobz-4453445421",
+    "source": "LinkedIn Verified Post",
+    "source_type": "verified_post",
+    "description": "Direct authentic internship placement for Intern- Cost & Budgeting at Verified Corporate Enterprise. Click 'See Original Post' to view the full verified post and apply directly.",
+    "requirements": [
+      "Enrolled in or recent graduate of BBA, B.Com, MBA or related business/commerce discipline",
+      "Strong analytical mindset, business acumen, and proficiency in MS Office / Excel",
+      "Good written and verbal communication abilities",
+      "Proactive attitude and motivation to learn in a real corporate team"
+    ],
+    "posted_at": "2026-10-21"
+  },
+  {
+    "id": "biz-0007",
+    "title": "Intern - Finance & Credit Control Department",
+    "company": "Financial Services Institution",
+    "tier": "Tier 3: Verified Corporate",
+    "tier_badge": "🏢 Tier 3: Corporate",
+    "tier_class": "tier-3",
+    "value_score": 78,
+    "discipline": "Finance & Banking",
+    "discipline_icon": "fa-building-columns",
+    "location": "Dhaka, Dhaka, Bangladesh",
+    "work_mode": "On-site",
+    "stipend": "BDT 12,000 - 18,000 / mo",
+    "deadline": "Active Verified Placement",
+    "post_url": "https://bd.linkedin.com/jobs/view/intern-finance-credit-control-department-at-nextjobz-4467340623",
+    "source": "LinkedIn Verified Post",
+    "source_type": "verified_post",
+    "description": "Direct authentic internship placement for Intern - Finance & Credit Control Department at Financial Services Institution. Click 'See Original Post' to view the full verified post and apply directly.",
+    "requirements": [
+      "Enrolled in or recent graduate of BBA, B.Com, MBA or related business/commerce discipline",
+      "Strong analytical mindset, business acumen, and proficiency in MS Office / Excel",
+      "Good written and verbal communication abilities",
+      "Proactive attitude and motivation to learn in a real corporate team"
+    ],
+    "posted_at": "2026-10-21"
+  },
+  {
+    "id": "biz-0008",
+    "title": "Intern - Credit Management, Dhaka",
+    "company": "Financial Services Institution",
+    "tier": "Tier 3: Verified Corporate",
+    "tier_badge": "🏢 Tier 3: Corporate",
+    "tier_class": "tier-3",
+    "value_score": 78,
+    "discipline": "Finance & Banking",
+    "discipline_icon": "fa-building-columns",
+    "location": "Dhaka, Dhaka, Bangladesh",
+    "work_mode": "On-site",
+    "stipend": "BDT 12,000 - 18,000 / mo",
+    "deadline": "Active Verified Placement",
+    "post_url": "https://bd.linkedin.com/jobs/view/intern-credit-management-dhaka-at-nextjobz-4476047306",
+    "source": "LinkedIn Verified Post",
+    "source_type": "verified_post",
+    "description": "Direct authentic internship placement for Intern - Credit Management, Dhaka at Financial Services Institution. Click 'See Original Post' to view the full verified post and apply directly.",
+    "requirements": [
+      "Enrolled in or recent graduate of BBA, B.Com, MBA or related business/commerce discipline",
+      "Strong analytical mindset, business acumen, and proficiency in MS Office / Excel",
+      "Good written and verbal communication abilities",
+      "Proactive attitude and motivation to learn in a real corporate team"
+    ],
+    "posted_at": "2026-10-21"
+  },
+  {
+    "id": "biz-0010",
+    "title": "Intern, HR Operations (Bangladesh)",
+    "company": "Commure",
+    "tier": "Tier 3: Verified Corporate",
+    "tier_badge": "🏢 Tier 3: Corporate",
+    "tier_class": "tier-3",
+    "value_score": 78,
+    "discipline": "Human Resources & Talent",
+    "discipline_icon": "fa-users-gear",
+    "location": "Dhaka, Dhaka, Bangladesh",
+    "work_mode": "On-site",
+    "stipend": "BDT 12,000 - 18,000 / mo",
+    "deadline": "Active Verified Placement",
+    "post_url": "https://bd.linkedin.com/jobs/view/intern-hr-operations-bangladesh-at-commure-4475885250",
+    "source": "LinkedIn Verified Post",
+    "source_type": "verified_post",
+    "description": "Direct authentic internship placement for Intern, HR Operations (Bangladesh) at Commure. Click 'See Original Post' to view the full verified post and apply directly.",
+    "requirements": [
+      "Enrolled in or recent graduate of BBA, B.Com, MBA or related business/commerce discipline",
+      "Strong analytical mindset, business acumen, and proficiency in MS Office / Excel",
+      "Good written and verbal communication abilities",
+      "Proactive attitude and motivation to learn in a real corporate team"
+    ],
+    "posted_at": "2026-10-21"
+  },
+  {
+    "id": "biz-0015",
     "title": "Marketing Intern",
     "company": "Bay of Bytes",
     "tier": "Tier 3: Verified Corporate",
@@ -234,7 +468,7 @@
     "posted_at": "2026-10-21"
   },
   {
-    "id": "biz-0009",
+    "id": "biz-0018",
     "title": "Marketing Intern (Bangladesh)",
     "company": "Athelas",
     "tier": "Tier 3: Verified Corporate",
@@ -260,7 +494,7 @@
     "posted_at": "2026-10-21"
   },
   {
-    "id": "biz-0010",
+    "id": "biz-0019",
     "title": "Intern – Branding & Marketing (Paid) for a Reputed Renewable Energy Company",
     "company": "Reputed Renewable Energy Company",
     "tier": "Tier 3: Verified Corporate",
@@ -286,7 +520,7 @@
     "posted_at": "2026-10-21"
   },
   {
-    "id": "biz-0011",
+    "id": "biz-0020",
     "title": "Data Analyst - Intern (Pharma)",
     "company": "Leading Healthcare & Pharma Group",
     "tier": "Tier 3: Verified Corporate",
@@ -312,7 +546,7 @@
     "posted_at": "2026-10-21"
   },
   {
-    "id": "biz-0012",
+    "id": "biz-0021",
     "title": "Finance & Accounts Intern",
     "company": "Financial Services Institution",
     "tier": "Tier 3: Verified Corporate",
@@ -338,7 +572,7 @@
     "posted_at": "2026-10-21"
   },
   {
-    "id": "biz-0013",
+    "id": "biz-0022",
     "title": "HR Intern (Paid Internship)",
     "company": "Corporate Group Bangladesh",
     "tier": "Tier 3: Verified Corporate",
@@ -364,7 +598,33 @@
     "posted_at": "2026-10-21"
   },
   {
-    "id": "biz-0014",
+    "id": "biz-0023",
+    "title": "SEO Intern – Sylhet",
+    "company": "SJ Innovation LLC",
+    "tier": "Tier 3: Verified Corporate",
+    "tier_badge": "🏢 Tier 3: Corporate",
+    "tier_class": "tier-3",
+    "value_score": 78,
+    "discipline": "Management & Operations",
+    "discipline_icon": "fa-briefcase",
+    "location": "Sylhet, Sylhet, Bangladesh",
+    "work_mode": "On-site",
+    "stipend": "BDT 12,000 - 18,000 / mo",
+    "deadline": "Active Verified Placement",
+    "post_url": "https://bd.linkedin.com/jobs/view/seo-intern-%E2%80%93-sylhet-at-sj-innovation-llc-4456285288",
+    "source": "LinkedIn Verified Post",
+    "source_type": "verified_post",
+    "description": "Direct authentic internship placement for SEO Intern – Sylhet at SJ Innovation LLC. Click 'See Original Post' to view the full verified post and apply directly.",
+    "requirements": [
+      "Enrolled in or recent graduate of BBA, B.Com, MBA or related business/commerce discipline",
+      "Strong analytical mindset, business acumen, and proficiency in MS Office / Excel",
+      "Good written and verbal communication abilities",
+      "Proactive attitude and motivation to learn in a real corporate team"
+    ],
+    "posted_at": "2026-10-21"
+  },
+  {
+    "id": "biz-0024",
     "title": "SheraGEN Internship Program",
     "company": "Shera International Group",
     "tier": "Tier 3: Verified Corporate",
@@ -390,7 +650,7 @@
     "posted_at": "2026-10-21"
   },
   {
-    "id": "biz-0015",
+    "id": "biz-0025",
     "title": "Intern - Corporate Sales & Business Development",
     "company": "Leading FMCG & Retail Enterprise",
     "tier": "Tier 3: Verified Corporate",
@@ -416,7 +676,7 @@
     "posted_at": "2026-10-21"
   },
   {
-    "id": "biz-0016",
+    "id": "biz-0026",
     "title": "Product Marketing Intern",
     "company": "Roxnor",
     "tier": "Tier 3: Verified Corporate",
@@ -442,7 +702,7 @@
     "posted_at": "2026-10-21"
   },
   {
-    "id": "biz-0017",
+    "id": "biz-0027",
     "title": "Intern - HR",
     "company": "Corporate Group Bangladesh",
     "tier": "Tier 3: Verified Corporate",
@@ -468,7 +728,7 @@
     "posted_at": "2026-10-21"
   },
   {
-    "id": "biz-0018",
+    "id": "biz-0028",
     "title": "HR & Admin-Intern",
     "company": "Offshore Information Technologies Ltd",
     "tier": "Tier 3: Verified Corporate",
@@ -494,7 +754,7 @@
     "posted_at": "2026-10-21"
   },
   {
-    "id": "biz-0020",
+    "id": "biz-0030",
     "title": "Marketing Associate Intern",
     "company": "Leading FMCG & Retail Enterprise",
     "tier": "Tier 3: Verified Corporate",
@@ -520,7 +780,7 @@
     "posted_at": "2026-10-21"
   },
   {
-    "id": "biz-0021",
+    "id": "biz-0031",
     "title": "HR Intern",
     "company": "Corporate Group Bangladesh",
     "tier": "Tier 3: Verified Corporate",
@@ -546,7 +806,7 @@
     "posted_at": "2026-10-21"
   },
   {
-    "id": "biz-0022",
+    "id": "biz-0032",
     "title": "Intern Sales & Customer Care",
     "company": "Leading FMCG & Retail Enterprise",
     "tier": "Tier 3: Verified Corporate",
@@ -572,7 +832,7 @@
     "posted_at": "2026-10-21"
   },
   {
-    "id": "biz-0023",
+    "id": "biz-0033",
     "title": "Intern (Paid) – Supply Chain & Business Analytics",
     "company": "FMCG / Supply Chain Enterprise",
     "tier": "Tier 3: Verified Corporate",
@@ -598,7 +858,7 @@
     "posted_at": "2026-10-21"
   },
   {
-    "id": "biz-0024",
+    "id": "biz-0034",
     "title": "Growth & Outreach Intern (Remote) – SaaS Startup",
     "company": "Writova Ltd",
     "tier": "Tier 3: Verified Corporate",
@@ -624,7 +884,7 @@
     "posted_at": "2026-10-21"
   },
   {
-    "id": "biz-0025",
+    "id": "biz-0035",
     "title": "Business Development Intern",
     "company": "Web Xpress",
     "tier": "Tier 3: Verified Corporate",
@@ -650,7 +910,7 @@
     "posted_at": "2026-10-21"
   },
   {
-    "id": "biz-0026",
+    "id": "biz-0036",
     "title": "Intern - Sales & Marketing",
     "company": "Leading FMCG & Retail Enterprise",
     "tier": "Tier 3: Verified Corporate",
@@ -676,7 +936,7 @@
     "posted_at": "2026-10-21"
   },
   {
-    "id": "biz-0027",
+    "id": "biz-0037",
     "title": "Digital Sales Intern",
     "company": "Clickless",
     "tier": "Tier 3: Verified Corporate",
@@ -702,7 +962,7 @@
     "posted_at": "2026-10-21"
   },
   {
-    "id": "biz-0028",
+    "id": "biz-0038",
     "title": "Intern, Talent Acquisition (Bangladesh)",
     "company": "Athelas",
     "tier": "Tier 3: Verified Corporate",
@@ -728,7 +988,7 @@
     "posted_at": "2026-10-21"
   },
   {
-    "id": "biz-0029",
+    "id": "biz-0039",
     "title": "Human Resources Intern",
     "company": "Verified Corporate Enterprise",
     "tier": "Tier 3: Verified Corporate",
@@ -754,7 +1014,7 @@
     "posted_at": "2026-10-21"
   },
   {
-    "id": "biz-0030",
+    "id": "biz-0040",
     "title": "Intern - SCM/ Procurement",
     "company": "FMCG / Supply Chain Enterprise",
     "tier": "Tier 3: Verified Corporate",
@@ -780,7 +1040,7 @@
     "posted_at": "2026-10-21"
   },
   {
-    "id": "biz-0031",
+    "id": "biz-0041",
     "title": "Sales And Marketing Intern",
     "company": "Arbeit Technology",
     "tier": "Tier 3: Verified Corporate",
