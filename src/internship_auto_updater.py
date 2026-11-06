@@ -2,6 +2,7 @@
 Autonomous Daily Internship Placement Discovery & Verification Engine.
 Strictly curates authentic, verified student internship & placement postings for Business & Commerce students.
 Performs live HTTP 200 checks on every link (zero 404s, zero non-intern roles).
+Ensures maximum coverage across all corporations, banks, MNCs, and NGOs in Bangladesh without missing opportunities.
 """
 import re
 import json
@@ -67,39 +68,156 @@ DISCIPLINE_METAS = {
     "Management & Operations": {"icon": "fa-briefcase", "color": "#475569"}
 }
 
-SEARCH_QUERIES = [
-    "finance intern Bangladesh",
-    "banking intern Bangladesh",
-    "accounts intern Bangladesh",
-    "audit intern Bangladesh",
-    "tax intern Bangladesh",
-    "credit analyst intern Bangladesh",
-    "treasury intern Bangladesh",
-    "marketing intern Bangladesh",
-    "brand intern Bangladesh",
-    "digital marketing intern Bangladesh",
-    "sales intern Bangladesh",
-    "business development intern Bangladesh",
-    "supply chain intern Bangladesh",
-    "procurement intern Bangladesh",
-    "commercial intern Bangladesh",
-    "logistics intern Bangladesh",
-    "hr intern Bangladesh",
-    "human resources intern Bangladesh",
-    "talent acquisition intern Bangladesh",
-    "student work placement Bangladesh",
-    "operations intern Bangladesh",
-    "bba internship Bangladesh",
-    "Unilever internship Bangladesh",
-    "British American Tobacco internship Bangladesh",
-    "Standard Chartered internship Bangladesh",
-    "HSBC internship Bangladesh",
-    "BRAC Bank internship Bangladesh",
-    "bKash internship Bangladesh",
-    "Grameenphone internship Bangladesh",
-    "Square internship Bangladesh",
-    "Singer Bangladesh internship",
-    "Coca-Cola internship Bangladesh"
+# Comprehensive query list with query string and pagination offset
+# Covers broad national search, all business disciplines, and all major institutions
+SEARCH_QUERY_SPECS = [
+    # 1. Broad National High-Yield Queries (with multiple pagination pages)
+    ("internship Bangladesh", 0),
+    ("internship Bangladesh", 25),
+    ("intern Bangladesh", 0),
+    ("intern Bangladesh", 25),
+    ("business intern Bangladesh", 0),
+    ("business intern Bangladesh", 25),
+    ("bba internship Bangladesh", 0),
+    ("bba internship Bangladesh", 25),
+    ("commerce intern Bangladesh", 0),
+    ("student work placement Bangladesh", 0),
+    ("student work placement Bangladesh", 25),
+    ("management trainee Bangladesh", 0),
+    ("management trainee Bangladesh", 25),
+    ("graduate trainee Bangladesh", 0),
+
+    # 2. Specialized Commerce & Business Disciplines
+    ("finance intern Bangladesh", 0),
+    ("finance intern Bangladesh", 25),
+    ("financial analyst intern Bangladesh", 0),
+    ("corporate finance intern Bangladesh", 0),
+    ("banking intern Bangladesh", 0),
+    ("banking intern Bangladesh", 25),
+    ("credit risk intern Bangladesh", 0),
+    ("treasury intern Bangladesh", 0),
+    ("investment intern Bangladesh", 0),
+    ("equity research intern Bangladesh", 0),
+    ("accounts intern Bangladesh", 0),
+    ("accounting intern Bangladesh", 0),
+    ("audit intern Bangladesh", 0),
+    ("tax intern Bangladesh", 0),
+    ("marketing intern Bangladesh", 0),
+    ("marketing intern Bangladesh", 25),
+    ("brand intern Bangladesh", 0),
+    ("digital marketing intern Bangladesh", 0),
+    ("social media intern Bangladesh", 0),
+    ("content marketing intern Bangladesh", 0),
+    ("communications intern Bangladesh", 0),
+    ("market research intern Bangladesh", 0),
+    ("sales intern Bangladesh", 0),
+    ("sales intern Bangladesh", 25),
+    ("sales management intern Bangladesh", 0),
+    ("business development intern Bangladesh", 0),
+    ("business development intern Bangladesh", 25),
+    ("growth intern Bangladesh", 0),
+    ("lead generation intern Bangladesh", 0),
+    ("supply chain intern Bangladesh", 0),
+    ("supply chain intern Bangladesh", 25),
+    ("procurement intern Bangladesh", 0),
+    ("sourcing intern Bangladesh", 0),
+    ("logistics intern Bangladesh", 0),
+    ("commercial intern Bangladesh", 0),
+    ("warehouse intern Bangladesh", 0),
+    ("hr intern Bangladesh", 0),
+    ("hr intern Bangladesh", 25),
+    ("human resources intern Bangladesh", 0),
+    ("human resources intern Bangladesh", 25),
+    ("talent acquisition intern Bangladesh", 0),
+    ("people culture intern Bangladesh", 0),
+    ("recruitment intern Bangladesh", 0),
+    ("operations intern Bangladesh", 0),
+    ("operations intern Bangladesh", 25),
+    ("business operations intern Bangladesh", 0),
+    ("business analyst intern Bangladesh", 0),
+    ("mis intern Bangladesh", 0),
+    ("fintech intern Bangladesh", 0),
+
+    # 3. Multinational Corporations (MNCs) in Bangladesh
+    ("Unilever internship Bangladesh", 0),
+    ("British American Tobacco internship Bangladesh", 0),
+    ("BAT internship Bangladesh", 0),
+    ("Nestle internship Bangladesh", 0),
+    ("Nestle internship Bangladesh", 25),
+    ("Marico internship Bangladesh", 0),
+    ("Marico internship Bangladesh", 25),
+    ("Reckitt internship Bangladesh", 0),
+    ("Berger Paints internship Bangladesh", 0),
+    ("LafargeHolcim internship Bangladesh", 0),
+    ("LafargeHolcim internship Bangladesh", 25),
+    ("Singer Bangladesh internship", 0),
+    ("Coca-Cola internship Bangladesh", 0),
+    ("Standard Chartered internship Bangladesh", 0),
+    ("HSBC internship Bangladesh", 0),
+    ("MetLife internship Bangladesh", 0),
+    ("Chevron internship Bangladesh", 0),
+    ("Novartis Bangladesh internship", 0),
+    ("Sanofi Bangladesh internship", 0),
+    ("TUV Austria internship Bangladesh", 0),
+    ("Decathlon Bangladesh internship", 0),
+
+    # 4. Premier Commercial & Islamic Banks, Financial Institutions (NBFIs)
+    ("BRAC Bank internship Bangladesh", 0),
+    ("BRAC Bank internship Bangladesh", 25),
+    ("City Bank internship Bangladesh", 0),
+    ("City Bank internship Bangladesh", 25),
+    ("Eastern Bank internship Bangladesh", 0),
+    ("EBL internship Bangladesh", 0),
+    ("Mutual Trust Bank internship Bangladesh", 0),
+    ("MTB internship Bangladesh", 0),
+    ("Prime Bank internship Bangladesh", 0),
+    ("Dhaka Bank internship Bangladesh", 0),
+    ("Bank Asia internship Bangladesh", 0),
+    ("Dutch-Bangla Bank internship Bangladesh", 0),
+    ("DBBL internship Bangladesh", 0),
+    ("Islami Bank Bangladesh internship", 0),
+    ("IDLC internship Bangladesh", 0),
+    ("IDLC internship Bangladesh", 25),
+    ("IPDC internship Bangladesh", 0),
+    ("LankaBangla internship Bangladesh", 0),
+
+    # 5. Telecoms, FinTech & Digital Leaders
+    ("Grameenphone internship Bangladesh", 0),
+    ("Robi internship Bangladesh", 0),
+    ("Banglalink internship Bangladesh", 0),
+    ("bKash internship Bangladesh", 0),
+    ("bKash internship Bangladesh", 25),
+    ("Nagad internship Bangladesh", 0),
+    ("Pathao internship Bangladesh", 0),
+    ("Foodpanda internship Bangladesh", 0),
+    ("Daraz internship Bangladesh", 0),
+    ("ShopUp internship Bangladesh", 0),
+    ("Chaldal internship Bangladesh", 0),
+
+    # 6. Top Conglomerates & Business Houses in Bangladesh
+    ("Square internship Bangladesh", 0),
+    ("Beximco internship Bangladesh", 0),
+    ("Akij internship Bangladesh", 0),
+    ("PRAN internship Bangladesh", 0),
+    ("RFL internship Bangladesh", 0),
+    ("ACI internship Bangladesh", 0),
+    ("Meghna Group internship Bangladesh", 0),
+    ("Bashundhara internship Bangladesh", 0),
+    ("Summit Group internship Bangladesh", 0),
+    ("Walton internship Bangladesh", 0),
+    ("Renata internship Bangladesh", 0),
+    ("Incepta internship Bangladesh", 0),
+    ("Apex internship Bangladesh", 0),
+    ("DBL Group internship Bangladesh", 0),
+    ("Super Star Group internship Bangladesh", 0),
+    ("SSG internship Bangladesh", 0),
+
+    # 7. Development Organizations & NGOs in Bangladesh
+    ("BRAC internship Bangladesh", 0),
+    ("UNDP internship Bangladesh", 0),
+    ("UNICEF Bangladesh internship", 0),
+    ("icddr,b internship Bangladesh", 0),
+    ("Save the Children internship Bangladesh", 0)
 ]
 
 
@@ -174,11 +292,9 @@ def verify_http_status(job: dict) -> bool:
             elif r.status_code in (404, 410):
                 return False
             elif r.status_code in (429, 999):
-                # Rate limited by LinkedIn guest endpoint
                 if attempt == 0:
                     time.sleep(1.2)
                     continue
-                # If still 429 and this is an already verified job, keep it
                 return is_pre_verified
             return False
         except Exception:
@@ -189,11 +305,12 @@ def verify_http_status(job: dict) -> bool:
     return is_pre_verified
 
 
-def scrape_linkedin_query(query: str):
+def scrape_query_spec(spec):
+    query, start = spec
     api_url = "https://www.linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search"
     results = []
     try:
-        params = {"keywords": query, "location": "Bangladesh", "start": 0}
+        params = {"keywords": query, "location": "Bangladesh", "start": start}
         resp = requests.get(api_url, params=params, headers=HEADERS, timeout=10)
         if resp.status_code == 200 and resp.text.strip():
             soup = BeautifulSoup(resp.text, "html.parser")
@@ -229,7 +346,7 @@ def run_daily_update() -> int:
     Returns the count of strictly verified internship placements.
     """
     start_time = datetime.now()
-    print(f"[{start_time.strftime('%Y-%m-%d %H:%M:%S')}] [Scan] Starting 10:00 AM Internship Placement Scan...")
+    print(f"[{start_time.strftime('%Y-%m-%d %H:%M:%S')}] [Scan] Starting Comprehensive Internship Placement Discovery...")
 
     # Always ensure repository is up to date before running
     try:
@@ -280,42 +397,56 @@ def run_daily_update() -> int:
         except Exception as e:
             print(f"[Warning] Failed loading existing business_internships: {e}")
 
-    # 3. Live scrape from targeted queries
-    print(f"[Scrape] Searching {len(SEARCH_QUERIES)} targeted live search queries across Bangladesh...")
-    with ThreadPoolExecutor(max_workers=4) as ex:
-        query_results = list(ex.map(scrape_linkedin_query, SEARCH_QUERIES))
+    # 3. Live scrape across all corporations, banks, MNCs, and NGOs in Bangladesh
+    print(f"[Scrape] Searching {len(SEARCH_QUERY_SPECS)} targeted live search queries across Bangladesh...")
+    with ThreadPoolExecutor(max_workers=5) as ex:
+        query_results = list(ex.map(scrape_query_spec, SEARCH_QUERY_SPECS))
 
     for res_list in query_results:
         raw_candidates.extend(res_list)
 
-    print(f"[Filter] Gathered {len(raw_candidates)} candidate postings. Performing deduplication...")
+    print(f"[Filter] Gathered {len(raw_candidates)} candidate postings. Performing smart multi-dimensional deduplication...")
 
-    # 4. Smart Deduplication: Keep primary employer over aggregator
+    # 4. Smart Deduplication:
+    # Key by (normalized_title, cleaned_company) AND track unique post URLs
+    # Ensures different companies posting the same title (e.g. Finance Intern, Marketing Intern) are NEVER discarded!
+    seen_urls = set()
     dedup_dict = {}
+
     for cand in raw_candidates:
         title = cand["title"]
         if not is_valid_internship(title):
             continue
-        nt = normalize_title(title)
-        comp = cand["company"]
 
-        if nt not in dedup_dict:
-            dedup_dict[nt] = cand
+        url = cand["post_url"].split("?")[0]
+        if url in seen_urls:
+            continue
+
+        comp = clean_company_name(cand["company"], title)
+        title_key = normalize_title(title)
+        comp_key = re.sub(r"[^a-z0-9]", "", comp.lower())
+        dedup_key = f"{comp_key}:{title_key}"
+
+        if dedup_key not in dedup_dict:
+            dedup_dict[dedup_key] = cand
+            seen_urls.add(url)
         else:
-            existing = dedup_dict[nt]
-            if any(agg in existing["company"].lower() for agg in ["nextjobz", "skill jobs", "urban job", "bdjobs"]):
-                if not any(agg in comp.lower() for agg in ["nextjobz", "skill jobs", "urban job", "bdjobs"]):
-                    dedup_dict[nt] = cand
+            existing = dedup_dict[dedup_key]
+            # If current cand has a cleaner/direct company name, upgrade it
+            if any(agg in existing["company"].lower() for agg in ["nextjobz", "skill jobs", "urban job", "bdjobs", "corporate institution"]):
+                if not any(agg in comp.lower() for agg in ["nextjobz", "skill jobs", "urban job", "bdjobs", "corporate institution"]):
+                    dedup_dict[dedup_key] = cand
+                    seen_urls.add(url)
 
     candidates = list(dedup_dict.values())
-    print(f"[Verify] Deduplicated to {len(candidates)} unique postings. Testing live HTTP status...")
+    print(f"[Verify] Deduplicated to {len(candidates)} unique postings across Bangladesh. Testing live HTTP status...")
 
     # 5. Strict HTTP 200 Verification with gentle pacing (Zero 404s, specific posting URLs only)
     verified_jobs = []
     for cand in candidates:
         if verify_http_status(cand):
             verified_jobs.append(cand)
-        time.sleep(0.08)
+        time.sleep(0.06)
 
     print(f"[Success] Verified {len(verified_jobs)} active, authentic internship postings returning HTTP 200 OK.")
 
@@ -335,13 +466,13 @@ def run_daily_update() -> int:
             disc = "Finance & Banking"
         elif any(k in tl for k in ["audit", "account", "tax", "vat"]):
             disc = "Accounting, Audit & Tax"
-        elif any(k in tl for k in ["market", "brand", "sales", "consumer", "social", "lead gen", "growth"]):
+        elif any(k in tl for k in ["market", "brand", "sales", "consumer", "social", "lead gen", "growth", "counsellor"]):
             disc = "Marketing & Brand Management"
         elif any(k in tl for k in ["supply chain", "procure", "logistics", "commercial", "import", "export", "sourcing", "warehouse", "scm"]):
             disc = "Supply Chain & Procurement"
-        elif any(k in tl for k in ["hr", "human resource", "talent", "people", "learning", "culture"]):
+        elif any(k in tl for k in ["hr", "human resource", "talent", "people", "learning", "culture", "recruitment"]):
             disc = "Human Resources & Talent"
-        elif any(k in tl for k in ["fintech", "card", "analytics", "mis", "data insight"]):
+        elif any(k in tl for k in ["fintech", "card", "analytics", "mis", "data insight", "business analyst"]):
             disc = "FinTech & Business Analytics"
 
         disc_meta = DISCIPLINE_METAS.get(disc, {"icon": "fa-briefcase", "color": "#2563eb"})
@@ -352,12 +483,31 @@ def run_daily_update() -> int:
         tier_class = "tier-3"
         val_score = 78
 
-        if any(m in cl for m in ["hsbc", "coca-cola", "singer", "decathlon", "tuv austria", "standard chartered", "unilever", "bat", "nestle"]):
+        # Tier 1: Global Multinationals & Leading International Institutions
+        tier_1_keywords = [
+            "hsbc", "coca-cola", "singer", "decathlon", "tuv austria", "standard chartered",
+            "unilever", "bat", "british american tobacco", "nestle", "marico", "reckitt",
+            "berger", "lafarge", "lafargeholcim", "metlife", "chevron", "novartis", "sanofi",
+            "commure", "athelas", "gaotek", "centric brands"
+        ]
+        # Tier 2: Premier Commercial & Islamic Banks, Telecoms, Conglomerates, FinTech & Top NGOs
+        tier_2_keywords = [
+            "bank", "brac", "city bank", "eastern bank", "ebl", "mutual trust", "mtb",
+            "prime bank", "dhaka bank", "bank asia", "dbbl", "dutch-bangla", "islami",
+            "idlc", "ipdc", "lankabangla", "grameen", "robi", "banglalink", "bkash",
+            "nagad", "pathao", "foodpanda", "daraz", "shopup", "chaldal", "square",
+            "beximco", "akij", "pran", "rfl", "aci", "meghna", "bashundhara", "summit",
+            "walton", "renata", "incepta", "apex", "dbl", "super star", "ssg", "next ventures",
+            "confidence", "undp", "unicef", "icddr", "save the children", "polygon technology",
+            "trace consulting", "thinkbait", "eon"
+        ]
+
+        if any(m in cl for m in tier_1_keywords):
             tier = "Tier 1: Global Multinational"
             tier_badge = "⭐ Tier 1: MNC"
             tier_class = "tier-1"
             val_score = 98
-        elif any(b in cl for b in ["bank", "islami", "grameen", "akij", "super star", "ssg", "next ventures", "bkash", "nagad", "idlc", "ipdc", "city", "brac", "eon", "confidence"]):
+        elif any(b in cl for b in tier_2_keywords):
             tier = "Tier 2: Premier Bank / Enterprise"
             tier_badge = "🏛️ Tier 2: Premier Group"
             tier_class = "tier-2"
