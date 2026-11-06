@@ -41,7 +41,7 @@ NON_COMMERCE_EXCLUSIONS = [
     "developer", "software", "frontend", "backend", "laravel", "react", "flutter",
     "sqa", "qa engineer", "full stack", "devops", "civil engineer", "electrical",
     "mechanical", "chemical engineer", "lab testing", "textile lab", "textile engineer",
-    "ui/ux", "graphic designer", "graphics intern", "video editor", "videographer", "photographer",
+    "ui/ux", "graphic designer", "graphic design", "graphics", "video editor", "videographer", "photographer",
     "salesforce technical", "pharmacist", "microbiolog", "lawyer", "counsel",
     "test engineer", "motion design", "artificial intelligence", "data science",
     "it -", "it intern", "ai intern", "engineer intern", "architect intern", "designer intern",
@@ -273,13 +273,25 @@ def normalize_title(title: str) -> str:
     return t
 
 
+EXPIRED_INDICATORS = [
+    "no longer accepting applications",
+    "আর আবেদনপত্র গ্রহণ করা হচ্ছে না",
+    "this job is closed",
+    "this position is closed",
+    "this job has expired",
+    "applications are closed",
+    "application closed"
+]
+
+
 def verify_http_status(job: dict) -> bool:
     """
-    Sends a live HTTP GET request to verify the link returns 200 OK (no 404).
-    Handles rate-limiting (429/999) gracefully with backoff retry so valid jobs aren't dropped.
+    Sends a live HTTP GET request to verify:
+    1. Returns HTTP 200 OK (no 404/410/broken links)
+    2. Not a soft 404 or redirect error
+    3. Job is currently OPEN and APPLYABLE (not closed, not expired, no 'closed-job' class or 'no longer accepting applications' banner)
     """
     url = job["post_url"]
-    is_pre_verified = job.get("is_existing", False)
 
     for attempt in range(2):
         try:
@@ -288,21 +300,30 @@ def verify_http_status(job: dict) -> bool:
                 final_u = r.url.lower()
                 if "404" in final_u or "page-not-found" in final_u or "error" in final_u:
                     return False
+
+                # Check if job has been closed or expired on the portal
+                soup = BeautifulSoup(r.text, "html.parser")
+                if soup.find(class_=lambda x: x and ("closed-job" in x.lower() or "closed_job" in x.lower())):
+                    return False
+
+                text = r.text.lower()
+                for ind in EXPIRED_INDICATORS:
+                    if ind in text:
+                        return False
+
                 return True
             elif r.status_code in (404, 410):
                 return False
             elif r.status_code in (429, 999):
-                if attempt == 0:
-                    time.sleep(1.2)
-                    continue
-                return is_pre_verified
+                time.sleep(1.2)
+                continue
             return False
         except Exception:
             if attempt == 0:
                 time.sleep(1.0)
                 continue
-            return is_pre_verified
-    return is_pre_verified
+            return False
+    return False
 
 
 def scrape_query_spec(spec):
