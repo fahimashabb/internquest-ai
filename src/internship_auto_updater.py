@@ -68,6 +68,35 @@ DISCIPLINE_METAS = {
     "Management & Operations": {"icon": "fa-briefcase", "color": "#475569"}
 }
 
+# Flagship direct official internship portals & cohorts across Bangladesh (Tier-1 Institutions / NGOs / MNCs)
+FLAGSHIP_DIRECT_PROGRAMS = [
+    {
+        "title": "BRIDGE Internship Programme",
+        "company": "BRAC",
+        "tier": "Tier 1: Global Development Organisation",
+        "tier_badge": "⭐ Tier 1: Global Dev NGO",
+        "tier_class": "tier-1",
+        "value_score": 99,
+        "discipline": "Management & Operations",
+        "discipline_icon": "fa-briefcase",
+        "location": "Dhaka & Field Operations, Bangladesh",
+        "work_mode": "Hybrid / On-site",
+        "stipend": "Paid Internship + Completion Certificate",
+        "deadline": "Active Verified Placement",
+        "post_url": "https://www.brac.net/get-involved/internship/bridge-internship/",
+        "source": "BRAC Official Portal",
+        "source_type": "verified_post",
+        "description": "Official BRAC BRIDGE Internship Programme. A prestigious 6-month journey across Bangladesh for recent graduates and final-semester students with direct pathways into BRAC early-career leadership.",
+        "requirements": [
+            "Graduation from any discipline from any reputed university (Bachelor's degree or students in their final semester)",
+            "Exposure to extracurricular activities preferred",
+            "Letter of intention and demonstrated motivation for the development sector",
+            "Willingness to travel for field operations across Bangladesh and collaborate with diverse teams"
+        ],
+        "is_existing": True
+    }
+]
+
 # Comprehensive query list with query string and pagination offset
 # Covers broad national search, all business disciplines, and all major institutions
 SEARCH_QUERY_SPECS = [
@@ -377,6 +406,10 @@ def run_daily_update() -> int:
 
     raw_candidates = []
 
+    # 0. Load Flagship Direct Official Programs (e.g. BRAC BRIDGE)
+    for f_prog in FLAGSHIP_DIRECT_PROGRAMS:
+        raw_candidates.append(dict(f_prog))
+
     # 1. Load existing direct view jobs from database if available
     db_path = BASE_DIR / "data" / "applications.db"
     if db_path.exists():
@@ -407,14 +440,9 @@ def run_daily_update() -> int:
                 existing_list = json.load(f)
                 for ej in existing_list:
                     if is_valid_internship(ej.get("title", "")):
-                        raw_candidates.append({
-                            "title": ej.get("title"),
-                            "company": ej.get("company"),
-                            "location": ej.get("location", "Dhaka, Bangladesh"),
-                            "post_url": ej.get("post_url"),
-                            "source": ej.get("source", "Verified Post"),
-                            "is_existing": True
-                        })
+                        cand = dict(ej)
+                        cand["is_existing"] = True
+                        raw_candidates.append(cand)
         except Exception as e:
             print(f"[Warning] Failed loading existing business_internships: {e}")
 
@@ -542,31 +570,45 @@ def run_daily_update() -> int:
         else:
             stipend = "BDT 12,000 - 18,000 / mo"
 
+        # Preserve custom overrides (e.g. Flagship direct programs)
+        c_tier = j.get("tier", tier)
+        c_badge = j.get("tier_badge", tier_badge)
+        c_class = j.get("tier_class", tier_class)
+        c_score = j.get("value_score", val_score)
+        c_disc = j.get("discipline", disc)
+        c_icon = j.get("discipline_icon", disc_meta["icon"])
+        c_stipend = j.get("stipend", stipend)
+        c_deadline = j.get("deadline", "Active Verified Placement")
+        c_desc = j.get("description", f"Direct authentic internship placement for {title} at {comp}. Click 'See Original Post' to view the full verified post and apply directly.")
+        c_reqs = j.get("requirements", [
+            "Enrolled in or recent graduate of BBA, B.Com, MBA or related business/commerce discipline",
+            "Strong analytical mindset, business acumen, and proficiency in MS Office / Excel",
+            "Good written and verbal communication abilities",
+            "Proactive attitude and motivation to learn in a real corporate team"
+        ])
+        c_source = j.get("source", "LinkedIn Verified Post")
+        c_source_type = j.get("source_type", "verified_post")
+
         catalog.append({
             "id": f"biz-{job_counter:04d}",
             "title": title,
             "company": comp,
-            "tier": tier,
-            "tier_badge": tier_badge,
-            "tier_class": tier_class,
-            "value_score": val_score,
-            "discipline": disc,
-            "discipline_icon": disc_meta["icon"],
+            "tier": c_tier,
+            "tier_badge": c_badge,
+            "tier_class": c_class,
+            "value_score": c_score,
+            "discipline": c_disc,
+            "discipline_icon": c_icon,
             "location": j["location"],
-            "work_mode": "On-site" if "remote" not in j["location"].lower() else "Remote",
-            "stipend": stipend,
-            "deadline": "Active Verified Placement",
+            "work_mode": j.get("work_mode", "On-site" if "remote" not in j["location"].lower() else "Remote"),
+            "stipend": c_stipend,
+            "deadline": c_deadline,
             "post_url": j["post_url"],
-            "source": "LinkedIn Verified Post",
-            "source_type": "verified_post",
-            "description": f"Direct authentic internship placement for {title} at {comp}. Click 'See Original Post' to view the full verified post and apply directly.",
-            "requirements": [
-                "Enrolled in or recent graduate of BBA, B.Com, MBA or related business/commerce discipline",
-                "Strong analytical mindset, business acumen, and proficiency in MS Office / Excel",
-                "Good written and verbal communication abilities",
-                "Proactive attitude and motivation to learn in a real corporate team"
-            ],
-            "posted_at": datetime.now().strftime("%Y-%m-%d")
+            "source": c_source,
+            "source_type": c_source_type,
+            "description": c_desc,
+            "requirements": c_reqs,
+            "posted_at": j.get("posted_at", datetime.now().strftime("%Y-%m-%d"))
         })
         job_counter += 1
 
