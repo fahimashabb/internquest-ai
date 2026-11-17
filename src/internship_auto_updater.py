@@ -11,6 +11,7 @@ import requests
 import time
 import subprocess
 import sys
+import unicodedata
 from pathlib import Path
 from bs4 import BeautifulSoup
 from concurrent.futures import ThreadPoolExecutor
@@ -42,10 +43,11 @@ NON_COMMERCE_EXCLUSIONS = [
     "sqa", "qa engineer", "full stack", "devops", "civil engineer", "electrical",
     "mechanical", "chemical engineer", "lab testing", "textile lab", "textile engineer",
     "ui/ux", "graphic designer", "graphic design", "graphics", "video editor", "videographer", "photographer",
-    "salesforce technical", "pharmacist", "microbiolog", "lawyer", "counsel",
+    "salesforce technical", "pharmacist", "microbiolog", "lawyer", "counsel", "legal intern", "law intern", "litigation",
     "test engineer", "motion design", "artificial intelligence", "data science",
     "it -", "it intern", "ai intern", "engineer intern", "architect intern", "designer intern",
-    "engineering internship", "ai builders", "competitive programming"
+    "engineering internship", "ai builders", "competitive programming", "fashion designer",
+    "isp support", "network technician"
 ]
 
 # Non-intern / Full-time senior titles to strictly exclude
@@ -100,7 +102,7 @@ FLAGSHIP_DIRECT_PROGRAMS = [
 # Comprehensive query list with query string and pagination offset
 # Covers broad national search, all business disciplines, and all major institutions
 SEARCH_QUERY_SPECS = [
-    # 1. Broad National High-Yield Queries (with multiple pagination pages)
+    # 1. Broad National High-Yield Queries
     ("internship Bangladesh", 0),
     ("internship Bangladesh", 25),
     ("intern Bangladesh", 0),
@@ -112,9 +114,8 @@ SEARCH_QUERY_SPECS = [
     ("commerce intern Bangladesh", 0),
     ("student work placement Bangladesh", 0),
     ("student work placement Bangladesh", 25),
-    ("management trainee Bangladesh", 0),
-    ("management trainee Bangladesh", 25),
-    ("graduate trainee Bangladesh", 0),
+    ("paid intern Bangladesh", 0),
+    ("paid intern Bangladesh", 25),
 
     # 2. Specialized Commerce & Business Disciplines
     ("finance intern Bangladesh", 0),
@@ -167,8 +168,125 @@ SEARCH_QUERY_SPECS = [
     ("mis intern Bangladesh", 0),
     ("fintech intern Bangladesh", 0),
 
-    # 3. Multinational Corporations (MNCs) in Bangladesh
+    # 3. Garments, RMG, Apparel & Textiles (Business Placements)
+    ("merchandising intern Bangladesh", 0),
+    ("merchandising intern Bangladesh", 25),
+    ("apparel merchandising intern", 0),
+    ("woven merchandising intern", 0),
+    ("knit merchandising intern", 0),
+    ("garments intern Bangladesh", 0),
+    ("garments intern Bangladesh", 25),
+    ("garments commercial intern Bangladesh", 0),
+    ("garments supply chain intern Bangladesh", 0),
+    ("garments procurement intern Bangladesh", 0),
+    ("garments hr intern Bangladesh", 0),
+    ("garments accounts intern Bangladesh", 0),
+    ("textile commercial intern Bangladesh", 0),
+    ("textile sourcing intern Bangladesh", 0),
+    ("apparel intern Bangladesh", 0),
+    ("rmg intern Bangladesh", 0),
+    ("Ha-Meem intern", 0),
+    ("Ha-Meem Group Bangladesh", 0),
+    ("DBL Group intern", 0),
+    ("DBL Group internship Bangladesh", 0),
+    ("DBL Group internship Bangladesh", 25),
+    ("Pacific Jeans intern", 0),
+    ("Pacific Jeans internship Bangladesh", 0),
+    ("Envoy Group intern", 0),
+    ("Ananta Group intern", 0),
+    ("Standard Group intern", 0),
+    ("Mohammadi Group intern", 0),
+    ("Epyllion Group intern", 0),
+    ("Youngone Bangladesh intern", 0),
+    ("Babylon Group intern", 0),
+    ("Fakir Apparels intern", 0),
+    ("Viyellatex intern", 0),
+    ("Snowtex intern", 0),
+    ("Team Group intern", 0),
+    ("Centric Brands intern", 0),
+    ("Centric Brands internship Bangladesh", 0),
+
+    # 4. Footwear, Retail & Fashion Giants
+    ("Bata internship Bangladesh", 0),
+    ("Bata intern Bangladesh", 0),
+    ("Bata Bangladesh internship", 0),
+    ("Apex Footwear internship Bangladesh", 0),
+    ("Apex Footwear intern", 0),
+    ("Apex internship Bangladesh", 0),
+    ("Apex internship Bangladesh", 25),
+    ("Bay Footwear internship Bangladesh", 0),
+    ("Bay Emporium intern", 0),
+    ("Lotto Bangladesh internship", 0),
+    ("Aarong internship Bangladesh", 0),
+    ("Aarong intern", 0),
+    ("Shwapno internship Bangladesh", 0),
+    ("Shwapno intern", 0),
+    ("Unimart internship Bangladesh", 0),
+
+    # 5. Top National Conglomerates & Business Groups
+    ("Akij internship Bangladesh", 0),
+    ("Akij intern Bangladesh", 0),
+    ("Akij Bashir Group internship Bangladesh", 0),
+    ("Akij Food and Beverage internship Bangladesh", 0),
+    ("Square internship Bangladesh", 0),
+    ("Square intern Bangladesh", 0),
+    ("Square internship Bangladesh", 25),
+    ("Square Pharmaceuticals internship Bangladesh", 0),
+    ("Square Toiletries internship Bangladesh", 0),
+    ("Square Fashions internship Bangladesh", 0),
+    ("Beximco internship Bangladesh", 0),
+    ("Beximco intern Bangladesh", 0),
+    ("Beximco internship Bangladesh", 25),
+    ("PRAN internship Bangladesh", 0),
+    ("PRAN intern Bangladesh", 0),
+    ("PRAN internship Bangladesh", 25),
+    ("RFL internship Bangladesh", 0),
+    ("RFL intern Bangladesh", 0),
+    ("RFL internship Bangladesh", 25),
+    ("ACI internship Bangladesh", 0),
+    ("ACI intern Bangladesh", 0),
+    ("ACI internship Bangladesh", 25),
+    ("Meghna Group internship Bangladesh", 0),
+    ("Meghna Group intern", 0),
+    ("Bashundhara internship Bangladesh", 0),
+    ("Bashundhara intern", 0),
+    ("Summit Group internship Bangladesh", 0),
+    ("Walton internship Bangladesh", 0),
+    ("Walton intern", 0),
+    ("City Group internship Bangladesh", 0),
+    ("Abul Khair Group internship Bangladesh", 0),
+    ("TK Group internship Bangladesh", 0),
+    ("S. Alam Group internship Bangladesh", 0),
+    ("Orion Group internship Bangladesh", 0),
+    ("Kazi Farms internship Bangladesh", 0),
+    ("Transcom internship Bangladesh", 0),
+    ("Navana Group internship Bangladesh", 0),
+    ("Rangs Group internship Bangladesh", 0),
+    ("United Group internship Bangladesh", 0),
+    ("Concord Group internship Bangladesh", 0),
+    ("Anwar Group internship Bangladesh", 0),
+    ("Super Star Group internship Bangladesh", 0),
+    ("SSG internship Bangladesh", 0),
+    ("Shera International Group internship", 0),
+    ("Stardust Telecom internship", 0),
+    ("Riseup Labs internship", 0),
+
+    # 6. Healthcare & Pharmaceuticals (Commercial / Business)
+    ("Roche Bangladesh internship", 0),
+    ("Renata internship Bangladesh", 0),
+    ("Incepta internship Bangladesh", 0),
+    ("Eskayef internship Bangladesh", 0),
+    ("SK+F internship Bangladesh", 0),
+    ("Healthcare Pharmaceuticals internship Bangladesh", 0),
+    ("Opsonin internship Bangladesh", 0),
+    ("Popular Pharmaceuticals internship Bangladesh", 0),
+    ("Rangs Pharmaceuticals internship", 0),
+    ("pharma marketing intern Bangladesh", 0),
+    ("pharma commercial intern Bangladesh", 0),
+
+    # 7. Multinational Corporations (MNCs)
     ("Unilever internship Bangladesh", 0),
+    ("Unilever Bangladesh intern", 0),
     ("British American Tobacco internship Bangladesh", 0),
     ("BAT internship Bangladesh", 0),
     ("Nestle internship Bangladesh", 0),
@@ -181,6 +299,7 @@ SEARCH_QUERY_SPECS = [
     ("LafargeHolcim internship Bangladesh", 25),
     ("Singer Bangladesh internship", 0),
     ("Coca-Cola internship Bangladesh", 0),
+    ("PepsiCo Bangladesh internship", 0),
     ("Standard Chartered internship Bangladesh", 0),
     ("HSBC internship Bangladesh", 0),
     ("MetLife internship Bangladesh", 0),
@@ -189,8 +308,15 @@ SEARCH_QUERY_SPECS = [
     ("Sanofi Bangladesh internship", 0),
     ("TUV Austria internship Bangladesh", 0),
     ("Decathlon Bangladesh internship", 0),
+    ("Bureau Veritas Bangladesh internship", 0),
+    ("SGS Bangladesh internship", 0),
+    ("Intertek Bangladesh internship", 0),
+    ("PUMA Bangladesh internship", 0),
+    ("H&M Bangladesh internship", 0),
+    ("Marks and Spencer Bangladesh internship", 0),
+    ("Li & Fung Bangladesh internship", 0),
 
-    # 4. Premier Commercial & Islamic Banks, Financial Institutions (NBFIs)
+    # 8. Premier Commercial & Islamic Banks, Financial Institutions (NBFIs)
     ("BRAC Bank internship Bangladesh", 0),
     ("BRAC Bank internship Bangladesh", 25),
     ("City Bank internship Bangladesh", 0),
@@ -205,13 +331,18 @@ SEARCH_QUERY_SPECS = [
     ("Dutch-Bangla Bank internship Bangladesh", 0),
     ("DBBL internship Bangladesh", 0),
     ("Islami Bank Bangladesh internship", 0),
+    ("Trust Bank internship Bangladesh", 0),
+    ("Pubali Bank internship Bangladesh", 0),
+    ("United Commercial Bank internship Bangladesh", 0),
+    ("UCB internship Bangladesh", 0),
     ("IDLC internship Bangladesh", 0),
     ("IDLC internship Bangladesh", 25),
     ("IPDC internship Bangladesh", 0),
     ("LankaBangla internship Bangladesh", 0),
 
-    # 5. Telecoms, FinTech & Digital Leaders
+    # 9. Telecoms, FinTech & Digital Economy
     ("Grameenphone internship Bangladesh", 0),
+    ("GP internship Bangladesh", 0),
     ("Robi internship Bangladesh", 0),
     ("Banglalink internship Bangladesh", 0),
     ("bKash internship Bangladesh", 0),
@@ -223,36 +354,23 @@ SEARCH_QUERY_SPECS = [
     ("ShopUp internship Bangladesh", 0),
     ("Chaldal internship Bangladesh", 0),
 
-    # 6. Top Conglomerates & Business Houses in Bangladesh
-    ("Square internship Bangladesh", 0),
-    ("Beximco internship Bangladesh", 0),
-    ("Akij internship Bangladesh", 0),
-    ("PRAN internship Bangladesh", 0),
-    ("RFL internship Bangladesh", 0),
-    ("ACI internship Bangladesh", 0),
-    ("Meghna Group internship Bangladesh", 0),
-    ("Bashundhara internship Bangladesh", 0),
-    ("Summit Group internship Bangladesh", 0),
-    ("Walton internship Bangladesh", 0),
-    ("Renata internship Bangladesh", 0),
-    ("Incepta internship Bangladesh", 0),
-    ("Apex internship Bangladesh", 0),
-    ("DBL Group internship Bangladesh", 0),
-    ("Super Star Group internship Bangladesh", 0),
-    ("SSG internship Bangladesh", 0),
-
-    # 7. Development Organizations & NGOs in Bangladesh
+    # 10. Development Organizations & NGOs in Bangladesh
     ("BRAC internship Bangladesh", 0),
+    ("Norwegian Refugee Council internship Bangladesh", 0),
     ("UNDP internship Bangladesh", 0),
     ("UNICEF Bangladesh internship", 0),
     ("icddr,b internship Bangladesh", 0),
-    ("Save the Children internship Bangladesh", 0)
+    ("Save the Children internship Bangladesh", 0),
+    ("ActionAid Bangladesh internship", 0),
+    ("Oxfam Bangladesh internship", 0),
+    ("CARE Bangladesh internship", 0)
 ]
 
 
 def is_valid_internship(title: str) -> bool:
     """Strictly checks that the title is an authentic internship/placement role for business students."""
-    tl = title.strip().lower()
+    title = unicodedata.normalize('NFKD', title).strip()
+    tl = title.lower()
 
     if tl in ("intern", "internship", "trainee", "student"):
         return False
@@ -517,7 +635,7 @@ def run_daily_update() -> int:
             disc = "Accounting, Audit & Tax"
         elif any(k in tl for k in ["market", "brand", "sales", "consumer", "social", "lead gen", "growth", "counsellor"]):
             disc = "Marketing & Brand Management"
-        elif any(k in tl for k in ["supply chain", "procure", "logistics", "commercial", "import", "export", "sourcing", "warehouse", "scm"]):
+        elif any(k in tl for k in ["supply chain", "procure", "logistics", "commercial", "import", "export", "sourcing", "warehouse", "scm", "merchandis", "apparel", "woven", "knit"]):
             disc = "Supply Chain & Procurement"
         elif any(k in tl for k in ["hr", "human resource", "talent", "people", "learning", "culture", "recruitment"]):
             disc = "Human Resources & Talent"
@@ -537,7 +655,9 @@ def run_daily_update() -> int:
             "hsbc", "coca-cola", "singer", "decathlon", "tuv austria", "standard chartered",
             "unilever", "bat", "british american tobacco", "nestle", "marico", "reckitt",
             "berger", "lafarge", "lafargeholcim", "metlife", "chevron", "novartis", "sanofi",
-            "commure", "athelas", "gaotek", "centric brands"
+            "commure", "athelas", "gaotek", "centric brands", "roche", "bata", "pepsico",
+            "youngone", "h&m", "marks and spencer", "puma", "li & fung", "bureau veritas",
+            "sgs", "intertek", "kpmg", "ey", "pwc", "deloitte"
         ]
         # Tier 2: Premier Commercial & Islamic Banks, Telecoms, Conglomerates, FinTech & Top NGOs
         tier_2_keywords = [
@@ -548,7 +668,12 @@ def run_daily_update() -> int:
             "beximco", "akij", "pran", "rfl", "aci", "meghna", "bashundhara", "summit",
             "walton", "renata", "incepta", "apex", "dbl", "super star", "ssg", "next ventures",
             "confidence", "undp", "unicef", "icddr", "save the children", "polygon technology",
-            "trace consulting", "thinkbait", "eon"
+            "trace consulting", "thinkbait", "eon", "norwegian refugee council", "nrc",
+            "rangs", "shera", "stardust", "riseup", "ha-meem", "hameem", "pacific jeans",
+            "envoy", "ananta", "standard group", "epyllion", "bitopi", "viyellatex",
+            "team group", "snowtex", "aarong", "shwapno", "city group", "abul khair",
+            "tk group", "s. alam", "orion", "kazi farms", "transcom", "eskayef", "sk+f",
+            "healthcare pharma", "opsonin", "popular pharma"
         ]
 
         if any(m in cl for m in tier_1_keywords):
