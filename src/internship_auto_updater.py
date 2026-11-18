@@ -462,6 +462,8 @@ def verify_http_status(job: dict) -> bool:
             elif r.status_code in (404, 410):
                 return False
             elif r.status_code in (429, 999):
+                if job.get("is_existing"):
+                    return True
                 time.sleep(1.2)
                 continue
             return False
@@ -469,6 +471,8 @@ def verify_http_status(job: dict) -> bool:
             if attempt == 0:
                 time.sleep(1.0)
                 continue
+            if job.get("is_existing"):
+                return True
             return False
     return False
 
@@ -738,6 +742,8 @@ def run_daily_update() -> int:
         job_counter += 1
 
     catalog.sort(key=lambda x: x["value_score"], reverse=True)
+    for idx, item in enumerate(catalog, 1):
+        item["id"] = f"biz-{idx:04d}"
 
     # 7. Write to JSON
     OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
