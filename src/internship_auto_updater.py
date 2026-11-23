@@ -651,6 +651,39 @@ EXPIRED_INDICATORS = [
 ]
 
 
+DEADLINE_PATTERNS = [
+    r'(?:deadline|last date of application|apply before|application closes|valid till|valid until|closing date|আবেদনের শেষ তারিখ)\s*[:\-]?\s*(\d{1,2}\s+[A-Za-z]+\s+\d{4})',
+    r'(?:deadline|last date of application|apply before|application closes|valid till|valid until|closing date|আবেদনের শেষ তারিখ)\s*[:\-]?\s*([A-Za-z]+\s+\d{1,2},?\s+\d{4})',
+    r'(?:deadline|last date of application|apply before|application closes|valid till|valid until|closing date|আবেদনের শেষ তারিখ)\s*[:\-]?\s*(\d{1,2}[/\-\.]\d{1,2}[/\-\.]\d{4})'
+]
+
+DEADLINE_DATE_FORMATS = [
+    "%d %B %Y", "%d %b %Y",
+    "%B %d %Y", "%b %d %Y",
+    "%d-%m-%Y", "%d/%m/%Y", "%d.%m.%Y"
+]
+
+
+def is_deadline_passed(text: str) -> bool:
+    """
+    Scans the text for explicit application deadlines across all standard formats.
+    Returns True if an application deadline is detected and the date has already passed.
+    """
+    now = datetime.now()
+    for pat in DEADLINE_PATTERNS:
+        matches = re.finditer(pat, text, re.IGNORECASE)
+        for m in matches:
+            d_str = m.group(1).replace(",", "").strip()
+            for fmt in DEADLINE_DATE_FORMATS:
+                try:
+                    dt = datetime.strptime(d_str, fmt)
+                    if dt < now:
+                        return True
+                except ValueError:
+                    continue
+    return False
+
+
 def verify_http_status(job: dict) -> bool:
     """
     Sends a live HTTP GET request to rigorously verify:
@@ -698,17 +731,9 @@ def verify_http_status(job: dict) -> bool:
                         # Job is closed or filled, LinkedIn removed the Apply button
                         return False
 
-                # 4. Check deadline in description if present
-                m_deadline = re.search(r'(?:last date of application|deadline)\s*:\s*(\d{1,2}\s+[A-Za-z]+\s+\d{4})', r.text, re.IGNORECASE)
-                if m_deadline:
-                    d_str = m_deadline.group(1)
-                    try:
-                        d_date = datetime.strptime(d_str, "%d %B %Y")
-                        if d_date < datetime.now():
-                            # Deadline has passed
-                            return False
-                    except Exception:
-                        pass
+                # 4. Rigorous deadline verification: reject immediately if deadline has passed
+                if is_deadline_passed(r.text):
+                    return False
 
                 return True
             elif r.status_code in (404, 410):
