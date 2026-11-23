@@ -30,7 +30,15 @@ On **every single catalog refresh and scan**, the discovery and verification eng
 
 ---
 
-## 4. Multi-Platform Deployment & Synchronization
+## 4. Direct Original Postings Requirement ("See Original Post" Integrity)
+- Every single "See Original Post" button MUST land directly on an individual, original internship post page (strictly zero generic company homepages or root career landing pages like `/career` where students cannot find the specific internship).
+- Maximize direct, verified LinkedIn job postings (`https://bd.linkedin.com/jobs/view/...` or `https://www.linkedin.com/jobs/view/...`) across Bangladesh, as LinkedIn postings provide the exact role requirements, authentic company metadata, and a direct "Apply" / "Easy Apply" / "আবেদন করুন" button right on the page.
+- Any non-LinkedIn listing must be an official dedicated program portal that features the direct active application intake (e.g. BRAC BRIDGE).
+- Every link in the catalog must be live-tested and cross-verified to be 100% fault-free, active, and open.
+
+---
+
+## 5. Multi-Platform Deployment & Synchronization
 - Every refresh must update:
   1. `data/business_internships.json`
   2. `index.html` (`EMBEDDED_JOBS`)
